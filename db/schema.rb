@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_19_220000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_04_210000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -82,6 +82,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_220000) do
     t.jsonb "internal_attributes", default: {}, null: false
     t.jsonb "settings", default: {}
     t.bigint "feature_flags_ext_1", default: 0, null: false
+    t.index "((settings ->> 'white_label_domain'::text))", name: "index_accounts_on_white_label_domain", unique: true, where: "((settings ->> 'white_label_domain'::text) IS NOT NULL)"
     t.index ["status"], name: "index_accounts_on_status"
   end
 
@@ -1143,6 +1144,83 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_220000) do
     t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "((account_id IS NULL) AND (inbox_id IS NULL))"
   end
 
+  create_table "flow_kanban_board_inboxes", force: :cascade do |t|
+    t.bigint "board_id", null: false
+    t.bigint "inbox_id", null: false
+    t.index ["board_id", "inbox_id"], name: "index_flow_kanban_board_inboxes_on_board_id_and_inbox_id", unique: true
+    t.index ["board_id"], name: "index_flow_kanban_board_inboxes_on_board_id"
+    t.index ["inbox_id"], name: "index_flow_kanban_board_inboxes_on_inbox_id"
+  end
+
+  create_table "flow_kanban_board_teams", force: :cascade do |t|
+    t.bigint "board_id", null: false
+    t.bigint "team_id", null: false
+    t.index ["board_id", "team_id"], name: "index_flow_kanban_board_teams_on_board_id_and_team_id", unique: true
+    t.index ["board_id"], name: "index_flow_kanban_board_teams_on_board_id"
+    t.index ["team_id"], name: "index_flow_kanban_board_teams_on_team_id"
+  end
+
+  create_table "flow_kanban_boards", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.integer "position", default: 0, null: false
+    t.bigint "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_boards_on_account_id"
+    t.index ["created_by_id"], name: "index_flow_kanban_boards_on_created_by_id"
+  end
+
+  create_table "flow_kanban_card_conversations", force: :cascade do |t|
+    t.bigint "card_id", null: false
+    t.bigint "conversation_id", null: false
+    t.bigint "board_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "conversation_id"], name: "idx_on_board_id_conversation_id_faa1e45701", unique: true
+    t.index ["board_id"], name: "index_flow_kanban_card_conversations_on_board_id"
+    t.index ["card_id"], name: "index_flow_kanban_card_conversations_on_card_id"
+    t.index ["conversation_id"], name: "index_flow_kanban_card_conversations_on_conversation_id"
+  end
+
+  create_table "flow_kanban_cards", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "board_id", null: false
+    t.bigint "stage_id", null: false
+    t.bigint "contact_id", null: false
+    t.bigint "assignee_id"
+    t.bigint "created_by_id"
+    t.string "title", null: false
+    t.text "description"
+    t.float "position", default: 0.0, null: false
+    t.datetime "stage_changed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_cards_on_account_id"
+    t.index ["assignee_id"], name: "index_flow_kanban_cards_on_assignee_id"
+    t.index ["board_id", "assignee_id"], name: "index_flow_kanban_cards_on_board_id_and_assignee_id"
+    t.index ["board_id"], name: "index_flow_kanban_cards_on_board_id"
+    t.index ["contact_id"], name: "index_flow_kanban_cards_on_contact_id"
+    t.index ["created_by_id"], name: "index_flow_kanban_cards_on_created_by_id"
+    t.index ["stage_id", "position"], name: "index_flow_kanban_cards_on_stage_id_and_position"
+    t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
+  end
+
+  create_table "flow_kanban_stages", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "board_id", null: false
+    t.string "name", null: false
+    t.string "color", default: "#6B7280", null: false
+    t.integer "stage_type", default: 0, null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_stages_on_account_id"
+    t.index ["board_id", "position"], name: "index_flow_kanban_stages_on_board_id_and_position"
+    t.index ["board_id"], name: "index_flow_kanban_stages_on_board_id"
+  end
+
   create_table "folders", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "category_id", null: false
@@ -1882,6 +1960,23 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_19_220000) do
   add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
   add_foreign_key "campaign_recipients", "contacts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "inboxes", on_delete: :cascade
+  add_foreign_key "flow_kanban_board_inboxes", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_board_inboxes", "inboxes", on_delete: :cascade
+  add_foreign_key "flow_kanban_board_teams", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_board_teams", "teams", on_delete: :cascade
+  add_foreign_key "flow_kanban_boards", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_boards", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_card_conversations", "conversations", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_conversations", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_conversations", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_cards", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_cards", "contacts", on_delete: :cascade
+  add_foreign_key "flow_kanban_cards", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_cards", "flow_kanban_stages", column: "stage_id"
+  add_foreign_key "flow_kanban_cards", "users", column: "assignee_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_cards", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_stages", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_stages", "flow_kanban_boards", column: "board_id", on_delete: :cascade
   add_foreign_key "group_members", "contacts"
   add_foreign_key "group_members", "contacts", column: "group_contact_id"
   add_foreign_key "inboxes", "portals"

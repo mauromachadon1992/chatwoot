@@ -1,0 +1,15 @@
+es:
+  flow_kanban:
+    default_stages:
+      new: Nuevo
+      in_progress: En curso
+      won: Ganado
+      lost: Perdido
+    card_fields:
+      label: Campos de la tarjeta del Kanban
+      hint: Lo que el tablero muestra en cada tarjeta sin abrirla. El título siempre se muestra.
+      contact: Contacto
+      conversations: Conversaciones y canales
+      assignee: Responsable
+      time_in_stage: Tiempo en la etapa
+      last_activity: Última actividad

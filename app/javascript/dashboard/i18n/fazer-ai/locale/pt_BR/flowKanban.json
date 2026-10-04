@@ -1,0 +1,117 @@
+{
+  "FLOW_KANBAN": {
+    "TITLE": "Kanban",
+    "SELECT_BOARD": "Selecionar funil",
+    "NEW_BOARD": "Novo funil",
+    "NEW_CARD": "Novo card",
+    "BOARD_SETTINGS": "Configurar funil",
+    "LOADING": "Carregando…",
+    "FILTERS": {
+      "SEARCH": "Buscar por título, nome, telefone ou e-mail",
+      "ALL_AGENTS": "Todos os responsáveis",
+      "UNASSIGNED": "Sem responsável",
+      "SEARCH_AGENT": "Buscar agente",
+      "SEARCH_INBOX": "Buscar caixa de entrada",
+      "ALL_INBOXES": "Todas as caixas de entrada",
+      "CLEAR": "Limpar filtros"
+    },
+    "EMPTY": {
+      "NO_BOARDS_TITLE": "Nenhum funil ainda",
+      "NO_BOARDS_ADMIN": "Crie um funil para acompanhar negócios das conversas de qualquer caixa de entrada.",
+      "NO_BOARDS_AGENT": "Nenhum funil foi compartilhado com você. Peça a um administrador para criar um.",
+      "COLUMN": "Arraste cards para cá"
+    },
+    "COLUMN": {
+      "LOAD_MORE": "Carregar mais",
+      "ADD_CARD": "Adicionar card"
+    },
+    "CARD": {
+      "TIME_IN_STAGE": "Desde que entrou nesta etapa",
+      "LAST_ACTIVITY": "Última atividade nas conversas",
+      "NO_CONVERSATIONS": "Sem conversas",
+      "CONVERSATIONS": "{count} conversa | {count} conversas",
+      "RESTRICTED_CONVERSATION": "Conversa de uma caixa de entrada sem acesso"
+    },
+    "CARD_FORM": {
+      "CREATE_TITLE": "Novo card",
+      "EDIT_TITLE": "Detalhes do card",
+      "TITLE": "Título",
+      "TITLE_PLACEHOLDER": "Em branco usa o nome do contato",
+      "DESCRIPTION": "Descrição",
+      "DESCRIPTION_PLACEHOLDER": "Anotações sobre o negócio",
+      "CONTACT": "Contato",
+      "CONTACT_PLACEHOLDER": "Buscar contato",
+      "CONTACT_SEARCH": "Digite nome, telefone ou e-mail",
+      "CONTACT_EMPTY": "Nenhum contato encontrado",
+      "STAGE": "Etapa",
+      "ASSIGNEE": "Responsável",
+      "NO_ASSIGNEE": "Sem responsável",
+      "CONVERSATIONS": "Conversas vinculadas",
+      "OPEN_CONVERSATION": "Abrir conversa",
+      "UNLINK": "Desvincular",
+      "OPEN_CONTACT": "Ver contato",
+      "CREATE": "Criar card",
+      "SAVE": "Salvar",
+      "DELETE": "Excluir card",
+      "DELETE_CONFIRM": "Excluir este card? As conversas não são afetadas.",
+      "CREATED": "Card criado",
+      "SAVED": "Card salvo",
+      "DELETED": "Card excluído"
+    },
+    "BOARD_FORM": {
+      "CREATE_TITLE": "Novo funil",
+      "EDIT_TITLE": "Configurar funil",
+      "NAME": "Nome",
+      "NAME_PLACEHOLDER": "Ex.: Vendas",
+      "DESCRIPTION": "Descrição",
+      "VISIBILITY": "Quem vê este funil",
+      "VISIBILITY_HINT": "Sem caixas de entrada nem times, todos os agentes veem o funil. Administradores sempre veem.",
+      "INBOXES": "Caixas de entrada",
+      "INBOXES_PLACEHOLDER": "Todas",
+      "TEAMS": "Times",
+      "TEAMS_PLACEHOLDER": "Todos",
+      "STAGES": "Etapas",
+      "STAGES_HINT": "Arraste para reordenar. Etapas do tipo Ganho e Perdido fecham o negócio.",
+      "STAGE_NAME": "Nome da etapa",
+      "DRAG_STAGE": "Arrastar para reordenar",
+      "STAGE_COLOR": "Cor da etapa",
+      "STAGE_TYPE": "Tipo da etapa",
+      "ADD_STAGE": "Adicionar etapa",
+      "STAGES_AUTOSAVE": "Alterações nas etapas são salvas na hora.",
+      "DEFAULT_STAGES_HINT": "O funil começa com as etapas Novo, Em andamento, Ganho e Perdido. Você pode ajustá-las depois.",
+      "DELETE_STAGE_EMPTY": "Esta etapa não tem cards. Ela será removida do funil.",
+      "NEW_STAGE": "Nova etapa",
+      "STAGE_TYPES": {
+        "OPEN": "Aberta",
+        "WON": "Ganho",
+        "LOST": "Perdido"
+      },
+      "DELETE_STAGE": "Excluir etapa",
+      "DELETE_STAGE_MOVE_TO": "Mover os cards desta etapa para",
+      "DELETE_STAGE_CONFIRM": "Excluir etapa",
+      "CREATE": "Criar funil",
+      "SAVE": "Salvar",
+      "DELETE": "Excluir funil",
+      "DELETE_CONFIRM": "Excluir o funil \"{name}\" e todos os seus cards? As conversas não são afetadas.",
+      "CREATED": "Funil criado",
+      "SAVED": "Funil salvo",
+      "DELETED": "Funil excluído"
+    },
+    "PANEL": {
+      "TITLE": "Kanban",
+      "LINKED": "Nesta conversa",
+      "CONTACT_CARDS": "Outros cards do contato",
+      "NONE": "Esta conversa não está em nenhum card.",
+      "LINK": "Vincular",
+      "UNLINK": "Desvincular",
+      "OPEN_BOARD": "Abrir no Kanban",
+      "CREATE": "Criar card",
+      "CREATE_IN": "Criar card em",
+      "NO_BOARDS": "Nenhum funil disponível."
+    },
+    "ERRORS": {
+      "GENERIC": "Não foi possível concluir. Tente novamente.",
+      "MOVE": "Não foi possível mover o card. O quadro foi recarregado."
+    }
+  }
+}

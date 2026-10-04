@@ -1,5 +1,6 @@
 import { frontendURL } from '../../../helper/URLHelper';
-import KanbanIndex from './Index.vue';
+// Flow: our Kanban replaces the fazer.ai Pro paywall at the same route.
+import KanbanIndex from '../flowKanban/KanbanPage.vue';
 
 const meta = {
   permissions: ['administrator', 'agent', 'custom_role'],

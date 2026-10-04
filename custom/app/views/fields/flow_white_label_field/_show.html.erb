@@ -1,0 +1,17 @@
+<div class="flex flex-wrap items-center gap-3">
+  <% if field.icon_path %>
+    <img src="<%= field.icon_path %>" alt="" class="size-6 rounded object-contain">
+  <% end %>
+  <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium <%= field.enabled? ? 'bg-n-alpha-2 text-n-teal-11' : 'bg-n-alpha-1 text-n-slate-11' %>">
+    <span class="size-1.5 rounded-full <%= field.enabled? ? 'bg-n-teal-9' : 'bg-n-slate-9' %>"></span>
+    <%= field.to_s %>
+  </span>
+  <% if field.brand_name %>
+    <span class="text-sm text-n-slate-12"><%= field.brand_name %></span>
+  <% end %>
+  <% if field.domain %>
+    <span class="text-xs text-n-slate-11"><%= field.domain %></span>
+  <% end %>
+  <%= link_to t('flow_white_label.field.configure'), super_admin_account_white_label_path(field.resource),
+              class: 'inline-flex items-center h-8 px-3 text-xs font-medium rounded-lg bg-n-alpha-2 text-n-slate-12 hover:bg-n-alpha-1' %>
+</div>

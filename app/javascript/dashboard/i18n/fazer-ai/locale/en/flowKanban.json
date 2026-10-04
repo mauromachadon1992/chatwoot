@@ -1,0 +1,117 @@
+{
+  "FLOW_KANBAN": {
+    "TITLE": "Kanban",
+    "SELECT_BOARD": "Select board",
+    "NEW_BOARD": "New board",
+    "NEW_CARD": "New card",
+    "BOARD_SETTINGS": "Board settings",
+    "LOADING": "Loading…",
+    "FILTERS": {
+      "SEARCH": "Search by title, name, phone or e-mail",
+      "ALL_AGENTS": "All assignees",
+      "UNASSIGNED": "Unassigned",
+      "SEARCH_AGENT": "Search agent",
+      "SEARCH_INBOX": "Search inbox",
+      "ALL_INBOXES": "All inboxes",
+      "CLEAR": "Clear filters"
+    },
+    "EMPTY": {
+      "NO_BOARDS_TITLE": "No boards yet",
+      "NO_BOARDS_ADMIN": "Create a board to track deals from conversations in any inbox.",
+      "NO_BOARDS_AGENT": "No board has been shared with you. Ask an administrator to create one.",
+      "COLUMN": "Drag cards here"
+    },
+    "COLUMN": {
+      "LOAD_MORE": "Load more",
+      "ADD_CARD": "Add card"
+    },
+    "CARD": {
+      "TIME_IN_STAGE": "Since it entered this stage",
+      "LAST_ACTIVITY": "Last activity in its conversations",
+      "NO_CONVERSATIONS": "No conversations",
+      "CONVERSATIONS": "{count} conversation | {count} conversations",
+      "RESTRICTED_CONVERSATION": "Conversation from an inbox you cannot access"
+    },
+    "CARD_FORM": {
+      "CREATE_TITLE": "New card",
+      "EDIT_TITLE": "Card details",
+      "TITLE": "Title",
+      "TITLE_PLACEHOLDER": "Leave blank to use the contact's name",
+      "DESCRIPTION": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Notes about the deal",
+      "CONTACT": "Contact",
+      "CONTACT_PLACEHOLDER": "Search contact",
+      "CONTACT_SEARCH": "Type a name, phone or e-mail",
+      "CONTACT_EMPTY": "No contacts found",
+      "STAGE": "Stage",
+      "ASSIGNEE": "Assignee",
+      "NO_ASSIGNEE": "Unassigned",
+      "CONVERSATIONS": "Linked conversations",
+      "OPEN_CONVERSATION": "Open conversation",
+      "UNLINK": "Unlink",
+      "OPEN_CONTACT": "View contact",
+      "CREATE": "Create card",
+      "SAVE": "Save",
+      "DELETE": "Delete card",
+      "DELETE_CONFIRM": "Delete this card? Conversations are not affected.",
+      "CREATED": "Card created",
+      "SAVED": "Card saved",
+      "DELETED": "Card deleted"
+    },
+    "BOARD_FORM": {
+      "CREATE_TITLE": "New board",
+      "EDIT_TITLE": "Board settings",
+      "NAME": "Name",
+      "NAME_PLACEHOLDER": "E.g. Sales",
+      "DESCRIPTION": "Description",
+      "VISIBILITY": "Who sees this board",
+      "VISIBILITY_HINT": "With no inboxes and no teams, every agent sees the board. Administrators always do.",
+      "INBOXES": "Inboxes",
+      "INBOXES_PLACEHOLDER": "All",
+      "TEAMS": "Teams",
+      "TEAMS_PLACEHOLDER": "All",
+      "STAGES": "Stages",
+      "STAGES_HINT": "Drag to reorder. Won and Lost stages close the deal.",
+      "STAGE_NAME": "Stage name",
+      "DRAG_STAGE": "Drag to reorder",
+      "STAGE_COLOR": "Stage color",
+      "STAGE_TYPE": "Stage type",
+      "ADD_STAGE": "Add stage",
+      "STAGES_AUTOSAVE": "Stage changes are saved right away.",
+      "DEFAULT_STAGES_HINT": "The board starts with the stages New, In progress, Won and Lost. You can adjust them afterwards.",
+      "DELETE_STAGE_EMPTY": "This stage has no cards. It will be removed from the board.",
+      "NEW_STAGE": "New stage",
+      "STAGE_TYPES": {
+        "OPEN": "Open",
+        "WON": "Won",
+        "LOST": "Lost"
+      },
+      "DELETE_STAGE": "Delete stage",
+      "DELETE_STAGE_MOVE_TO": "Move this stage's cards to",
+      "DELETE_STAGE_CONFIRM": "Delete stage",
+      "CREATE": "Create board",
+      "SAVE": "Save",
+      "DELETE": "Delete board",
+      "DELETE_CONFIRM": "Delete the board \"{name}\" and all its cards? Conversations are not affected.",
+      "CREATED": "Board created",
+      "SAVED": "Board saved",
+      "DELETED": "Board deleted"
+    },
+    "PANEL": {
+      "TITLE": "Kanban",
+      "LINKED": "On this conversation",
+      "CONTACT_CARDS": "Other cards of this contact",
+      "NONE": "This conversation is not on any card.",
+      "LINK": "Link",
+      "UNLINK": "Unlink",
+      "OPEN_BOARD": "Open in Kanban",
+      "CREATE": "Create card",
+      "CREATE_IN": "Create card in",
+      "NO_BOARDS": "No boards available."
+    },
+    "ERRORS": {
+      "GENERIC": "Could not complete that. Please try again.",
+      "MOVE": "Could not move the card. The board was reloaded."
+    }
+  }
+}

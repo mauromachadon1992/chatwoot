@@ -1,0 +1,15 @@
+en:
+  flow_kanban:
+    default_stages:
+      new: New
+      in_progress: In progress
+      won: Won
+      lost: Lost
+    card_fields:
+      label: Kanban card fields
+      hint: What the board shows on each card without opening it. The title always shows.
+      contact: Contact
+      conversations: Conversations and channels
+      assignee: Assignee
+      time_in_stage: Time in stage
+      last_activity: Last activity

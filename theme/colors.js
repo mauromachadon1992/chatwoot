@@ -226,7 +226,9 @@ export const colors = {
     },
 
     black: '#000000',
-    brand: '#2781F6',
+    // Flow: step 9 of the accent ramp, so a white label can re-colour it. The fallback is the
+    // original #2781F6, for the widget and super admin, which do not load the ramp.
+    brand: 'rgb(var(--blue-9, 39 129 246) / <alpha-value>)',
     portal: 'var(--dynamic-portal-color)',
     'portal-soft': 'var(--dynamic-portal-color-soft)',
     'portal-faint': 'var(--dynamic-portal-color-faint)',

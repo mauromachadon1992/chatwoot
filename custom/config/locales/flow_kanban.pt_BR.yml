@@ -1,0 +1,15 @@
+pt_BR:
+  flow_kanban:
+    default_stages:
+      new: Novo
+      in_progress: Em andamento
+      won: Ganho
+      lost: Perdido
+    card_fields:
+      label: Campos do card do Kanban
+      hint: O que o quadro mostra em cada card sem abri-lo. O título sempre aparece.
+      contact: Contato
+      conversations: Conversas e canais
+      assignee: Responsável
+      time_in_stage: Tempo na etapa
+      last_activity: Última atividade
