@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Publishes the local flow-chatwoot:latest-ee to the private package
+# ghcr.io/mauromachadon1992/chatwoot, as <sha>-ee and latest-ee.
+#
+# The token comes on stdin and needs the write:packages scope. From Windows, after a one-time
+# `gh auth refresh -h github.com -s write:packages,read:packages`:
+#
+#   gh auth token | wsl -d Ubuntu -u mauro -- ~/chatwoot/custom/docker/publish-ghcr
+#
+# A package created this way starts private; check it at
+# https://github.com/users/mauromachadon1992/packages/container/package/chatwoot.
+set -euo pipefail
+
+owner="${GHCR_OWNER:-mauromachadon1992}"
+target="ghcr.io/${owner}/chatwoot"
+source_image="${FLOW_IMAGE:-flow-chatwoot:latest-ee}"
+
+token="$(cat)"
+if [ -z "$token" ]; then
+  echo "No token on stdin. Pipe one with the write:packages scope (see the header)." >&2
+  exit 1
+fi
+
+sha="$(docker run --rm --entrypoint cat "$source_image" /app/.git_sha | cut -c1-9)"
+
+# Log out on the way out, so the token is not left in ~/.docker/config.json.
+trap 'docker logout ghcr.io > /dev/null 2>&1 || true' EXIT
+printf '%s' "$token" | docker login ghcr.io -u "$owner" --password-stdin > /dev/null
+
+for tag in "${sha}-ee" latest-ee; do
+  docker tag "$source_image" "${target}:${tag}"
+  docker push "${target}:${tag}"
+done
+
+echo "Published ${target}:${sha}-ee and ${target}:latest-ee"

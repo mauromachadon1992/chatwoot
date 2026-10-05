@@ -44,6 +44,12 @@ features off on every account and resets the premium installation config each da
   `rake flow:enterprise:dev_disable` shows what an unlicensed installation gets. Both refuse
   to run outside development and test (`Custom::EnterpriseDev`).
 
+## Image and deployment
+
+The production image is this fork with `enterprise/` and `custom/`, published privately as
+`ghcr.io/mauromachadon1992/chatwoot`. Building, local checks, publishing and the Coolify
+stack: `custom/docker/README.md`.
+
 ## Upstream files we touch (check these on every merge)
 
 | File | Why |

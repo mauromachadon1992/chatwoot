@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Builds the fork's EE image (enterprise/ + custom/) from a clean, shallow clone of a branch,
+# so local edits and untracked files never end up in it.
+#
+#   custom/docker/build-ee [branch]     default: the current branch
+#
+# Tags flow-chatwoot:<sha>-ee and flow-chatwoot:latest-ee. Test it with
+# custom/docker/ee-local, publish it with custom/docker/publish-ghcr.
+set -euo pipefail
+
+repo="$(cd "$(dirname "$0")/../.." && pwd)"
+branch="${1:-$(git -C "$repo" rev-parse --abbrev-ref HEAD)}"
+build="$(mktemp -d /tmp/flow-chatwoot-build.XXXXXX)"
+trap 'rm -rf "$build"' EXIT
+
+# Shallow: the checkout is a blob:none partial clone, and a full clone would need history
+# objects it never downloaded. The Dockerfile reads `git rev-parse HEAD`, so .git stays.
+git clone -q --depth 1 --branch "$branch" "file://$repo" "$build"
+cd "$build"
+sha="$(git rev-parse --short=9 HEAD)"
+
+# The edition marker fazer.ai's latest-ee workflow adds; enterprise/ is kept (no rm -rf).
+printf '\nENV CW_EDITION="ee"\n' >> docker/Dockerfile
+test -d enterprise && test -d custom
+
+echo "Building flow-chatwoot:${sha}-ee from ${branch}"
+docker build -f docker/Dockerfile -t "flow-chatwoot:${sha}-ee" -t flow-chatwoot:latest-ee .
+docker images flow-chatwoot --format '{{.Repository}}:{{.Tag}} {{.Size}} {{.CreatedSince}}'
