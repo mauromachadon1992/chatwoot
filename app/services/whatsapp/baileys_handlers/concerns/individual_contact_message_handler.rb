@@ -42,6 +42,8 @@ module Whatsapp::BaileysHandlers::Concerns::IndividualContactMessageHandler
     # set_conversation so a blank webhook can't open/create a stray thread.
     return mark_existing_reaction_as_removed(sender: @contact) if reaction_removal?
 
+    return if Whatsapp::BlockedSender.silenced?(@contact, from_me: !incoming?)
+
     set_first_touch_attribution
     set_conversation
     handle_create_message

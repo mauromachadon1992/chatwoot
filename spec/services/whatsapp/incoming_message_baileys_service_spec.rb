@@ -475,8 +475,10 @@ describe Whatsapp::IncomingMessageBaileysService do
             expect { described_class.new(inbox: inbox, params: params).perform }
               .not_to change(inbox.account.contacts, :count)
 
-            expect(inbox.conversations.sole.contact_id).to eq(existing.id)
+            expect(inbox.contact_inboxes.sole.contact_id).to eq(existing.id)
             expect(existing.reload.blocked).to be(true)
+            # Found, the block holds: nothing reaches the bot (#793).
+            expect(inbox.conversations).to be_empty
           end
         end
 
