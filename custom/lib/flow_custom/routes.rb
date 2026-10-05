@@ -27,6 +27,9 @@ module FlowCustom::Routes
     # blob id, so a new upload gets a new URL and the response can be cached for good.
     get 'flow/brand/:account_id/:name/:version', to: 'white_label_images#show', as: :flow_white_label_image,
                                                  constraints: { account_id: /\d+/, version: /\d+/ }
+    # The installation login page's images, on the same terms.
+    get 'flow/login/:name/:version', to: 'login_page_images#show', as: :flow_login_page_image,
+                                     constraints: { version: /\d+/ }
 
     # Same URL and helper names as a super admin route, outside the super_admin controller
     # namespace (see FlowAdmin::WhiteLabelsController).
@@ -35,6 +38,9 @@ module FlowCustom::Routes
         resource :white_label, only: [:show, :update] do
           get :palette
         end
+      end
+      resource :login_page, only: [:show, :update, :destroy] do
+        get :palette
       end
     end
   end

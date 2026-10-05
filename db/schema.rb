@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_04_210000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_05_010000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1219,6 +1219,21 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_04_210000) do
     t.index ["account_id"], name: "index_flow_kanban_stages_on_account_id"
     t.index ["board_id", "position"], name: "index_flow_kanban_stages_on_board_id_and_position"
     t.index ["board_id"], name: "index_flow_kanban_stages_on_board_id"
+  end
+
+  create_table "flow_login_pages", force: :cascade do |t|
+    t.boolean "enabled", default: false, null: false
+    t.string "name"
+    t.string "accent_color"
+    t.string "layout", default: "background", null: false
+    t.string "background_kind", default: "brand", null: false
+    t.jsonb "gradient", default: {}, null: false
+    t.string "animation", default: "none", null: false
+    t.integer "overlay", default: 30, null: false
+    t.jsonb "copy", default: {}, null: false
+    t.jsonb "options", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "folders", force: :cascade do |t|

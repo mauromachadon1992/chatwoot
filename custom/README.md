@@ -62,8 +62,14 @@ features off on every account and resets the premium installation config each da
 | `app/javascript/dashboard/routes/dashboard/settings/account/components/EmailBranding.vue` | notice when a white label manages the brand |
 | `db/schema.rb` | our `flow_kanban_*` tables, white label domain index |
 | `theme/colors.js` | `n-brand` reads `--blue-9` (fallback `#2781F6`), so the white label re-colours it |
-| `app/views/layouts/vueapp.html.erb` | inlines the white label's accent ramp on the account's own domain |
+| `app/views/layouts/vueapp.html.erb` | inlines the accent ramps: the login page's (installation) and the white label's (account) |
 | `.husky/pre-commit` | `xargs -r`, so a commit without Ruby files does not run rubocop on the whole repo |
+| `app/views/super_admin/application/_navigation.html.erb` | renders `_flow_navigation` (the Login page entry) |
+| `app/javascript/v3/views/login/Index.vue` | `FlowAuthShell` as the frame; hide options on signup, SSO and Google |
+| `app/javascript/v3/views/login/Saml.vue` | `FlowAuthShell` as the frame |
+| `app/javascript/v3/views/auth/reset/password/Index.vue` | `FlowAuthShell variant="plain"` as the frame |
+| `app/javascript/v3/views/auth/password/Edit.vue` | `FlowAuthShell variant="plain"` as the frame |
+| `app/javascript/v3/views/auth/signup/Index.vue` | `FlowAuthShell variant="bare"`; its own photo only without a login page |
 
 On a `db/schema.rb` conflict, take upstream's version, then run `rails db:migrate` to dump
 it again with our tables (and keep the larger schema version).
@@ -75,6 +81,35 @@ tokens, the typography utilities, `components-next` usage and the do's and don't
 screen follows it. `.impeccable/design.json` carries the extensions (dark values, shadows,
 motion, component snippets) for design tooling. Both files exist only in this fork, so
 merges from upstream never touch them.
+
+## Login page
+
+Super Admin → Login page (`/super_admin/login_page`, `FlowAdmin::LoginPagesController`)
+gives the whole installation its own sign-in screens: login, SSO, forgot and reset password,
+signup and the MFA step. One row in `flow_login_pages` (`Custom::LoginPage`) plus four images
+(logo, dark logo, icon, background), served by `LoginPageImagesController` on the same terms as
+the white label's. Stored there, not in `installation_configs`, because the Enterprise plan
+reconciliation resets `INSTALLATION_NAME`, `LOGO` and `BRAND_COLOR` daily on a `community`
+installation.
+
+- What it sets: identity (name, logos, icon, accent colour, for the whole installation,
+  dashboard included); copy per language (`pt_BR`, `en`, `es`: title, subtitle, panel
+  message; an empty field keeps Chatwoot's text); layout (`background`: one solid card over a
+  brand aurora, gradient or image, optionally drifting or slowly zooming; `split`: the form on
+  the left and the visual with its message on the right from `lg` up); hiding signup, SSO and
+  Google (hiding never shows something that is not configured); support, terms and privacy
+  links under the form.
+- Precedence (`Custom::DashboardController`): an account white label on its own domain, then
+  the login page, then Chatwoot. The installation's ramp is `<style id="flow-installation-theme">`,
+  so an account's ramp applied after login sits on top and leaves it in place.
+- Frontend: `app/javascript/v3/flow/FlowAuthShell.vue` reads `window.globalConfig.FLOW_LOGIN_PAGE`.
+  Without it, it renders Chatwoot's own wrappers byte for byte, so nothing configured means
+  nothing changed. With it, the screen's content goes into one surface (the screens' own cards
+  become plain sections of it), and no text sits on the background except the panel message,
+  which has its own scrim: any uploaded image keeps the copy readable. Animations stop under
+  `prefers-reduced-motion`.
+- The form previews everything live (light and dark, desktop and mobile), asking the server
+  for the accent ramp (`palette` action) so the preview shows the contrast-adjusted tone.
 
 ## White label
 

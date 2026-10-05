@@ -42,13 +42,7 @@ class FlowAdmin::WhiteLabelsController < SuperAdmin::ApplicationController
     color = params[:color].to_s.strip
     return head :unprocessable_content unless color.match?(Custom::WhiteLabel::COLOR_FORMAT)
 
-    palette = Custom::WhiteLabel::Palette.new(color)
-    render json: {
-      action: palette.action_hex,
-      adjusted: palette.adjusted?,
-      white_contrast: palette.brand.contrast(Custom::WhiteLabel::Palette::WHITE).round(1),
-      ramp: palette.variables[:light].values_at(*(1..12).map { |step| "--blue-#{step}" }).map { |rgb| "rgb(#{rgb})" }
-    }
+    render json: Custom::WhiteLabel::Palette.new(color).preview
   end
 
   private

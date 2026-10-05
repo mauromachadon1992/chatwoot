@@ -71,6 +71,27 @@ class Custom::WhiteLabel::Palette
     end
   end
 
+  # What a super admin form's live preview needs to show this colour as the dashboard will.
+  def preview
+    {
+      action: action_hex,
+      adjusted: adjusted?,
+      white_contrast: brand.contrast(WHITE).round(1),
+      ramp: ramp(:light),
+      ramp_dark: ramp(:dark)
+    }
+  end
+
+  # The 12 steps of one theme as CSS colours, for previews.
+  def ramp(theme)
+    variables[theme].values_at(*(1..12).map { |step| "--blue-#{step}" }).map { |rgb| "rgb(#{rgb})" }
+  end
+
+  # Chatwoot's own ramp for one theme, for a preview with no accent colour set.
+  def self.reference_ramp(theme)
+    REFERENCE[theme].map { |rgb| "rgb(#{rgb.join(' ')})" }
+  end
+
   # Unlayered, so it wins over Chatwoot's `@layer base` tokens; the dashboard toggles the dark
   # theme with a class on <body>, which is where the dark values have to land.
   def to_css

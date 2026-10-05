@@ -1,0 +1,22 @@
+<%# locals: (name:, label:, options:, selected:, group:, hint: nil, error: nil)
+    A segmented control: real radio inputs (keyboard and screen readers get a radio group),
+    drawn as one row of buttons so every option stays visible. %>
+<fieldset class="flex flex-col gap-1.5 p-0 m-0 border-0">
+  <legend class="mb-1.5 text-sm font-medium text-n-slate-12"><%= label %></legend>
+  <div class="inline-flex flex-wrap self-start gap-1 p-1 rounded-lg bg-n-alpha-1" role="radiogroup">
+    <% options.each do |value, text| %>
+      <label class="relative cursor-pointer" data-option="<%= group %>:<%= value %>">
+        <input type="radio" name="<%= name %>" value="<%= value %>" class="sr-only peer" data-group="<%= group %>" <%= 'checked' if selected.to_s == value.to_s %>>
+        <span class="flex items-center h-8 px-3 text-sm rounded-md transition-colors text-n-slate-11 hover:text-n-slate-12 peer-checked:bg-n-solid-1 peer-checked:text-n-slate-12 peer-checked:shadow-sm peer-checked:font-medium peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-n-brand peer-disabled:opacity-40 peer-disabled:cursor-not-allowed"><%= text %></span>
+      </label>
+    <% end %>
+  </div>
+  <% if error %>
+    <p class="flex items-center gap-1.5 m-0 text-xs text-n-ruby-11">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <%= label %>: <%= error %>
+    </p>
+  <% elsif hint %>
+    <p class="m-0 text-xs text-n-slate-11" data-hint-for="<%= group %>"><%= hint %></p>
+  <% end %>
+</fieldset>

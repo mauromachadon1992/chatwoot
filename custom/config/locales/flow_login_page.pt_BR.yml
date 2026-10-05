@@ -1,0 +1,100 @@
+pt_BR:
+  flow_login_page:
+    super_admin:
+      nav: Página de login
+      title: Página de login
+      description: Como a instalação se apresenta no login, no SSO, na recuperação e redefinição de senha e no cadastro.
+      open_login: Abrir a página de login
+      saved: Página de login salva.
+      not_saved: Não foi possível salvar. Corrija os campos indicados.
+      restored: A página de login voltou ao padrão do Chatwoot.
+      session_expired: Sua sessão expirou e nada foi salvo. Sair do painel encerra também a sessão do Super Admin. Confira os campos e salve de novo.
+      save: Salvar página de login
+      restore: Restaurar padrão
+      restore_confirm: Restaurar a página de login do Chatwoot? Textos, imagens e cores configurados aqui serão apagados.
+      enable:
+        title: Usar esta página de login
+        hint: Desligada, as telas de acesso voltam a ser as do Chatwoot. Nada do que foi configurado é apagado. Uma conta com white label no domínio próprio continua usando a marca dela.
+      identity:
+        title: Identidade
+        hint: Vale para toda a instalação, inclusive o painel das contas sem white label.
+        name: Nome
+        name_hint: Aparece no título da aba e no lugar de "Chatwoot" nos textos.
+        name_placeholder: 'Ex.: Flow Agents'
+        color: Cor de destaque
+        color_hint: Botões, links, foco e seleção, no login e no painel.
+        color_adjusted: 'Texto branco sobre esta cor fica com contraste %{ratio}:1, abaixo do mínimo de 4,5:1. Nos botões, o painel usa um tom mais escuro da mesma cor:'
+        palette: Paleta gerada
+        logo: Logo (fundo claro)
+        logo_hint: PNG, JPG, SVG ou WebP, até 2 MB. Formato horizontal.
+        logo_dark: Logo (fundo escuro)
+        logo_dark_hint: Opcional. Sem ele, o logo claro é usado no tema escuro.
+        icon: Ícone
+        icon_hint: PNG ou SVG quadrado (512×512), até 1 MB. Vira o favicon.
+      layout:
+        title: Layout e fundo
+        label: Layout
+        background: Cartão sobre o fundo
+        background_hint: O formulário num cartão centralizado, sobre o fundo escolhido.
+        split: Painel lateral
+        split_hint: O formulário de um lado e o fundo, com uma mensagem, do outro. Em telas estreitas vira o cartão.
+        kind: Fundo
+        kind_brand: Cor da marca
+        kind_gradient: Gradiente
+        kind_image: Imagem
+        brand_hint: Um degradê suave gerado da cor de destaque, que acompanha o tema claro e o escuro.
+        gradient_from: Início
+        gradient_via: Meio (opcional)
+        gradient_to: Fim
+        gradient_angle: Ângulo
+        image: Imagem de fundo
+        image_hint: JPG, PNG ou WebP, até 5 MB. Use pelo menos 1920×1080.
+        overlay: Véu sobre a imagem
+        overlay_hint: Escurece a imagem para destacar o cartão e a mensagem.
+        animation: Animação
+        animation_none: Nenhuma
+        animation_drift: Movimento suave
+        animation_zoom: Zoom lento
+        animation_hint: Lenta e discreta. Para quem pede menos movimento no sistema, o fundo fica parado.
+      copy:
+        title: Textos
+        hint: Por idioma. Um campo vazio usa o texto padrão do Chatwoot naquele idioma.
+        locale_pt_BR: Português
+        locale_en: English
+        locale_es: Español
+        field_title: Título
+        field_subtitle: Subtítulo
+        field_panel_message: Mensagem do painel
+        panel_message_hint: Aparece só no layout de painel lateral.
+        count: '%{count}/%{limit}'
+      options:
+        title: Opções e links
+        hint: Esconder só esconde. Nada aparece se não estiver configurado na instalação.
+        hide_signup: Esconder "Criar conta"
+        hide_sso: Esconder o login por SSO
+        hide_google: Esconder o login com Google
+        support_label: Texto do link de suporte
+        support_label_placeholder: 'Ex.: Precisa de ajuda?'
+        support_url: Link de suporte
+        support_url_hint: 'Um endereço https:// ou mailto:'
+        terms_url: Termos de uso
+        privacy_url: Política de privacidade
+        url_placeholder: https://
+      images:
+        choose: Escolher arquivo
+        replace: Trocar
+        remove: Remover
+        empty: Nenhuma imagem
+      preview:
+        title: Prévia
+        hint: Atualiza enquanto você edita. Salve para aplicar.
+        light: Claro
+        dark: Escuro
+        desktop: Computador
+        mobile: Celular
+        email: E-mail
+        password: Senha
+        submit: Entrar
+        support: Suporte
+        terms: Termos
+        privacy: Privacidade

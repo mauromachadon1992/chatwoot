@@ -1,0 +1,7 @@
+<%# Flow entries in the super admin sidebar. Administrate lists only `super_admin/*` controllers,
+    and ours live in FlowAdmin, so _navigation renders this partial (one line, upstream). %>
+<%= render partial: 'super_admin/application/nav_item', locals: {
+      icon: 'icon-paint-brush-line',
+      url: super_admin_login_page_url,
+      label: t('flow_login_page.super_admin.nav')
+    } %>
