@@ -33,6 +33,7 @@ upstream rarely touch it.
 | `db/schema.rb` | our `flow_kanban_*` tables, white label domain index |
 | `theme/colors.js` | `n-brand` reads `--blue-9` (fallback `#2781F6`), so the white label re-colours it |
 | `app/views/layouts/vueapp.html.erb` | inlines the white label's accent ramp on the account's own domain |
+| `.husky/pre-commit` | `xargs -r`, so a commit without Ruby files does not run rubocop on the whole repo |
 
 On a `db/schema.rb` conflict, take upstream's version, then run `rails db:migrate` to dump
 it again with our tables (and keep the larger schema version).
