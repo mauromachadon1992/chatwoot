@@ -7,10 +7,36 @@ The production image is this fork with `enterprise/` and `custom/`, built like f
 
 | Script | What it does |
 | --- | --- |
-| `build-ee [branch]` | Builds from a clean shallow clone of the branch: `flow-chatwoot:<sha>-ee` and `latest-ee`. |
+| `build-ee [branch]` | Builds from a clean shallow clone of the branch: `flow-chatwoot:<version>-<sha>-ee`, `<sha>-ee` and `latest-ee`, with OCI labels. |
 | `ee-local up\|check\|logs\|down` | Runs that image on http://localhost:3100 with its own database and Redis. `check` prints the version, edition, extensions, plan and whether our code loaded. |
-| `publish-ghcr` | Pushes the local `latest-ee` as `<sha>-ee` and `latest-ee` (token on stdin). |
-| `coolify.compose.yaml` | The Coolify stack: rails, sidekiq, Baileys API, on the shared PostgreSQL and Redis. |
+| `publish-ghcr` | Pushes the local `latest-ee` with the tags below, through the WSL's `docker login ghcr.io` (or a token on stdin). |
+| `coolify.compose.yaml` | The production Coolify stack: rails, sidekiq, Baileys API, on the shared PostgreSQL and Redis. |
+| `coolify.staging.compose.yaml` | The staging stack: the same services with their own PostgreSQL and Redis, nothing shared. |
+
+## Staging
+
+`atendimento` → environment `staging` → service `chatwoot-staging`, on
+https://chat-hml.freitascasaeconstrucao.com.br. Only rails has a domain; the Baileys API,
+PostgreSQL and Redis have no port or domain. Every secret is a Coolify `SERVICE_*` variable.
+`FLOW_IMAGE_TAG` (a service variable) picks the build: set it to the new
+`<version>-<sha>-ee` and restart the service. The native WhatsApp connector runs inside
+sidekiq, with its pairings in the `chatwoot_staging_whatsapp_connector` database.
+
+## Tags
+
+`<version>` is Chatwoot's (`config/app.yml`), `<sha>` the fork's commit, 9 characters. The
+`-ee` suffix is the variant, as in fazer.ai's `latest-ee`.
+
+| Tag | Example | Moves? |
+| --- | --- | --- |
+| `<version>-<sha>-ee` | `4.18.0-3bd220e2f-ee` | Never. Pin this one in production. |
+| `<sha>-ee` | `3bd220e2f-ee` | Never. The same build, by commit alone. |
+| `<version>-ee` | `4.18.0-ee` | The last build on that Chatwoot version. |
+| `latest-ee` | | The last build published. |
+
+`publish-ghcr` refuses to push an immutable tag that already exists. The image carries
+`org.opencontainers.image.{title,version,revision,created,ref.name}`, but not `.source`:
+that would link the package to the public repository.
 
 ## Release
 
@@ -19,10 +45,12 @@ The production image is this fork with `enterprise/` and `custom/`, built like f
    (`setsid nohup custom/docker/build-ee feat/kanban > /tmp/flow-build.log 2>&1 < /dev/null &`).
 3. `custom/docker/ee-local up`, then `custom/docker/ee-local check`. A fresh database sends
    `/app/login` to `/installation/onboarding` until the first super admin exists.
-4. From Windows: `gh auth token | wsl -d Ubuntu -u mauro -- ~/chatwoot/custom/docker/publish-ghcr`.
-   The token needs `write:packages`; grant it once with
-   `gh auth refresh -h github.com -s write:packages,read:packages`.
-5. In Coolify, deploy with `FLOW_IMAGE_TAG` set to the new `<sha>-ee` (or leave `latest-ee`).
+4. From Windows: `wsl -d Ubuntu -u mauro -- ~/chatwoot/custom/docker/publish-ghcr`. It uses
+   the WSL's `docker login ghcr.io`, made once with a classic PAT that has `write:packages`
+   (`wsl -d Ubuntu -u mauro -- docker login ghcr.io -u mauromachadon1992`). The gh CLI's
+   token was refused by ghcr.io.
+5. In Coolify, set `FLOW_IMAGE_TAG` to the new `<version>-<sha>-ee` and deploy. Rolling back
+   to a previous build is setting it back to that build's tag.
 
 ## Coolify, first switch from fazer.ai's image
 

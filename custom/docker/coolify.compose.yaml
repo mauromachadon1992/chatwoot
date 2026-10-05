@@ -8,8 +8,9 @@
 # Coolify variable (`${VAR:?}` ones must be set before the first deploy). See
 # custom/docker/README.md for the private registry login and the rollout checklist.
 #
-# Image: ghcr.io/mauromachadon1992/chatwoot, private. Pin FLOW_IMAGE_TAG to a commit tag
-# (`<sha>-ee`) to deploy a known build; `latest-ee` follows the last published one.
+# Image: ghcr.io/mauromachadon1992/chatwoot, private. Pin FLOW_IMAGE_TAG to an immutable tag
+# (`<version>-<sha>-ee`, e.g. 4.18.0-3bd220e2f-ee); `latest-ee` follows the last published
+# one. Tags: custom/docker/README.md.
 
 services:
   rails:

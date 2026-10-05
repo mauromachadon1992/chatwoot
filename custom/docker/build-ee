@@ -4,8 +4,9 @@
 #
 #   custom/docker/build-ee [branch]     default: the current branch
 #
-# Tags flow-chatwoot:<sha>-ee and flow-chatwoot:latest-ee. Test it with
-# custom/docker/ee-local, publish it with custom/docker/publish-ghcr.
+# Tags flow-chatwoot:<version>-<sha>-ee, <sha>-ee and latest-ee (<version> is Chatwoot's, from
+# config/app.yml; <sha> is 9 characters) and stamps the OCI labels publish-ghcr reads. Test it
+# with custom/docker/ee-local, publish it with custom/docker/publish-ghcr.
 set -euo pipefail
 
 repo="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -18,11 +19,20 @@ trap 'rm -rf "$build"' EXIT
 git clone -q --depth 1 --branch "$branch" "file://$repo" "$build"
 cd "$build"
 sha="$(git rev-parse --short=9 HEAD)"
+version="$(grep -m1 -E '^\s*version:' config/app.yml | grep -oE '[0-9]+(\.[0-9]+)+')"
+test -n "$version"
 
 # The edition marker fazer.ai's latest-ee workflow adds; enterprise/ is kept (no rm -rf).
 printf '\nENV CW_EDITION="ee"\n' >> docker/Dockerfile
 test -d enterprise && test -d custom
 
-echo "Building flow-chatwoot:${sha}-ee from ${branch}"
-docker build -f docker/Dockerfile -t "flow-chatwoot:${sha}-ee" -t flow-chatwoot:latest-ee .
+# No org.opencontainers.image.source: it links the package to the (public) repository.
+echo "Building flow-chatwoot:${version}-${sha}-ee from ${branch}"
+docker build -f docker/Dockerfile \
+  --label org.opencontainers.image.title="Flow Agents Chatwoot (EE)" \
+  --label org.opencontainers.image.version="${version}-${sha}-ee" \
+  --label org.opencontainers.image.revision="$(git rev-parse HEAD)" \
+  --label org.opencontainers.image.created="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --label org.opencontainers.image.ref.name="$branch" \
+  -t "flow-chatwoot:${version}-${sha}-ee" -t "flow-chatwoot:${sha}-ee" -t flow-chatwoot:latest-ee .
 docker images flow-chatwoot --format '{{.Repository}}:{{.Tag}} {{.Size}} {{.CreatedSince}}'
