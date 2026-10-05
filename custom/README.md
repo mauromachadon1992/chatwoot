@@ -13,6 +13,36 @@ upstream rarely touch it.
   `Custom::Foo` module from here. That is how we hook in without editing upstream classes:
   - `Custom::AsyncDispatcher` adds our listeners.
   - `Custom::Concerns::Account` adds account accessors.
+  - `Custom::Internal::CheckNewVersionsJob` restores the Chatwoot Hub plan sync (see below).
+
+## Chatwoot Enterprise
+
+`enterprise/` ships with the fork and loads before `custom/` (`ChatwootApp.extensions` is
+`%w[enterprise custom]`), so a `Custom::` module wraps the `Enterprise::` one for the same
+class. `DISABLE_ENTERPRISE=true` turns it off; we run with it on, and every spec under
+`spec/custom` and `spec/enterprise` passes with both loaded.
+
+The Enterprise features (SSO/SAML, Captain, audit logs, custom roles, SLA and the rest of
+`enterprise/config/premium_features.yml`) need a **Chatwoot Inc** license in production. A
+fazer.ai license covers fazer.ai's Pro code, not these (fazer.ai's README says so). The
+license is not code: Chatwoot Inc ties it to the installation's `INSTALLATION_IDENTIFIER`,
+and a daily job asks the Chatwoot Hub for the plan and stores it (`INSTALLATION_PRICING_PLAN`,
+`_QUANTITY`). Without a plan the installation is `community`, and that job switches premium
+features off on every account and resets the premium installation config each day.
+
+- fazer.ai removed that Hub call (fazer-ai/chatwoot #105). `Custom::Internal::CheckNewVersionsJob`
+  puts it back with `CHATWOOT_HUB_SYNC=true`, in production with Enterprise on. It is opt-in
+  because the call sends the identifier, version, host and, unless `DISABLE_TELEMETRY=true`,
+  usage counts; off, the job behaves exactly as fazer.ai's.
+- To license production: open Super Admin → Settings on the production installation (its
+  identifier, not dev's), follow the subscription link to the Chatwoot Hub, attach the
+  license, and set `CHATWOOT_HUB_SYNC=true`. The next daily run stores the plan;
+  `Internal::CheckNewVersionsJob.perform_now` in a Rails console does it at once.
+- Development and test may use everything without a subscription (`enterprise/LICENSE`):
+  `rake flow:enterprise:dev_enable` (optional `SEATS=`) sets the enterprise plan and turns on
+  every feature flag except the `chatwoot_internal` and `deprecated` ones;
+  `rake flow:enterprise:dev_disable` shows what an unlicensed installation gets. Both refuse
+  to run outside development and test (`Custom::EnterpriseDev`).
 
 ## Upstream files we touch (check these on every merge)
 
