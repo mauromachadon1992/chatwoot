@@ -17,6 +17,7 @@ import RequiredComboBox from './RequiredComboBox.vue';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
+import CardValueSection from './CardValueSection.vue';
 import { useFlowKanban } from './useFlowKanban';
 
 const { t } = useI18n();
@@ -68,6 +69,13 @@ const syncForm = source => {
   };
 };
 
+const refreshLines = async () => {
+  const cardId = card.value.id;
+  const { data } = await FlowKanbanAPI.getCard(cardId);
+  if (card.value?.id === cardId)
+    card.value = { ...card.value, ...data.payload };
+};
+
 // Changes made elsewhere while the panel is open (another agent, the conversation panel)
 // arrive through the store; untouched fields follow them.
 watch(
@@ -78,12 +86,23 @@ watch(
       panelRef.value?.close();
       return;
     }
+    // Board events carry the value but not the product lines: when the value or the line
+    // count moved under us, the lines are fetched again.
+    const linesChanged =
+      !event.card.items &&
+      (event.card.items_count !== card.value.items_count ||
+        event.card.value_cents !== card.value.value_cents);
     const keepEdits = isDirty.value;
     card.value = { ...card.value, ...event.card };
     if (!keepEdits) syncForm(card.value);
     else form.value.stage_id = event.card.stage_id;
+    if (linesChanged) refreshLines();
   }
 );
+
+const onValueChange = payload => {
+  card.value = { ...card.value, ...payload };
+};
 
 const open = async cardId => {
   card.value = null;
@@ -191,6 +210,8 @@ defineExpose({ open });
           min-height="6rem"
         />
       </div>
+
+      <CardValueSection :card="card" @update:card="onValueChange" />
 
       <section class="flex flex-col gap-3">
         <h4 class="text-heading-3 text-n-slate-12">

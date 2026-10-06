@@ -298,6 +298,19 @@ action or a state lives.
 - **Kanban column:** `bg-n-alpha-1`, 12px radius, 288px wide, header with a colour dot, name,
   stage-type icon, count and an add button. An empty column shows a dashed drop zone.
 
+### Money and figures
+
+- **Money input** (`flowKanban/MoneyInput.vue`): Chatwoot's `Input`, plain number while
+  focused (either decimal mark), formatted in the account currency on blur. Values are cents.
+- **Amounts** use `tabular-nums`. On the board they drop the cents (`money(v, { whole: true })`);
+  in a deal's lines and totals they keep them.
+- **Report strip**: one `rounded-xl bg-n-solid-2` container like Chatwoot's report metrics,
+  each figure a label with an info tooltip that defines it, the value (`text-2xl`), and a
+  `text-label-small` detail; figures separated by a `border-s` hairline, never separate cards.
+- **Funnel table**: a real `<table>`, numbers right-aligned, the reach bar in the stage's own
+  colour on a `bg-n-alpha-2` track, with the count beside it. Lost stages say "outside the
+  funnel" in words, not only by a missing bar.
+
 ### Overlays
 
 - **Side panel** (`SidePanel`): for detail and settings that keep the board in view (card

@@ -130,6 +130,56 @@ describe('useFlowKanbanStore', () => {
     });
   });
 
+  describe('stage values', () => {
+    beforeEach(() => {
+      store.columns = {
+        10: {
+          cards: [
+            card(1, 10, 0, { value_cents: 1000 }),
+            card(2, 10, 1024, { value_cents: 500 }),
+          ],
+          total: 2,
+          totalValue: 1500,
+        },
+        20: {
+          cards: [card(3, 20, 0, { value_cents: 200 })],
+          total: 1,
+          totalValue: 200,
+        },
+      };
+    });
+
+    it('follows a card whose value changed, or that moved, or was removed', () => {
+      store.upsertCard(card(1, 10, 0, { value_cents: 4000 }));
+      expect(store.columns[10].totalValue).toBe(4500);
+
+      store.upsertCard(card(1, 20, 512, { value_cents: 4000 }));
+      expect(store.columns[10].totalValue).toBe(500);
+      expect(store.columns[20].totalValue).toBe(4200);
+
+      store.removeCard(card(3, 20, 0));
+      expect(store.columns[20].totalValue).toBe(4000);
+    });
+
+    it('moves the value with a dragged card, once', async () => {
+      const moved = store.columns[10].cards.shift();
+      store.columns[20].cards.push(moved);
+      FlowKanbanAPI.moveCard.mockResolvedValue({
+        data: { payload: card(1, 20, 1024, { value_cents: 1000 }) },
+      });
+
+      await store.moveCard({
+        card: moved,
+        fromStageId: 10,
+        toStageId: 20,
+        newIndex: 1,
+      });
+
+      expect(store.columns[10].totalValue).toBe(500);
+      expect(store.columns[20].totalValue).toBe(1200);
+    });
+  });
+
   describe('onBoardUpdated', () => {
     it('falls back to another board when the agent lost access to the active one', async () => {
       FlowKanbanAPI.getBoards.mockResolvedValue({

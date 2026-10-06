@@ -13,7 +13,7 @@ const props = defineProps({
 defineEmits(['open']);
 
 const { t } = useI18n();
-const { cardFields, relativeTime } = useFlowKanban();
+const { cardFields, relativeTime, money } = useFlowKanban();
 
 const contactLabel = computed(
   () =>
@@ -27,6 +27,9 @@ const lastActivityAt = computed(() =>
   Math.max(0, ...props.card.conversations.map(c => c.last_activity_at || 0))
 );
 
+const showValue = computed(
+  () => cardFields.value.has('value') && props.card.value_cents > 0
+);
 const showAssignee = computed(
   () => cardFields.value.has('assignee') && props.card.assignee
 );
@@ -65,6 +68,15 @@ const showLastActivity = computed(
         class="flex-shrink-0"
       />
     </div>
+
+    <p
+      v-if="showValue"
+      v-tooltip.top="t('FLOW_KANBAN.CARD.VALUE')"
+      class="text-label tabular-nums text-n-slate-12 w-fit"
+    >
+      <span class="sr-only">{{ t('FLOW_KANBAN.CARD.VALUE') }}</span>
+      {{ money(card.value_cents, { whole: true }) }}
+    </p>
 
     <div
       v-if="cardFields.has('contact')"

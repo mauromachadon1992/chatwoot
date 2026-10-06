@@ -76,6 +76,8 @@ stack: `custom/docker/README.md`.
 | `app/javascript/v3/views/auth/reset/password/Index.vue` | `FlowAuthShell variant="plain"` as the frame |
 | `app/javascript/v3/views/auth/password/Edit.vue` | `FlowAuthShell variant="plain"` as the frame |
 | `app/javascript/v3/views/auth/signup/Index.vue` | `FlowAuthShell variant="bare"`; its own photo only without a login page |
+| `app/javascript/dashboard/routes/dashboard/settings/settings.routes.js` | Settings → Products route (Kanban catalog) |
+| `app/javascript/dashboard/components-next/sidebar/Sidebar.vue` | Settings → Products entry (administrators, through the route permissions) |
 
 On a `db/schema.rb` conflict, take upstream's version, then run `rails db:migrate` to dump
 it again with our tables (and keep the larger schema version).
@@ -161,4 +163,30 @@ label (`/super_admin/accounts/:id/white_label`). Values live in `accounts.settin
 - Which fields a card shows is picked per account by a super admin (Super Admin → Accounts
   → Edit → Kanban card fields), stored in `accounts.settings.flow_kanban_card_fields`.
 - Specs: `spec/custom/`, `spec/factories/flow_kanban.rb`,
-  `app/javascript/dashboard/stores/specs/flowKanban.spec.js`.
+  `app/javascript/dashboard/stores/specs/flowKanban.spec.js`,
+  `app/javascript/dashboard/routes/dashboard/flowKanban/specs/`.
+
+### Values, products and the funnel report (phase 2)
+
+- Money is integer minor units (`*_cents`, bigint) everywhere, API included; the dashboard
+  formats it (`flowKanban/money.js`). One currency per account,
+  `accounts.settings.flow_kanban_currency` (`Custom::Kanban::Currency`, BRL by default, two
+  decimal currencies only), changed by administrators in Settings → Products.
+- A deal's value (`flow_kanban_cards.value_cents`) is typed while it has no products and is
+  the sum of its lines once it has some: `Custom::Kanban::CardItemsService` changes the lines
+  and recalculates in one transaction, and the card refuses a typed value while lines exist.
+  Removing the last line keeps the last sum, which the agent may then change.
+- The catalog (`flow_kanban_products`) belongs to the account: everyone searches it, only
+  administrators change it. A line (`flow_kanban_card_items`) copies the product's name, code,
+  unit and price when added, so catalog changes, deactivation or deletion never rewrite a deal.
+- Stage history (`flow_kanban_stage_transitions`): one row per entry into a stage, written by
+  the card's callbacks and, for a deleted stage's cards, by `StageTransition.record_bulk!`.
+  Phase 1 cards were backfilled with a single entry into their stage at that time.
+- Report (`Custom::Kanban::FunnelReport`, `GET kanban/boards/:id/report?since&until&assignee_id`):
+  open now; won and lost in the period (by current stage and when the card got there); win
+  rate, average won deal, sales cycle; per stage, what it holds now, the average stay for stays
+  that ended in the period, and the funnel of the deals created in the period (reached the
+  stage or a later one, a won deal passing every open stage; conversion against the previous
+  step). The dashboard shows it under Kanban → Report.
+- The board gets `value_cents` and `items_count` per card and `total_value_cents` per stage;
+  the lines go only with the card detail (`GET kanban/cards/:id`) and the item endpoints.

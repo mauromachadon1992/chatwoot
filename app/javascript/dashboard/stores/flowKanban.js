@@ -28,7 +28,8 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
     boards: [],
     boardsLoaded: false,
     activeBoardId: null,
-    // stageId -> { cards, total, isLoading }
+    // stageId -> { cards, total, totalValue, isLoading }. `total` and `totalValue` describe
+    // the whole filtered stage, not only the cards loaded so far.
     columns: {},
     isLoadingCards: false,
     filters: emptyFilters(),
@@ -84,7 +85,12 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
         this.columns = Object.fromEntries(
           data.payload.map(column => [
             column.stage_id,
-            { cards: column.cards, total: column.total, isLoading: false },
+            {
+              cards: column.cards,
+              total: column.total,
+              totalValue: column.total_value_cents || 0,
+              isLoading: false,
+            },
           ])
         );
       } finally {
@@ -107,6 +113,7 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
         const known = new Set(column.cards.map(card => card.id));
         column.cards.push(...page.cards.filter(card => !known.has(card.id)));
         column.total = page.total;
+        column.totalValue = page.total_value_cents || 0;
       } finally {
         column.isLoading = false;
       }
@@ -214,7 +221,9 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
       const column = this.columns[toStageId];
       if (fromStageId !== toStageId) {
         this.columns[fromStageId].total -= 1;
+        this.columns[fromStageId].totalValue -= card.value_cents || 0;
         column.total += 1;
+        column.totalValue += card.value_cents || 0;
       }
       card.stage_id = toStageId;
       const previousCard = column.cards[newIndex - 1];
@@ -235,7 +244,12 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
     ensureColumns() {
       this.stages.forEach(stage => {
         if (!this.columns[stage.id]) {
-          this.columns[stage.id] = { cards: [], total: 0, isLoading: false };
+          this.columns[stage.id] = {
+            cards: [],
+            total: 0,
+            totalValue: 0,
+            isLoading: false,
+          };
         }
       });
     },
@@ -272,9 +286,13 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
 
       const location = this.findCard(card.id);
       if (location) {
+        const previous = location.column.cards.find(
+          item => item.id === card.id
+        );
         location.column.cards = location.column.cards.filter(
           item => item.id !== card.id
         );
+        location.column.totalValue -= previous.value_cents || 0;
         if (location.stageId !== card.stage_id) location.column.total -= 1;
       } else if (this.hasActiveFilters && !created) {
         return;
@@ -283,6 +301,7 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
       const column = this.columns[card.stage_id];
       if (!column) return;
       if (!location || location.stageId !== card.stage_id) column.total += 1;
+      column.totalValue += card.value_cents || 0;
 
       const index = column.cards.findIndex(item => byPosition(card, item) < 0);
       const hasMore = column.total > column.cards.length + 1;
@@ -295,10 +314,12 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
       this.lastCardEvent = { card, deleted: true, at: Date.now() };
       const location = this.findCard(card.id);
       if (!location) return;
+      const previous = location.column.cards.find(item => item.id === card.id);
       location.column.cards = location.column.cards.filter(
         item => item.id !== card.id
       );
       location.column.total -= 1;
+      location.column.totalValue -= previous.value_cents || 0;
     },
 
     // ActionCable handlers (see helper/flowKanbanCable.js).

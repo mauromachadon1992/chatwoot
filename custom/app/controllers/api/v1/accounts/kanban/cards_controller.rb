@@ -10,20 +10,11 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     board = find_visible_board(params[:board_id])
     stages = params[:stage_id].present? ? board.stages.where(id: params[:stage_id]) : board.stages
     offset = params[:offset].to_i
-
-    payload = stages.map do |stage|
-      cards = filtered(cards_scope.where(stage: stage))
-      {
-        stage_id: stage.id,
-        total: cards.count,
-        cards: cards.ordered.offset(offset).limit(PER_STAGE).map(&:push_event_data)
-      }
-    end
-    render json: { payload: payload }
+    render json: { payload: stages.map { |stage| column(stage, offset) } }
   end
 
   def show
-    render json: { payload: @card.push_event_data }
+    render json: { payload: @card.push_event_data(with_items: true) }
   end
 
   # A card is created on a stage either for a contact or straight from a conversation, in
@@ -66,8 +57,19 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     authorize @card
   end
 
+  def column(stage, offset)
+    cards = filtered(cards_scope.where(stage: stage))
+    {
+      stage_id: stage.id,
+      total: cards.count,
+      # Without the preloads: a sum over them would join the conversations and count a card once per link.
+      total_value_cents: cards.unscope(:includes).sum(:value_cents),
+      cards: cards.ordered.offset(offset).limit(PER_STAGE).map(&:push_event_data)
+    }
+  end
+
   def card_params
-    params.permit(:title, :description, :assignee_id)
+    params.permit(:title, :description, :assignee_id, :value_cents)
   end
 
   # The board is set here, not left to validation, because the policy reads it.
@@ -102,6 +104,6 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
   def broadcast_updated
     @card = cards_scope.find(@card.id)
     Custom::Kanban::Broadcaster.card_updated(@card)
-    render json: { payload: @card.push_event_data }
+    render json: { payload: @card.push_event_data(with_items: true) }
   end
 end

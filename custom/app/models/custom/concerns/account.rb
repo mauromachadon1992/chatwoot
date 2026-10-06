@@ -21,6 +21,18 @@ module Custom::Concerns::Account
     )
   end
 
+  def flow_kanban_currency
+    code = settings&.dig(Custom::Kanban::Currency::SETTINGS_KEY)
+    Custom::Kanban::Currency.supported?(code) ? code : Custom::Kanban::Currency::DEFAULT
+  end
+
+  # Callers check Currency.supported? first; an unknown code is ignored rather than stored.
+  def flow_kanban_currency=(code)
+    return unless Custom::Kanban::Currency.supported?(code)
+
+    self.settings = (settings || {}).merge(Custom::Kanban::Currency::SETTINGS_KEY => code)
+  end
+
   def white_label_enabled?
     ActiveModel::Type::Boolean.new.cast(settings&.dig('white_label_enabled')) == true
   end

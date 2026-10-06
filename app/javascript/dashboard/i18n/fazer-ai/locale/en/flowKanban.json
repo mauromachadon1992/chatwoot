@@ -23,14 +23,16 @@
     },
     "COLUMN": {
       "LOAD_MORE": "Load more",
-      "ADD_CARD": "Add card"
+      "ADD_CARD": "Add card",
+      "TOTAL_VALUE": "Total of the deals in this stage"
     },
     "CARD": {
       "TIME_IN_STAGE": "Since it entered this stage",
       "LAST_ACTIVITY": "Last activity in its conversations",
       "NO_CONVERSATIONS": "No conversations",
       "CONVERSATIONS": "{count} conversation | {count} conversations",
-      "RESTRICTED_CONVERSATION": "Conversation from an inbox you cannot access"
+      "RESTRICTED_CONVERSATION": "Conversation from an inbox you cannot access",
+      "VALUE": "Deal value"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "New card",
@@ -112,6 +114,162 @@
     "ERRORS": {
       "GENERIC": "Could not complete that. Please try again.",
       "MOVE": "Could not move the card. The board was reloaded."
+    },
+    "VIEW": {
+      "LABEL": "View",
+      "BOARD": "Board",
+      "REPORT": "Report"
+    },
+    "VALUE": {
+      "SECTION": "Value and products",
+      "AMOUNT": "Deal value",
+      "AMOUNT_HINT": "Without products, type the value. With products, it becomes their sum.",
+      "FROM_ITEMS": "Sum of the products. To type a value, remove the products.",
+      "INVALID": "Use a value like 1,250.00.",
+      "ADD_PRODUCT": "Add product",
+      "SEARCH_PRODUCT": "Search by name or code",
+      "NO_PRODUCTS": "No active product found",
+      "EMPTY_CATALOG_ADMIN": "The catalog is empty.",
+      "EMPTY_CATALOG_AGENT": "The catalog is empty. Ask an administrator to add products.",
+      "MANAGE_PRODUCTS": "Add products",
+      "QUANTITY": "Quantity",
+      "UNIT_PRICE": "Unit price",
+      "DISCOUNT": "Discount (%)",
+      "TOTAL": "Total",
+      "REMOVE_ITEM": "Remove product",
+      "ITEMS_AUTOSAVE": "Saves right away",
+      "ITEM_INVALID": "Check quantity, price and discount (0 to 100%)."
+    },
+    "UNITS": {
+      "un": "ea",
+      "m": "m",
+      "m2": "m²",
+      "m3": "m³",
+      "kg": "kg",
+      "t": "t",
+      "l": "L",
+      "cx": "box",
+      "pc": "pc",
+      "sc": "bag",
+      "par": "pair",
+      "kit": "kit",
+      "h": "h",
+      "srv": "svc"
+    },
+    "UNIT_NAMES": {
+      "un": "Each",
+      "m": "Meter",
+      "m2": "Square meter",
+      "m3": "Cubic meter",
+      "kg": "Kilogram",
+      "t": "Ton",
+      "l": "Liter",
+      "cx": "Box",
+      "pc": "Piece",
+      "sc": "Bag",
+      "par": "Pair",
+      "kit": "Kit",
+      "h": "Hour",
+      "srv": "Service"
+    },
+    "REPORT": {
+      "PERIOD": {
+        "LABEL": "Period",
+        "LAST_7": "Last 7 days",
+        "LAST_30": "Last 30 days",
+        "LAST_90": "Last 90 days",
+        "THIS_MONTH": "This month",
+        "LAST_MONTH": "Last month",
+        "THIS_YEAR": "This year"
+      },
+      "SUMMARY": {
+        "LABEL": "Funnel summary",
+        "OPEN": "Open",
+        "OPEN_HINT": "Deals in open stages right now, created at any time.",
+        "WON": "Won",
+        "WON_HINT": "Deals that entered a won stage in the period and are still there.",
+        "LOST": "Lost",
+        "LOST_HINT": "Deals that entered a lost stage in the period and are still there.",
+        "WIN_RATE": "Win rate",
+        "WIN_RATE_HINT": "Won over all deals closed (won and lost) in the period.",
+        "AVERAGE_WON": "Average deal",
+        "AVERAGE_WON_HINT": "Average value of the deals won in the period.",
+        "CYCLE": "Sales cycle",
+        "CYCLE_HINT": "Average time from creation to win, for the deals won in the period.",
+        "DEALS": "{count} deal | {count} deals",
+        "NO_CLOSED": "None closed"
+      },
+      "FUNNEL": {
+        "TITLE": "Funnel for the period",
+        "DESCRIPTION": "Of the {count} deals created in the period, how many reached each stage or went past it.",
+        "STAGE": "Stage",
+        "REACHED": "Reached",
+        "REACHED_HINT": "Deals created in the period that entered this stage or a later one. A won deal went through every open stage.",
+        "CONVERSION": "Conversion",
+        "CONVERSION_HINT": "Share of the previous stage that got here. On the first stage, share of the deals created in the period.",
+        "NOW": "Now",
+        "NOW_HINT": "Deals and value in this stage right now.",
+        "TIME": "Average time",
+        "TIME_HINT": "How long deals stayed in the stage before leaving, for the exits in the period.",
+        "OUT_OF_FUNNEL": "Outside the funnel",
+        "BAR_LABEL": "{stage}: {reached} of {total} deals"
+      },
+      "DURATION": {
+        "DAYS": "{n} day | {n} days",
+        "HOURS": "{n} h",
+        "LESS_THAN_HOUR": "under 1 h"
+      },
+      "EMPTY_TITLE": "No deals created in this period",
+      "EMPTY_BODY": "The funnel counts the deals created in the period. Pick a longer period or create cards on the board.",
+      "HISTORY_NOTE": "Stage history started being recorded in this version. Older deals only count the stage they were in at that moment.",
+      "ERROR": "The report could not be loaded.",
+      "RETRY": "Try again"
+    },
+    "PRODUCTS": {
+      "HEADER": "Products",
+      "DESCRIPTION": "The catalog agents use to build the value of the deals on the Kanban. Changing or deactivating a product never changes the deals that already have it.",
+      "SEARCH": "Search by name or code",
+      "COUNT": "{n} product | {n} products",
+      "NEW": "New product",
+      "TABLE": {
+        "NAME": "Product",
+        "UNIT": "Unit",
+        "PRICE": "Price",
+        "STATUS": "Status",
+        "ACTIONS": "Actions"
+      },
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "EMPTY_TITLE": "No products yet",
+      "EMPTY_BODY": "Add the products and services you sell. They show up to pick from when building the value of a deal.",
+      "NO_RESULTS": "No product found for \"{query}\".",
+      "EDIT": "Edit product",
+      "DELETE": "Delete product",
+      "DELETE_CONFIRM": "Delete \"{name}\" from the catalog? Deals that already have it keep their copy.",
+      "DELETED": "Product deleted",
+      "FORM": {
+        "CREATE_TITLE": "New product",
+        "EDIT_TITLE": "Edit product",
+        "NAME": "Name",
+        "NAME_PLACEHOLDER": "E.g. Portland cement 50 kg",
+        "NAME_REQUIRED": "Enter the product name.",
+        "SKU": "Code (optional)",
+        "SKU_PLACEHOLDER": "E.g. CEM-50",
+        "UNIT": "Unit",
+        "PRICE": "Price",
+        "PRICE_INVALID": "Use a price like 39.90.",
+        "ACTIVE": "Available for new deals",
+        "ACTIVE_HINT": "When off, it leaves the card search but stays on the deals that already have it.",
+        "CREATE": "Add product",
+        "SAVE": "Save",
+        "CREATED": "Product added",
+        "SAVED": "Product saved"
+      },
+      "CURRENCY": {
+        "LABEL": "Deal currency",
+        "HINT": "Applies to every Kanban value in this account. Changing it does not convert values already entered.",
+        "SAVED": "Currency updated"
+      }
     }
   }
 }

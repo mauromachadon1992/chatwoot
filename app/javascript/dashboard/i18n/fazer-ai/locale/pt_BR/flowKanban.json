@@ -23,14 +23,16 @@
     },
     "COLUMN": {
       "LOAD_MORE": "Carregar mais",
-      "ADD_CARD": "Adicionar card"
+      "ADD_CARD": "Adicionar card",
+      "TOTAL_VALUE": "Soma dos negócios desta etapa"
     },
     "CARD": {
       "TIME_IN_STAGE": "Desde que entrou nesta etapa",
       "LAST_ACTIVITY": "Última atividade nas conversas",
       "NO_CONVERSATIONS": "Sem conversas",
       "CONVERSATIONS": "{count} conversa | {count} conversas",
-      "RESTRICTED_CONVERSATION": "Conversa de uma caixa de entrada sem acesso"
+      "RESTRICTED_CONVERSATION": "Conversa de uma caixa de entrada sem acesso",
+      "VALUE": "Valor do negócio"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Novo card",
@@ -112,6 +114,162 @@
     "ERRORS": {
       "GENERIC": "Não foi possível concluir. Tente novamente.",
       "MOVE": "Não foi possível mover o card. O quadro foi recarregado."
+    },
+    "VIEW": {
+      "LABEL": "Visualização",
+      "BOARD": "Quadro",
+      "REPORT": "Relatório"
+    },
+    "VALUE": {
+      "SECTION": "Valor e produtos",
+      "AMOUNT": "Valor do negócio",
+      "AMOUNT_HINT": "Sem produtos, digite o valor. Com produtos, ele passa a ser a soma deles.",
+      "FROM_ITEMS": "Soma dos produtos. Para digitar um valor, remova os produtos.",
+      "INVALID": "Use um valor como 1.250,00.",
+      "ADD_PRODUCT": "Adicionar produto",
+      "SEARCH_PRODUCT": "Buscar por nome ou código",
+      "NO_PRODUCTS": "Nenhum produto ativo encontrado",
+      "EMPTY_CATALOG_ADMIN": "O catálogo está vazio.",
+      "EMPTY_CATALOG_AGENT": "O catálogo está vazio. Peça a um administrador para cadastrar produtos.",
+      "MANAGE_PRODUCTS": "Cadastrar produtos",
+      "QUANTITY": "Quantidade",
+      "UNIT_PRICE": "Preço unitário",
+      "DISCOUNT": "Desconto (%)",
+      "TOTAL": "Total",
+      "REMOVE_ITEM": "Remover produto",
+      "ITEMS_AUTOSAVE": "Salvo na hora",
+      "ITEM_INVALID": "Confira quantidade, preço e desconto (0 a 100%)."
+    },
+    "UNITS": {
+      "un": "un",
+      "m": "m",
+      "m2": "m²",
+      "m3": "m³",
+      "kg": "kg",
+      "t": "t",
+      "l": "L",
+      "cx": "cx",
+      "pc": "pç",
+      "sc": "sc",
+      "par": "par",
+      "kit": "kit",
+      "h": "h",
+      "srv": "serv."
+    },
+    "UNIT_NAMES": {
+      "un": "Unidade",
+      "m": "Metro",
+      "m2": "Metro quadrado",
+      "m3": "Metro cúbico",
+      "kg": "Quilo",
+      "t": "Tonelada",
+      "l": "Litro",
+      "cx": "Caixa",
+      "pc": "Peça",
+      "sc": "Saco",
+      "par": "Par",
+      "kit": "Kit",
+      "h": "Hora",
+      "srv": "Serviço"
+    },
+    "REPORT": {
+      "PERIOD": {
+        "LABEL": "Período",
+        "LAST_7": "Últimos 7 dias",
+        "LAST_30": "Últimos 30 dias",
+        "LAST_90": "Últimos 90 dias",
+        "THIS_MONTH": "Este mês",
+        "LAST_MONTH": "Mês passado",
+        "THIS_YEAR": "Este ano"
+      },
+      "SUMMARY": {
+        "LABEL": "Resumo do funil",
+        "OPEN": "Em aberto",
+        "OPEN_HINT": "Negócios em etapas abertas agora, criados em qualquer data.",
+        "WON": "Ganhos",
+        "WON_HINT": "Negócios que entraram em uma etapa de ganho no período e continuam nela.",
+        "LOST": "Perdidos",
+        "LOST_HINT": "Negócios que entraram em uma etapa de perda no período e continuam nela.",
+        "WIN_RATE": "Taxa de conversão",
+        "WIN_RATE_HINT": "Ganhos sobre o total de negócios fechados (ganhos e perdidos) no período.",
+        "AVERAGE_WON": "Ticket médio",
+        "AVERAGE_WON_HINT": "Valor médio dos negócios ganhos no período.",
+        "CYCLE": "Ciclo de venda",
+        "CYCLE_HINT": "Tempo médio da criação ao ganho, para os negócios ganhos no período.",
+        "DEALS": "{count} negócio | {count} negócios",
+        "NO_CLOSED": "Nenhum fechado"
+      },
+      "FUNNEL": {
+        "TITLE": "Funil do período",
+        "DESCRIPTION": "Dos {count} negócios criados no período, quantos chegaram a cada etapa ou passaram dela.",
+        "STAGE": "Etapa",
+        "REACHED": "Chegaram",
+        "REACHED_HINT": "Negócios criados no período que entraram nesta etapa ou em uma posterior. Um negócio ganho passou por todas as etapas abertas.",
+        "CONVERSION": "Conversão",
+        "CONVERSION_HINT": "Parte da etapa anterior que chegou a esta. Na primeira etapa, parte dos negócios criados no período.",
+        "NOW": "Agora",
+        "NOW_HINT": "Negócios e valor nesta etapa neste momento.",
+        "TIME": "Tempo médio",
+        "TIME_HINT": "Quanto os negócios ficaram na etapa antes de sair, para as saídas do período.",
+        "OUT_OF_FUNNEL": "Fora do funil",
+        "BAR_LABEL": "{stage}: {reached} de {total} negócios"
+      },
+      "DURATION": {
+        "DAYS": "{n} dia | {n} dias",
+        "HOURS": "{n} h",
+        "LESS_THAN_HOUR": "menos de 1 h"
+      },
+      "EMPTY_TITLE": "Nenhum negócio criado neste período",
+      "EMPTY_BODY": "O funil conta os negócios criados no período. Escolha um período maior ou crie cards no quadro.",
+      "HISTORY_NOTE": "O histórico de etapas começou a ser registrado nesta versão. Negócios mais antigos contam só a etapa em que estavam naquele momento.",
+      "ERROR": "Não foi possível carregar o relatório.",
+      "RETRY": "Tentar de novo"
+    },
+    "PRODUCTS": {
+      "HEADER": "Produtos",
+      "DESCRIPTION": "O catálogo que os atendentes usam para montar o valor dos negócios no Kanban. Alterar ou desativar um produto não muda os negócios que já o têm.",
+      "SEARCH": "Buscar por nome ou código",
+      "COUNT": "{n} produto | {n} produtos",
+      "NEW": "Novo produto",
+      "TABLE": {
+        "NAME": "Produto",
+        "UNIT": "Unidade",
+        "PRICE": "Preço",
+        "STATUS": "Situação",
+        "ACTIONS": "Ações"
+      },
+      "ACTIVE": "Ativo",
+      "INACTIVE": "Inativo",
+      "EMPTY_TITLE": "Nenhum produto cadastrado",
+      "EMPTY_BODY": "Cadastre os produtos e serviços que vocês vendem. Eles aparecem para escolher ao montar o valor de um negócio.",
+      "NO_RESULTS": "Nenhum produto encontrado para \"{query}\".",
+      "EDIT": "Editar produto",
+      "DELETE": "Excluir produto",
+      "DELETE_CONFIRM": "Excluir \"{name}\" do catálogo? Negócios que já têm este produto mantêm a cópia dele.",
+      "DELETED": "Produto excluído",
+      "FORM": {
+        "CREATE_TITLE": "Novo produto",
+        "EDIT_TITLE": "Editar produto",
+        "NAME": "Nome",
+        "NAME_PLACEHOLDER": "Ex.: Cimento CP II 50 kg",
+        "NAME_REQUIRED": "Informe o nome do produto.",
+        "SKU": "Código (opcional)",
+        "SKU_PLACEHOLDER": "Ex.: CIM-50",
+        "UNIT": "Unidade",
+        "PRICE": "Preço",
+        "PRICE_INVALID": "Use um preço como 39,90.",
+        "ACTIVE": "Disponível para novos negócios",
+        "ACTIVE_HINT": "Desativado, some da busca no card, mas continua nos negócios que já o têm.",
+        "CREATE": "Cadastrar produto",
+        "SAVE": "Salvar",
+        "CREATED": "Produto cadastrado",
+        "SAVED": "Produto salvo"
+      },
+      "CURRENCY": {
+        "LABEL": "Moeda dos negócios",
+        "HINT": "Vale para todos os valores do Kanban desta conta. Trocar a moeda não converte valores já cadastrados.",
+        "SAVED": "Moeda atualizada"
+      }
     }
   }
 }

@@ -12,17 +12,28 @@ class Custom::Kanban::Card < ApplicationRecord
   belongs_to :assignee, class_name: 'User', optional: true
   belongs_to :created_by, class_name: 'User', optional: true
 
+  # Ceiling for a deal's value: 10 billion in major units, far past any real deal and well
+  # inside JavaScript's safe integer range.
+  MAX_VALUE_CENTS = 1_000_000_000_000
+
   has_many :card_conversations, class_name: 'Custom::Kanban::CardConversation', dependent: :delete_all
   has_many :conversations, through: :card_conversations
+  has_many :items, -> { order(:position, :id) }, class_name: 'Custom::Kanban::CardItem', dependent: :delete_all,
+                                                 inverse_of: :card
+  has_many :stage_transitions, class_name: 'Custom::Kanban::StageTransition', dependent: :delete_all
 
   validates :title, presence: true, length: { maximum: 255 }
+  validates :value_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: MAX_VALUE_CENTS }
   validate :stage_belongs_to_board
   validate :contact_belongs_to_account
   validate :assignee_belongs_to_account
+  validate :value_follows_items, if: :value_cents_changed?
 
   before_validation :inherit_from_stage
   before_save :touch_stage_changed_at, if: :stage_id_changed?
   before_create :place_on_top
+  after_create :record_stage_entry
+  after_update :record_stage_entry, if: :saved_change_to_stage_id?
 
   scope :ordered, -> { order(:position, :id) }
 
@@ -53,17 +64,31 @@ class Custom::Kanban::Card < ApplicationRecord
     end
   end
 
+  # A deal with products is worth their sum; one without keeps the value an agent typed (or,
+  # once its last product is removed, the last sum, which the agent may then change).
+  def recalculate_value!
+    return if items_count.zero?
+
+    @recalculating_value = true
+    update!(value_cents: items.reload.sum(&:total_cents))
+  ensure
+    @recalculating_value = false
+  end
+
   # Conversations go out by `display_id` only: that is how the dashboard routes and stores
   # them, and sending the internal id next to it is how cards got matched to the wrong
   # conversation in Pro (see AGENTS.md, "Conversation ids").
-  def push_event_data
-    {
+  # The board gets the value and the item count; the lines go only to whoever opens the card.
+  def push_event_data(with_items: false)
+    data = {
       id: id,
       board_id: board_id,
       stage_id: stage_id,
       title: title,
       description: description,
       position: position,
+      value_cents: value_cents,
+      items_count: items_count,
       created_by_id: created_by_id,
       stage_changed_at: stage_changed_at&.to_i,
       created_at: created_at.to_i,
@@ -72,6 +97,7 @@ class Custom::Kanban::Card < ApplicationRecord
       assignee: assignee&.push_event_data,
       conversations: card_conversations.map { |link| conversation_data(link.conversation) }
     }
+    with_items ? data.merge(items: items.map(&:push_event_data)) : data
   end
 
   private
@@ -116,6 +142,17 @@ class Custom::Kanban::Card < ApplicationRecord
 
   def touch_stage_changed_at
     self.stage_changed_at = Time.current
+  end
+
+  def record_stage_entry
+    stage_transitions.create!(
+      account_id: account_id, board_id: board_id, to_stage_id: stage_id,
+      from_stage_id: saved_changes['stage_id']&.first, user: Current.user, created_at: stage_changed_at || Time.current
+    )
+  end
+
+  def value_follows_items
+    errors.add(:value_cents, :follows_items) if items_count.positive? && !@recalculating_value
   end
 
   def stage_belongs_to_board

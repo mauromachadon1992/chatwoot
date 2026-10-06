@@ -903,6 +903,13 @@ const menuItems = computed(() => {
           icon: 'i-lucide-code',
           to: accountScopedRoute('attributes_list'),
         },
+        // Flow: the Kanban product catalog; administrators only (route permissions).
+        {
+          name: 'Settings Flow Products',
+          label: t('FLOW_KANBAN.PRODUCTS.HEADER'),
+          icon: 'i-lucide-package',
+          to: accountScopedRoute('flow_products_list'),
+        },
         {
           name: 'Settings Automation',
           label: t('SIDEBAR.AUTOMATION'),

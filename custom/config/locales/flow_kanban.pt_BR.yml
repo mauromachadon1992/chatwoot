@@ -9,7 +9,17 @@ pt_BR:
       label: Campos do card do Kanban
       hint: O que o quadro mostra em cada card sem abri-lo. O título sempre aparece.
       contact: Contato
+      value: Valor
       conversations: Conversas e canais
       assignee: Responsável
       time_in_stage: Tempo na etapa
       last_activity: Última atividade
+    settings:
+      unsupported_currency: Moeda não suportada.
+  activerecord:
+    errors:
+      models:
+        custom/kanban/card:
+          attributes:
+            value_cents:
+              follows_items: segue a soma dos produtos; remova os produtos para digitar um valor

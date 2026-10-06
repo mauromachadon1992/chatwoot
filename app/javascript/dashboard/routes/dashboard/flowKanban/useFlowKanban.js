@@ -6,6 +6,7 @@ import { enUS, es, ptBR } from 'date-fns/locale';
 import { useMapGetter } from 'dashboard/composables/store';
 import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
 import { getInboxIconByType } from 'dashboard/helper/inbox';
+import { formatMoney } from './money';
 
 const DATE_LOCALES = { en: enUS, es, pt_BR: ptBR };
 
@@ -23,6 +24,7 @@ export const STAGE_COLORS = [
 // Mirrors Custom::Kanban::CardFields::ALL; a super admin picks them per account.
 export const CARD_FIELDS = [
   'contact',
+  'value',
   'conversations',
   'assignee',
   'time_in_stage',
@@ -39,6 +41,19 @@ export function useFlowKanban() {
     const chosen = currentAccount.value?.settings?.flow_kanban_card_fields;
     return new Set(Array.isArray(chosen) ? chosen : CARD_FIELDS);
   });
+
+  // Mirrors Custom::Kanban::Currency: one currency per account, BRL until an admin picks one.
+  const currency = computed(
+    () => currentAccount.value?.settings?.flow_kanban_currency || 'BRL'
+  );
+
+  // `whole` drops the cents, for the board, where the order of magnitude is what matters.
+  const money = (cents, { whole = false } = {}) =>
+    formatMoney(cents, {
+      currency: currency.value,
+      locale: locale.value,
+      whole,
+    });
 
   const relativeTime = timestamp =>
     timestamp
@@ -67,6 +82,8 @@ export function useFlowKanban() {
 
   return {
     cardFields,
+    currency,
+    money,
     relativeTime,
     inboxFor,
     inboxIcon,

@@ -55,8 +55,11 @@ class Api::V1::Accounts::Kanban::StagesController < Api::V1::Accounts::Kanban::B
 
   def move_cards_out
     target = @board.stages.where.not(id: @stage.id).find(params.require(:move_to_stage_id))
+    now = Time.current
+    # The column's history first: the update below skips the card callbacks that record it.
+    Custom::Kanban::StageTransition.record_bulk!(cards: @stage.cards, from_stage: @stage, to_stage: target, user: Current.user, at: now)
     # One statement for the whole column; the cards stay valid since the target is on the same board.
-    @stage.cards.update_all(stage_id: target.id, stage_changed_at: Time.current, updated_at: Time.current) # rubocop:disable Rails/SkipsModelValidations
+    @stage.cards.update_all(stage_id: target.id, stage_changed_at: now, updated_at: now) # rubocop:disable Rails/SkipsModelValidations
     Custom::Kanban::Card.renumber!(target)
   end
 

@@ -9,7 +9,17 @@ en:
       label: Kanban card fields
       hint: What the board shows on each card without opening it. The title always shows.
       contact: Contact
+      value: Value
       conversations: Conversations and channels
       assignee: Assignee
       time_in_stage: Time in stage
       last_activity: Last activity
+    settings:
+      unsupported_currency: Currency not supported.
+  activerecord:
+    errors:
+      models:
+        custom/kanban/card:
+          attributes:
+            value_cents:
+              follows_items: follows the sum of the products; remove the products to type a value

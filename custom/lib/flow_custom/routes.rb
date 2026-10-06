@@ -10,11 +10,15 @@ module FlowCustom::Routes
                   collection { patch :reorder }
                 end
                 resources :cards, only: [:index]
+                resource :report, only: [:show]
               end
               resources :cards, only: [:show, :create, :update, :destroy] do
                 member { patch :move }
                 resources :conversations, only: [:create, :destroy], controller: 'card_conversations'
+                resources :items, only: [:create, :update, :destroy], controller: 'card_items'
               end
+              resources :products, only: [:index, :create, :update, :destroy]
+              resource :settings, only: [:show, :update]
               get 'conversations/:conversation_id/cards', to: 'conversation_cards#index', as: :conversation_cards
             end
             resource :white_label, only: [:show]

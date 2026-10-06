@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_05_010000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_05_130000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1184,6 +1184,25 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_010000) do
     t.index ["conversation_id"], name: "index_flow_kanban_card_conversations_on_conversation_id"
   end
 
+  create_table "flow_kanban_card_items", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "card_id", null: false
+    t.bigint "product_id"
+    t.string "name", null: false
+    t.string "sku"
+    t.string "unit", default: "un", null: false
+    t.decimal "quantity", precision: 12, scale: 3, default: "1.0", null: false
+    t.bigint "unit_price_cents", default: 0, null: false
+    t.decimal "discount_percent", precision: 5, scale: 2, default: "0.0", null: false
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_card_items_on_account_id"
+    t.index ["card_id", "position"], name: "index_flow_kanban_card_items_on_card_id_and_position"
+    t.index ["card_id"], name: "index_flow_kanban_card_items_on_card_id"
+    t.index ["product_id"], name: "index_flow_kanban_card_items_on_product_id"
+  end
+
   create_table "flow_kanban_cards", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "board_id", null: false
@@ -1197,6 +1216,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_010000) do
     t.datetime "stage_changed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "value_cents", default: 0, null: false
+    t.integer "items_count", default: 0, null: false
     t.index ["account_id"], name: "index_flow_kanban_cards_on_account_id"
     t.index ["assignee_id"], name: "index_flow_kanban_cards_on_assignee_id"
     t.index ["board_id", "assignee_id"], name: "index_flow_kanban_cards_on_board_id_and_assignee_id"
@@ -1205,6 +1226,37 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_010000) do
     t.index ["created_by_id"], name: "index_flow_kanban_cards_on_created_by_id"
     t.index ["stage_id", "position"], name: "index_flow_kanban_cards_on_stage_id_and_position"
     t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
+  end
+
+  create_table "flow_kanban_products", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.string "sku"
+    t.string "unit", default: "un", null: false
+    t.bigint "price_cents", default: 0, null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_flow_kanban_products_on_account_id_and_name"
+    t.index ["account_id", "sku"], name: "index_flow_kanban_products_on_account_id_and_sku", unique: true, where: "(sku IS NOT NULL)"
+    t.index ["account_id"], name: "index_flow_kanban_products_on_account_id"
+  end
+
+  create_table "flow_kanban_stage_transitions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "board_id", null: false
+    t.bigint "card_id", null: false
+    t.bigint "from_stage_id"
+    t.bigint "to_stage_id", null: false
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_stage_transitions_on_account_id"
+    t.index ["board_id", "created_at"], name: "index_flow_kanban_stage_transitions_on_board_id_and_created_at"
+    t.index ["board_id"], name: "index_flow_kanban_stage_transitions_on_board_id"
+    t.index ["card_id", "created_at"], name: "index_flow_kanban_stage_transitions_on_card_id_and_created_at"
+    t.index ["card_id"], name: "index_flow_kanban_stage_transitions_on_card_id"
+    t.index ["to_stage_id"], name: "index_flow_kanban_stage_transitions_on_to_stage_id"
+    t.index ["user_id"], name: "index_flow_kanban_stage_transitions_on_user_id"
   end
 
   create_table "flow_kanban_stages", force: :cascade do |t|
@@ -1984,12 +2036,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_05_010000) do
   add_foreign_key "flow_kanban_card_conversations", "conversations", on_delete: :cascade
   add_foreign_key "flow_kanban_card_conversations", "flow_kanban_boards", column: "board_id", on_delete: :cascade
   add_foreign_key "flow_kanban_card_conversations", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_items", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_items", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_items", "flow_kanban_products", column: "product_id", on_delete: :nullify
   add_foreign_key "flow_kanban_cards", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_cards", "contacts", on_delete: :cascade
   add_foreign_key "flow_kanban_cards", "flow_kanban_boards", column: "board_id", on_delete: :cascade
   add_foreign_key "flow_kanban_cards", "flow_kanban_stages", column: "stage_id"
   add_foreign_key "flow_kanban_cards", "users", column: "assignee_id", on_delete: :nullify
   add_foreign_key "flow_kanban_cards", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_products", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_stage_transitions", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_stage_transitions", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_stage_transitions", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_stage_transitions", "users", on_delete: :nullify
   add_foreign_key "flow_kanban_stages", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_stages", "flow_kanban_boards", column: "board_id", on_delete: :cascade
   add_foreign_key "group_members", "contacts"

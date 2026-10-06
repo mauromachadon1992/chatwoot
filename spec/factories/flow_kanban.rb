@@ -14,4 +14,10 @@ FactoryBot.define do
     contact { association :contact, account: stage.board.account }
     sequence(:title) { |n| "Negócio #{n}" }
   end
+
+  factory :flow_kanban_product, class: 'Custom::Kanban::Product' do
+    account
+    sequence(:name) { |n| "Produto #{n}" }
+    price_cents { 1_000 }
+  end
 end

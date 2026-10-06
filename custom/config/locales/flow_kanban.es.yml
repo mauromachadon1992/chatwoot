@@ -9,7 +9,17 @@ es:
       label: Campos de la tarjeta del Kanban
       hint: Lo que el tablero muestra en cada tarjeta sin abrirla. El título siempre se muestra.
       contact: Contacto
+      value: Valor
       conversations: Conversaciones y canales
       assignee: Responsable
       time_in_stage: Tiempo en la etapa
       last_activity: Última actividad
+    settings:
+      unsupported_currency: Moneda no admitida.
+  activerecord:
+    errors:
+      models:
+        custom/kanban/card:
+          attributes:
+            value_cents:
+              follows_items: sigue la suma de los productos; quite los productos para escribir un valor

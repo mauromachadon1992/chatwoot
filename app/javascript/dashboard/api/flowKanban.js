@@ -89,6 +89,48 @@ class FlowKanbanAPI extends ApiClient {
       `${this.url}/conversations/${conversationDisplayId}/cards`
     );
   }
+
+  addCardItem(cardId, data) {
+    return axios.post(`${this.url}/cards/${cardId}/items`, data);
+  }
+
+  updateCardItem(cardId, itemId, data) {
+    return axios.patch(`${this.url}/cards/${cardId}/items/${itemId}`, data);
+  }
+
+  removeCardItem(cardId, itemId) {
+    return axios.delete(`${this.url}/cards/${cardId}/items/${itemId}`);
+  }
+
+  getProducts({ q, page, active } = {}) {
+    return axios.get(`${this.url}/products`, { params: { q, page, active } });
+  }
+
+  createProduct(data) {
+    return axios.post(`${this.url}/products`, data);
+  }
+
+  updateProduct(productId, data) {
+    return axios.patch(`${this.url}/products/${productId}`, data);
+  }
+
+  deleteProduct(productId) {
+    return axios.delete(`${this.url}/products/${productId}`);
+  }
+
+  getSettings() {
+    return axios.get(`${this.url}/settings`);
+  }
+
+  updateSettings(data) {
+    return axios.patch(`${this.url}/settings`, data);
+  }
+
+  getReport(boardId, { since, until, assigneeId } = {}) {
+    return axios.get(`${this.url}/boards/${boardId}/report`, {
+      params: { since, until, assignee_id: assigneeId },
+    });
+  }
 }
 
 export default new FlowKanbanAPI();

@@ -15,10 +15,13 @@ import SingleSelect from 'dashboard/components-next/filter/inputs/SingleSelect.v
 import { getInboxIconByType } from 'dashboard/helper/inbox';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
+import ButtonGroup from 'dashboard/components-next/buttonGroup/ButtonGroup.vue';
 import KanbanColumn from './KanbanColumn.vue';
 import CardPanel from './CardPanel.vue';
 import CardCreateDialog from './CardCreateDialog.vue';
 import BoardSettingsPanel from './BoardSettingsPanel.vue';
+import KanbanReport from './report/KanbanReport.vue';
+import { DEFAULT_PERIOD, PERIODS } from './report/useFlowKanbanReport';
 
 const { t } = useI18n();
 const vuexStore = useStore();
@@ -98,6 +101,50 @@ const clearFilters = () => {
   kanban.resetFilters();
 };
 
+// Board or report, remembered per browser like the last board.
+const VIEW_KEY = 'flow_kanban_view';
+const readView = () => {
+  try {
+    return window.localStorage.getItem(VIEW_KEY) === 'report'
+      ? 'report'
+      : 'board';
+  } catch {
+    return 'board';
+  }
+};
+const view = ref(readView());
+const setView = value => {
+  view.value = value;
+  try {
+    window.localStorage.setItem(VIEW_KEY, value);
+  } catch {
+    // Storage blocked: the view is simply not remembered.
+  }
+};
+const viewOptions = computed(() => [
+  {
+    value: 'board',
+    label: t('FLOW_KANBAN.VIEW.BOARD'),
+    icon: 'i-lucide-columns-3',
+  },
+  {
+    value: 'report',
+    label: t('FLOW_KANBAN.VIEW.REPORT'),
+    icon: 'i-lucide-chart-column',
+  },
+]);
+
+// Report filters: a period that is always set, and the same assignee choices as the board.
+const periodOptions = computed(() =>
+  Object.keys(PERIODS).map(id => ({
+    id,
+    name: t(`FLOW_KANBAN.REPORT.PERIOD.${id}`),
+    icon: 'i-lucide-calendar',
+  }))
+);
+const reportPeriod = ref({ id: DEFAULT_PERIOD });
+const reportAssignee = ref(null);
+
 const onBoardMenuAction = ({ action, value }) => {
   isBoardMenuOpen.value = false;
   if (action === 'new') settingsPanelRef.value?.open(null);
@@ -155,13 +202,67 @@ const SKELETON_CARDS = [3, 2, 4, 1];
         />
       </div>
 
-      <template v-if="kanban.activeBoard">
+      <ButtonGroup
+        v-if="kanban.activeBoard"
+        role="radiogroup"
+        :aria-label="t('FLOW_KANBAN.VIEW.LABEL')"
+        class="flex items-center gap-0.5 p-0.5 rounded-lg bg-n-alpha-1"
+      >
+        <Button
+          v-for="option in viewOptions"
+          :key="option.value"
+          ghost
+          xs
+          type="button"
+          role="radio"
+          :aria-checked="view === option.value"
+          :icon="option.icon"
+          :label="option.label"
+          :color="view === option.value ? 'blue' : 'slate'"
+          :class="{ 'bg-n-solid-1 shadow-sm': view === option.value }"
+          @click="setView(option.value)"
+        />
+      </ButtonGroup>
+
+      <div
+        v-if="kanban.activeBoard && view === 'report'"
+        class="flex flex-wrap items-center gap-2 ms-auto"
+      >
+        <SingleSelect
+          v-model="reportPeriod"
+          :options="periodOptions"
+          disable-search
+          disable-deselect
+          placeholder-icon="i-lucide-chevron-down"
+          placeholder-trailing-icon
+        />
+        <SingleSelect
+          v-model="reportAssignee"
+          :options="assigneeOptions"
+          :placeholder="t('FLOW_KANBAN.FILTERS.ALL_AGENTS')"
+          :search-placeholder="t('FLOW_KANBAN.FILTERS.SEARCH_AGENT')"
+          placeholder-icon="i-lucide-chevron-down"
+          placeholder-trailing-icon
+        />
+        <Button
+          v-if="isAdmin"
+          v-tooltip.bottom="t('FLOW_KANBAN.BOARD_SETTINGS')"
+          ghost
+          slate
+          sm
+          icon="i-lucide-settings-2"
+          :aria-label="t('FLOW_KANBAN.BOARD_SETTINGS')"
+          @click="settingsPanelRef?.open(kanban.activeBoard)"
+        />
+      </div>
+
+      <template v-else-if="kanban.activeBoard">
         <div class="flex flex-wrap items-center gap-2 ms-auto">
           <Input
             v-model="search"
             type="search"
             size="sm"
-            class="w-72"
+            class="w-56 xl:w-64"
             :placeholder="t('FLOW_KANBAN.FILTERS.SEARCH')"
             custom-input-class="!ps-8"
           >
@@ -272,6 +373,13 @@ const SKELETON_CARDS = [3, 2, 4, 1];
         @click="settingsPanelRef?.open(null)"
       />
     </div>
+
+    <KanbanReport
+      v-else-if="view === 'report' && kanban.activeBoardId"
+      :board-id="kanban.activeBoardId"
+      :period="reportPeriod?.id || DEFAULT_PERIOD"
+      :assignee-id="reportAssignee?.id ?? ''"
+    />
 
     <div
       v-else

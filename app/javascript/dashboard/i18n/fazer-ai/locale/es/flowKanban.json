@@ -23,14 +23,16 @@
     },
     "COLUMN": {
       "LOAD_MORE": "Cargar más",
-      "ADD_CARD": "Añadir tarjeta"
+      "ADD_CARD": "Añadir tarjeta",
+      "TOTAL_VALUE": "Suma de los negocios de esta etapa"
     },
     "CARD": {
       "TIME_IN_STAGE": "Desde que entró en esta etapa",
       "LAST_ACTIVITY": "Última actividad en sus conversaciones",
       "NO_CONVERSATIONS": "Sin conversaciones",
       "CONVERSATIONS": "{count} conversación | {count} conversaciones",
-      "RESTRICTED_CONVERSATION": "Conversación de una bandeja de entrada sin acceso"
+      "RESTRICTED_CONVERSATION": "Conversación de una bandeja de entrada sin acceso",
+      "VALUE": "Valor del negocio"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Nueva tarjeta",
@@ -112,6 +114,162 @@
     "ERRORS": {
       "GENERIC": "No se pudo completar. Inténtalo de nuevo.",
       "MOVE": "No se pudo mover la tarjeta. El tablero se recargó."
+    },
+    "VIEW": {
+      "LABEL": "Vista",
+      "BOARD": "Tablero",
+      "REPORT": "Informe"
+    },
+    "VALUE": {
+      "SECTION": "Valor y productos",
+      "AMOUNT": "Valor del negocio",
+      "AMOUNT_HINT": "Sin productos, escriba el valor. Con productos, pasa a ser su suma.",
+      "FROM_ITEMS": "Suma de los productos. Para escribir un valor, quite los productos.",
+      "INVALID": "Use un valor como 1.250,00.",
+      "ADD_PRODUCT": "Agregar producto",
+      "SEARCH_PRODUCT": "Buscar por nombre o código",
+      "NO_PRODUCTS": "Ningún producto activo encontrado",
+      "EMPTY_CATALOG_ADMIN": "El catálogo está vacío.",
+      "EMPTY_CATALOG_AGENT": "El catálogo está vacío. Pida a un administrador que registre productos.",
+      "MANAGE_PRODUCTS": "Registrar productos",
+      "QUANTITY": "Cantidad",
+      "UNIT_PRICE": "Precio unitario",
+      "DISCOUNT": "Descuento (%)",
+      "TOTAL": "Total",
+      "REMOVE_ITEM": "Quitar producto",
+      "ITEMS_AUTOSAVE": "Se guarda al instante",
+      "ITEM_INVALID": "Revise cantidad, precio y descuento (0 a 100%)."
+    },
+    "UNITS": {
+      "un": "u",
+      "m": "m",
+      "m2": "m²",
+      "m3": "m³",
+      "kg": "kg",
+      "t": "t",
+      "l": "L",
+      "cx": "caja",
+      "pc": "pza",
+      "sc": "saco",
+      "par": "par",
+      "kit": "kit",
+      "h": "h",
+      "srv": "serv."
+    },
+    "UNIT_NAMES": {
+      "un": "Unidad",
+      "m": "Metro",
+      "m2": "Metro cuadrado",
+      "m3": "Metro cúbico",
+      "kg": "Kilo",
+      "t": "Tonelada",
+      "l": "Litro",
+      "cx": "Caja",
+      "pc": "Pieza",
+      "sc": "Saco",
+      "par": "Par",
+      "kit": "Kit",
+      "h": "Hora",
+      "srv": "Servicio"
+    },
+    "REPORT": {
+      "PERIOD": {
+        "LABEL": "Período",
+        "LAST_7": "Últimos 7 días",
+        "LAST_30": "Últimos 30 días",
+        "LAST_90": "Últimos 90 días",
+        "THIS_MONTH": "Este mes",
+        "LAST_MONTH": "Mes pasado",
+        "THIS_YEAR": "Este año"
+      },
+      "SUMMARY": {
+        "LABEL": "Resumen del embudo",
+        "OPEN": "Abiertos",
+        "OPEN_HINT": "Negocios en etapas abiertas ahora, creados en cualquier fecha.",
+        "WON": "Ganados",
+        "WON_HINT": "Negocios que entraron en una etapa ganada en el período y siguen en ella.",
+        "LOST": "Perdidos",
+        "LOST_HINT": "Negocios que entraron en una etapa perdida en el período y siguen en ella.",
+        "WIN_RATE": "Tasa de conversión",
+        "WIN_RATE_HINT": "Ganados sobre el total de negocios cerrados (ganados y perdidos) en el período.",
+        "AVERAGE_WON": "Ticket promedio",
+        "AVERAGE_WON_HINT": "Valor promedio de los negocios ganados en el período.",
+        "CYCLE": "Ciclo de venta",
+        "CYCLE_HINT": "Tiempo promedio desde la creación hasta la venta, para los negocios ganados en el período.",
+        "DEALS": "{count} negocio | {count} negocios",
+        "NO_CLOSED": "Ninguno cerrado"
+      },
+      "FUNNEL": {
+        "TITLE": "Embudo del período",
+        "DESCRIPTION": "De los {count} negocios creados en el período, cuántos llegaron a cada etapa o la pasaron.",
+        "STAGE": "Etapa",
+        "REACHED": "Llegaron",
+        "REACHED_HINT": "Negocios creados en el período que entraron en esta etapa o en una posterior. Un negocio ganado pasó por todas las etapas abiertas.",
+        "CONVERSION": "Conversión",
+        "CONVERSION_HINT": "Parte de la etapa anterior que llegó a esta. En la primera etapa, parte de los negocios creados en el período.",
+        "NOW": "Ahora",
+        "NOW_HINT": "Negocios y valor en esta etapa en este momento.",
+        "TIME": "Tiempo promedio",
+        "TIME_HINT": "Cuánto tiempo estuvieron los negocios en la etapa antes de salir, para las salidas del período.",
+        "OUT_OF_FUNNEL": "Fuera del embudo",
+        "BAR_LABEL": "{stage}: {reached} de {total} negocios"
+      },
+      "DURATION": {
+        "DAYS": "{n} día | {n} días",
+        "HOURS": "{n} h",
+        "LESS_THAN_HOUR": "menos de 1 h"
+      },
+      "EMPTY_TITLE": "Ningún negocio creado en este período",
+      "EMPTY_BODY": "El embudo cuenta los negocios creados en el período. Elija un período más largo o cree tarjetas en el tablero.",
+      "HISTORY_NOTE": "El historial de etapas empezó a registrarse en esta versión. Los negocios anteriores solo cuentan la etapa en la que estaban en ese momento.",
+      "ERROR": "No se pudo cargar el informe.",
+      "RETRY": "Reintentar"
+    },
+    "PRODUCTS": {
+      "HEADER": "Productos",
+      "DESCRIPTION": "El catálogo que los agentes usan para armar el valor de los negocios en el Kanban. Cambiar o desactivar un producto no cambia los negocios que ya lo tienen.",
+      "SEARCH": "Buscar por nombre o código",
+      "COUNT": "{n} producto | {n} productos",
+      "NEW": "Nuevo producto",
+      "TABLE": {
+        "NAME": "Producto",
+        "UNIT": "Unidad",
+        "PRICE": "Precio",
+        "STATUS": "Estado",
+        "ACTIONS": "Acciones"
+      },
+      "ACTIVE": "Activo",
+      "INACTIVE": "Inactivo",
+      "EMPTY_TITLE": "Ningún producto registrado",
+      "EMPTY_BODY": "Registre los productos y servicios que venden. Aparecen para elegir al armar el valor de un negocio.",
+      "NO_RESULTS": "Ningún producto encontrado para \"{query}\".",
+      "EDIT": "Editar producto",
+      "DELETE": "Eliminar producto",
+      "DELETE_CONFIRM": "¿Eliminar \"{name}\" del catálogo? Los negocios que ya lo tienen conservan su copia.",
+      "DELETED": "Producto eliminado",
+      "FORM": {
+        "CREATE_TITLE": "Nuevo producto",
+        "EDIT_TITLE": "Editar producto",
+        "NAME": "Nombre",
+        "NAME_PLACEHOLDER": "Ej.: Cemento CP II 50 kg",
+        "NAME_REQUIRED": "Indique el nombre del producto.",
+        "SKU": "Código (opcional)",
+        "SKU_PLACEHOLDER": "Ej.: CEM-50",
+        "UNIT": "Unidad",
+        "PRICE": "Precio",
+        "PRICE_INVALID": "Use un precio como 39,90.",
+        "ACTIVE": "Disponible para nuevos negocios",
+        "ACTIVE_HINT": "Desactivado, sale de la búsqueda en la tarjeta, pero sigue en los negocios que ya lo tienen.",
+        "CREATE": "Registrar producto",
+        "SAVE": "Guardar",
+        "CREATED": "Producto registrado",
+        "SAVED": "Producto guardado"
+      },
+      "CURRENCY": {
+        "LABEL": "Moneda de los negocios",
+        "HINT": "Vale para todos los valores del Kanban de esta cuenta. Cambiarla no convierte los valores ya registrados.",
+        "SAVED": "Moneda actualizada"
+      }
     }
   }
 }
