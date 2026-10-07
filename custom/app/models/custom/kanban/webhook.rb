@@ -10,6 +10,9 @@ class Custom::Kanban::Webhook < ApplicationRecord
   has_many :deliveries, class_name: 'Custom::Kanban::WebhookDelivery', dependent: :delete_all
 
   before_validation :normalize
+  # Encrypted at rest when the installation has Active Record encryption keys, like Chatwoot's own
+  # webhook secrets; plaintext rows stay readable (support_unencrypted_data).
+  encrypts :secret if Chatwoot.encryption_configured?
   before_create { self.secret = SecureRandom.hex(24) }
 
   validates :url, presence: true, length: { maximum: URL_MAX_LENGTH }
@@ -19,6 +22,12 @@ class Custom::Kanban::Webhook < ApplicationRecord
 
   scope :ordered, -> { order(:id) }
   scope :listening_to, ->(event) { where(active: true).where('? = ANY (events)', event) }
+
+  # A new secret, for when the old one may have leaked. The receiver must be given it (the create
+  # response and this one are the only times it leaves the server).
+  def rotate_secret!
+    update!(secret: SecureRandom.hex(24))
+  end
 
   # Never the secret: it leaves the server once, in the create response.
   def push_event_data

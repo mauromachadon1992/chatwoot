@@ -383,3 +383,37 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   who asked, for which deal, what was used and whether it was accepted or discarded (kept 90 days),
   which is what the metric (accepted ÷ generated) reads. The draft is written in the account's
   language.
+
+### Sprint 8: hardening (ROADMAP.md)
+
+- **Security review of the Kanban API.** `spec/custom/kanban/security_spec.rb` walks every route of
+  the Kanban API: signed out → 401; an administrator of another account → 401; an agent on every
+  administrator-only endpoint (automations, webhooks, imports) → 401; no route answers 5xx to a bad
+  id. A new route is covered by the sweep the day it is added. Findings fixed:
+  - the webhook address check now refuses every non-public range (this host, 0.0.0.0, private and
+    shared 100.64/10, link-local and cloud metadata, multicast, reserved, documentation, the IPv6
+    unique-local and NAT64 forms), not only the common ones;
+  - the webhook secret is encrypted at rest when the installation has Active Record encryption keys
+    (as Chatwoot's own webhook secrets), and can be replaced (*New secret*: the old one stops signing
+    at once, the new one is shown once);
+  - decisions kept and written down: webhooks are account-level and administrator-only; the deals
+    export is open to anyone who sees the board and only exports that board (the same data the
+    board shows them); the AI summary sends only what the agent can open.
+- **Performance.** `spec/custom/kanban/performance_spec.rb` counts the database queries of the
+  board, filtered board, My tasks, report, deals export, automation runs, boards list, products
+  (list and export) and webhooks with few and with many records: the count must not grow (no N+1).
+  With `PERF=1` it also seeds 10,000 deals and times them: the board page 0.4 s, My tasks 0.2 s,
+  the report 0.3 s, the stalled scan 0.01 s and the full export of 10,000 deals 2.9 s (1.2 MB). The
+  indexes designed with each query held; no index was added.
+- **Accessibility** (axe-core, WCAG 2.2 AA, light and dark, on the board, card panel, bell, My
+  tasks, report, rule editor, Settings, webhook and import dialogs): from 52 distinct findings in our
+  screens to none of ours. Fixed: the card was a `role="button"` around links (nested interactive
+  content) and is now a group with a real *Open* button that shows on focus, so Tab reaches a card and
+  Enter opens it; conversation chips are at least 24 px; checkboxes have a label; avatars next to
+  a name are hidden from assistive tech and the others are named in text; the report region can be
+  focused and its bar labels have a role; the file input has a name. **Faint Ink**
+  (`text-n-slate-10`) failed AA as text, so DESIGN.md now keeps it for icons and `design-audit`
+  rejects it on text; the stalled pill's amber text is darker. What is left in the audit is the
+  Chatwoot shell, not ours: the sidebar search placeholder and two unnamed buttons, the sidebar
+  profile avatar, the white-label icon without `alt` and the floating help button. The brand
+  colour is chosen per account, so contrast of brand-coloured text depends on the palette.

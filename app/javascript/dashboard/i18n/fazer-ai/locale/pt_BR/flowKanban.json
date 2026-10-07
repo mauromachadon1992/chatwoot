@@ -42,7 +42,9 @@
       "TASKS_OVERDUE": "Tarefas atrasadas: {count}",
       "STALE": "Parado há {days} d",
       "AUTOMATIC": "Automático",
-      "AUTOMATIC_HINT": "Aberto por uma conversa nova. Some quando alguém revisar o negócio."
+      "AUTOMATIC_HINT": "Aberto por uma conversa nova. Some quando alguém revisar o negócio.",
+      "OPEN": "Abrir",
+      "OPEN_TITLE": "Abrir o negócio {title}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Novo card",

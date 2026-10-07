@@ -89,7 +89,7 @@ const coverage = computed(() => forecastCoverage(props.forecast));
             <th
               scope="row"
               class="py-3 pe-4 font-normal text-start text-body-main"
-              :class="row.muted ? 'text-n-slate-10' : 'text-n-slate-12'"
+              :class="row.muted ? 'text-n-slate-11' : 'text-n-slate-12'"
             >
               <span class="inline-flex items-center gap-2">
                 {{ row.label }}
@@ -103,19 +103,19 @@ const coverage = computed(() => forecastCoverage(props.forecast));
             </th>
             <td
               class="py-3 pe-4 text-end text-body-main tabular-nums"
-              :class="row.muted ? 'text-n-slate-10' : 'text-n-slate-12'"
+              :class="row.muted ? 'text-n-slate-11' : 'text-n-slate-12'"
             >
               {{ row.count }}
             </td>
             <td
               class="py-3 pe-4 text-end text-body-main tabular-nums"
-              :class="row.muted ? 'text-n-slate-10' : 'text-n-slate-12'"
+              :class="row.muted ? 'text-n-slate-11' : 'text-n-slate-12'"
             >
               {{ money(row.value_cents, { whole: true }) }}
             </td>
             <td
               class="py-3 pe-4 text-end text-body-main tabular-nums"
-              :class="row.muted ? 'text-n-slate-10' : 'text-n-slate-12'"
+              :class="row.muted ? 'text-n-slate-11' : 'text-n-slate-12'"
             >
               {{ money(row.weighted_cents, { whole: true }) }}
             </td>

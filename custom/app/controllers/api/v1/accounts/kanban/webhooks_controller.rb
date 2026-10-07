@@ -1,7 +1,7 @@
 # The account's webhooks (administrators only; see Custom::Kanban::Webhook). The secret is in the
 # create response and nowhere else.
 class Api::V1::Accounts::Kanban::WebhooksController < Api::V1::Accounts::Kanban::BaseController
-  before_action :webhook, only: [:update, :destroy, :deliveries, :test]
+  before_action :webhook, only: [:update, :destroy, :deliveries, :test, :rotate_secret]
 
   def index
     authorize Custom::Kanban::Webhook
@@ -20,6 +20,12 @@ class Api::V1::Accounts::Kanban::WebhooksController < Api::V1::Accounts::Kanban:
   def update
     @webhook.update!(webhook_params)
     render json: { payload: row(@webhook, last_deliveries[@webhook.id]) }
+  end
+
+  # The old secret stops signing at once; the new one is shown this once.
+  def rotate_secret
+    @webhook.rotate_secret!
+    render json: { payload: row(@webhook, last_deliveries[@webhook.id]), secret: @webhook.secret }
   end
 
   def destroy

@@ -50,6 +50,11 @@ const RULES = [
     'use logical spacing (ms-, me-, ps-, pe-, start-, end-, text-start) so RTL works',
   ],
   [
+    'faint-text',
+    /^(?!.*\bsize-).*text-n-slate-10/,
+    'text-n-slate-10 is below AA contrast for text: use text-n-slate-11 (slate-10 is for icons, on a line with a size-* class)',
+  ],
+  [
     'spinner',
     /<Spinner\b/,
     'loading shows skeletons (SkeletonRows), never a spinner in content',

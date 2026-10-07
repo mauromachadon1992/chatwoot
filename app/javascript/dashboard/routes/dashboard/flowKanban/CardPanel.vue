@@ -251,7 +251,7 @@ defineExpose({ open });
           </p>
           <Button
             faded
-            blue
+            slate
             sm
             type="button"
             icon="i-lucide-check"
@@ -329,6 +329,7 @@ defineExpose({ open });
             :name="card.contact.name || ''"
             :size="36"
             rounded-full
+            aria-hidden="true"
           />
           <div class="flex flex-col flex-1 min-w-0">
             <span class="text-heading-3 truncate text-n-slate-12">

@@ -42,7 +42,9 @@
       "TASKS_OVERDUE": "Overdue tasks: {count}",
       "STALE": "Stalled {days} d",
       "AUTOMATIC": "Automatic",
-      "AUTOMATIC_HINT": "Opened by a new conversation. Goes away once someone reviews the deal."
+      "AUTOMATIC_HINT": "Opened by a new conversation. Goes away once someone reviews the deal.",
+      "OPEN": "Open",
+      "OPEN_TITLE": "Open the deal {title}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "New card",

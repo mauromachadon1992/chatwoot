@@ -84,6 +84,34 @@ RSpec.describe 'Kanban webhooks', type: :request do
       expect(Custom::Kanban::Webhook.where(id: mine.id)).to be_empty
     end
 
+    it 'replaces the secret, shows the new one once, and signs with it from then on' do
+      webhook = hook
+      old_secret = webhook.secret
+
+      post kanban_url("webhooks/#{webhook.id}/rotate_secret"), headers: admin.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:ok)
+      new_secret = response.parsed_body['secret']
+      expect(new_secret).to match(/\A\h{48}\z/).and(satisfy { |value| value != old_secret })
+      expect(payload).not_to have_key('secret')
+      expect(webhook.reload.secret).to eq(new_secret)
+
+      post kanban_url("webhooks/#{webhook.id}/test"), headers: admin.create_new_auth_token, as: :json
+      expect(WebMock).to(have_requested(:post, url).with do |request|
+        timestamp, digest = request.headers['X-Flow-Signature'].match(/t=(\d+),v1=(\h+)/).captures
+        digest == OpenSSL::HMAC.hexdigest('SHA256', new_secret, "#{timestamp}.#{request.body}")
+      end)
+    end
+
+    it 'does not let an agent or another account replace a secret' do
+      webhook = hook
+      post kanban_url("webhooks/#{webhook.id}/rotate_secret"), headers: agent.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:unauthorized)
+
+      other = create(:user, account: create(:account), role: :administrator)
+      post kanban_url("webhooks/#{webhook.id}/rotate_secret"), headers: other.create_new_auth_token, as: :json
+      expect(response).to have_http_status(:unauthorized)
+    end
+
     it 'lists the last deliveries with the newest first' do
       webhook = hook
       create_list(:flow_kanban_card, 2, stage: lead)
@@ -226,7 +254,8 @@ RSpec.describe 'Kanban webhooks', type: :request do
     end
 
     it 'never connects to a private, local or unresolvable address' do
-      %w[127.0.0.1 10.0.0.5 192.168.1.9 169.254.169.254 ::1 ::ffff:127.0.0.1].each do |ip|
+      %w[127.0.0.1 10.0.0.5 192.168.1.9 169.254.169.254 ::1 ::ffff:127.0.0.1 0.0.0.0 :: 100.64.0.1 224.0.0.1 fd00::1 fe80::1
+         64:ff9b::7f00:1 172.31.255.255 255.255.255.255].each do |ip|
         allow(Resolv).to receive(:getaddresses).with('hooks.example.com').and_return([ip])
         result = Custom::Kanban::WebhookSender.new(webhook, delivery).call
         expect(result.error).to eq('blocked_address'), ip

@@ -49,6 +49,7 @@ module FlowCustom::Routes
                 member do
                   get :deliveries
                   post :test
+                  post :rotate_secret
                 end
               end
               resource :settings, only: [:show, :update]

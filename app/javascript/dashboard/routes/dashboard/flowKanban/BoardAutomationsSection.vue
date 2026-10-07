@@ -223,7 +223,7 @@ watch(() => props.boardId, load);
             />
             <span
               class="flex-1 min-w-0 text-body-main"
-              :class="rule.active ? 'text-n-slate-12' : 'text-n-slate-10'"
+              :class="rule.active ? 'text-n-slate-12' : 'text-n-slate-11'"
             >
               {{ sentence(rule) }}
             </span>
@@ -307,7 +307,7 @@ watch(() => props.boardId, load);
                 · {{ describeResults(run.data.results, t) }}
               </span>
             </span>
-            <time class="text-n-slate-10 tabular-nums">
+            <time class="text-n-slate-11 tabular-nums">
               {{ when(run.created_at) }}
             </time>
           </li>

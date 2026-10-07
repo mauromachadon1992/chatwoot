@@ -28,7 +28,12 @@ const SKELETON_ROWS = 4;
 </script>
 
 <template>
-  <div class="flex-1 min-h-0 overflow-y-auto">
+  <div
+    class="flex-1 min-h-0 overflow-y-auto"
+    role="region"
+    tabindex="0"
+    :aria-label="t('FLOW_KANBAN.VIEW.REPORT')"
+  >
     <div class="flex flex-col w-full max-w-6xl gap-8 px-6 py-6 mx-auto">
       <div
         v-if="hasError && !report"
@@ -142,7 +147,7 @@ const SKELETON_ROWS = 4;
           />
         </section>
 
-        <p class="flex items-start gap-2 text-label-small text-n-slate-10">
+        <p class="flex items-start gap-2 text-label-small text-n-slate-11">
           <Icon icon="i-lucide-history" class="flex-shrink-0 mt-0.5 size-3.5" />
           {{ t('FLOW_KANBAN.REPORT.HISTORY_NOTE') }}
         </p>

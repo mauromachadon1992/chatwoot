@@ -169,7 +169,8 @@ this document means "the account's accent"; on an unbranded account it is Chatwo
 
 - **Ink** (ink, `text-n-slate-12`): titles and primary text. Never pure black.
 - **Muted Ink** (ink-muted, `text-n-slate-11`): secondary text, descriptions, field hints.
-- **Faint Ink** (ink-faint, `text-n-slate-10`): metadata, timestamps, placeholders.
+- **Faint Ink** (ink-faint, `text-n-slate-10`): icons and decoration only. It is below the AA
+  contrast ratio for text, so metadata and timestamps use Muted Ink; `design-audit` rejects it on text.
 - **Canvas** (canvas, `bg-n-background`), **Surface** (surface, `bg-n-surface-1`) and
   **Solid** (solid, `bg-n-solid-1`): the three layers, from the page back to the card in hand.
 - **Alpha fills** (`bg-n-alpha-1`, `bg-n-alpha-2`): Kanban columns, pills, hover and pressed

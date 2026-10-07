@@ -42,7 +42,9 @@
       "TASKS_OVERDUE": "Tareas vencidas: {count}",
       "STALE": "Detenida {days} d",
       "AUTOMATIC": "Automática",
-      "AUTOMATIC_HINT": "Abierta por una conversación nueva. Desaparece cuando alguien revise la negociación."
+      "AUTOMATIC_HINT": "Abierta por una conversación nueva. Desaparece cuando alguien revise la negociación.",
+      "OPEN": "Abrir",
+      "OPEN_TITLE": "Abrir el negocio {title}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Nueva tarjeta",

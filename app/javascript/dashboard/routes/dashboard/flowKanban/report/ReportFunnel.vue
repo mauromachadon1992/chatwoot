@@ -115,6 +115,7 @@ const HINTS = { REACHED: true, CONVERSION: true, NOW: true, TIME: true };
           <td class="py-3 pe-4">
             <span
               v-if="row.inFunnel"
+              role="group"
               class="flex items-center gap-3"
               :aria-label="
                 t('FLOW_KANBAN.REPORT.FUNNEL.BAR_LABEL', {
@@ -140,7 +141,7 @@ const HINTS = { REACHED: true, CONVERSION: true, NOW: true, TIME: true };
                 {{ row.reached ?? 0 }}
               </span>
             </span>
-            <span v-else class="text-label-small text-n-slate-10">
+            <span v-else class="text-label-small text-n-slate-11">
               {{ t('FLOW_KANBAN.REPORT.FUNNEL.OUT_OF_FUNNEL') }}
             </span>
           </td>
@@ -154,7 +155,7 @@ const HINTS = { REACHED: true, CONVERSION: true, NOW: true, TIME: true };
               <span class="text-body-main tabular-nums text-n-slate-12">
                 {{ money(row.value_cents, { whole: true }) }}
               </span>
-              <span class="text-label-small text-n-slate-10 tabular-nums">
+              <span class="text-label-small text-n-slate-11 tabular-nums">
                 {{
                   t(
                     'FLOW_KANBAN.REPORT.SUMMARY.DEALS',

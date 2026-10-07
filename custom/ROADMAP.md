@@ -1,7 +1,7 @@
 # Kanban roadmap: sprints and phases
 
-Status: **S0 to S7 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). S8 proposed; see "Decisions to confirm".
+Status: **S0 to S8 built** (hardening done; rollout is yours) (2026-10-08; S0.1 publishing and staging wait for confirmation and a
+Coolify token). rollout steps below; see "Decisions to confirm".
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,
@@ -312,6 +312,19 @@ the default `gpt-4.1-mini`, a fraction of a cent, and 10 an hour per agent caps 
   signing, import limits.
 - **Rollout:** features on per account, pilot board first, one retrospective; docs and `PRODUCT.md`
   refreshed; the roadmap closed or re-planned.
+
+**Built:** the audit, the performance review and the security review (README, "Sprint 8"); `PRODUCT.md`
+and the README refreshed. **Left for the rollout, in this order** (none needs code):
+1. Build the image (`build-ee`), check it in `ee-local`, publish it (`publish-ghcr`) and promote it on
+   Coolify staging (needs a valid Coolify token).
+2. In Super Admin, turn on per account what the pilot needs: *Automatic deals* (and pick the pilot board
+   and inbox in the board settings), leave *AI deal summary* off until a Captain API key is set.
+3. Pilot with one board for two weeks, then read the metrics of section 6 with
+   `rake "flow:kanban:metrics[ACCOUNT_ID,DAYS]"`, and note what surprised.
+4. Re-plan from the retrospective. Candidates already named: stale-alert preferences per agent, quote as
+   PDF, an `hmac` verification snippet for webhook receivers, a Kanban export limit for agents if the
+   pilot asks for one, running the image as a non-root user, and clearing the Trivy findings that
+   only an upstream sync fixes.
 
 ---
 

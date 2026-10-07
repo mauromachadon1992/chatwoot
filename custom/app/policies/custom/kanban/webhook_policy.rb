@@ -20,6 +20,10 @@ class Custom::Kanban::WebhookPolicy < ApplicationPolicy
     administrator?
   end
 
+  def rotate_secret?
+    administrator?
+  end
+
   def deliveries?
     administrator?
   end

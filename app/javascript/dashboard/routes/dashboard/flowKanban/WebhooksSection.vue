@@ -323,7 +323,7 @@ onMounted(load);
           <div class="flex flex-col flex-1 min-w-0 gap-1">
             <span
               class="text-body-main break-all"
-              :class="hook.active ? 'text-n-slate-12' : 'text-n-slate-10'"
+              :class="hook.active ? 'text-n-slate-12' : 'text-n-slate-11'"
             >
               {{ hook.url }}
             </span>

@@ -17,7 +17,7 @@ defineProps({
 // Full class names, so Tailwind keeps them.
 const TONES = {
   slate: 'bg-n-alpha-2 text-n-slate-11',
-  amber: 'bg-n-amber-3 text-n-amber-11',
+  amber: 'bg-n-amber-3 text-n-amber-12',
   ruby: 'bg-n-ruby-3 text-n-ruby-11',
   teal: 'bg-n-teal-3 text-n-teal-11',
   blue: 'bg-n-blue-3 text-n-blue-11',

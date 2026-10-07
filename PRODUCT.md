@@ -19,8 +19,9 @@ that happens.
 ## Product Purpose
 
 Flow Agents is a fork of fazer.ai's Chatwoot that adds what a sales-led conversation business
-needs on top of the inbox: a Kanban of deals, their value and products, a funnel report, follow-up
-tasks and rules that move a deal when its conversation changes. Success is an agent who never
+needs on top of the inbox: a Kanban of deals, their value and products, a funnel and revenue report,
+follow-up tasks, rules that act on a deal when something happens, quotes, webhooks, CSV import and
+export, and an AI draft that summarizes a deal on request. Success is an agent who never
 loses a deal between a chat and a spreadsheet, and an administrator who can read the funnel
 without leaving the tool.
 

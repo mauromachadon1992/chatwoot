@@ -164,7 +164,7 @@ onMounted(load);
                     : row.view.cardTitle
                 }}
               </span>
-              <span class="text-label-small text-n-slate-10">
+              <span class="text-label-small text-n-slate-11">
                 {{ relativeTime(row.notification.created_at) }}
               </span>
             </div>

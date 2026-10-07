@@ -221,6 +221,7 @@ defineExpose({ open });
       accept=".csv,.txt,text/csv,text/plain"
       class="sr-only"
       tabindex="-1"
+      :aria-label="t('FLOW_KANBAN.SETTINGS.IMPORT.CHOOSE')"
       @change="onFile"
     />
 

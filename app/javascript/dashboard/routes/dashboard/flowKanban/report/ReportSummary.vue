@@ -108,7 +108,7 @@ const metrics = computed(() => {
         >
           {{ metric.value }}
         </span>
-        <span v-if="metric.detail" class="text-label-small text-n-slate-10">
+        <span v-if="metric.detail" class="text-label-small text-n-slate-11">
           {{ metric.detail }}
         </span>
       </div>

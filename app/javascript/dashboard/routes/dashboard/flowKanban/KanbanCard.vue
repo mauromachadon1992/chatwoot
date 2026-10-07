@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
+import Button from 'dashboard/components-next/button/Button.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ConversationChips from './ConversationChips.vue';
 import StatePill from './StatePill.vue';
@@ -55,12 +56,20 @@ const showTasks = computed(() => tasks.value.open > 0);
 
 <template>
   <article
-    role="button"
-    tabindex="0"
-    class="group flex flex-col gap-2 p-3 rounded-lg bg-n-solid-1 outline outline-1 outline-n-container shadow-sm cursor-grab select-none transition-shadow duration-150 hover:shadow-md active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-n-brand"
+    class="group flex flex-col gap-2 p-3 rounded-lg bg-n-solid-1 outline outline-1 outline-n-container shadow-sm cursor-grab select-none transition-shadow duration-150 hover:shadow-md active:cursor-grabbing focus-within:outline-2 focus-within:outline-n-brand"
     @click="$emit('open', card)"
-    @keydown.enter.prevent="$emit('open', card)"
   >
+    <!-- The way in for the keyboard and screen readers; the rest of the card opens it with the mouse. -->
+    <Button
+      ghost
+      slate
+      xs
+      type="button"
+      class="sr-only focus:not-sr-only focus:self-start"
+      :label="t('FLOW_KANBAN.CARD.OPEN')"
+      :aria-label="t('FLOW_KANBAN.CARD.OPEN_TITLE', { title: card.title })"
+      @click.stop="$emit('open', card)"
+    />
     <div class="flex items-start gap-2">
       <h4
         class="flex-1 min-w-0 text-heading-3 break-words text-n-slate-12 line-clamp-2"
@@ -74,8 +83,10 @@ const showTasks = computed(() => tasks.value.open > 0);
         :name="card.assignee.name"
         :size="20"
         rounded-full
+        aria-hidden="true"
         class="flex-shrink-0"
       />
+      <span v-if="showAssignee" class="sr-only">{{ card.assignee.name }}</span>
     </div>
 
     <div v-if="staleDays || card.needs_review" class="flex flex-wrap gap-1">
@@ -109,9 +120,10 @@ const showTasks = computed(() => tasks.value.open > 0);
     >
       <Avatar
         :src="card.contact.thumbnail"
-        :name="contactLabel || ''"
+        name=""
         :size="16"
         rounded-full
+        aria-hidden="true"
       />
       <span class="text-label-small truncate text-n-slate-11">{{
         contactLabel
@@ -125,7 +137,7 @@ const showTasks = computed(() => tasks.value.open > 0);
 
     <div
       v-if="showTimeInStage || showLastActivity || showTasks"
-      class="flex flex-wrap items-center gap-x-3 gap-y-1 text-label-small text-n-slate-10"
+      class="flex flex-wrap items-center gap-x-3 gap-y-1 text-label-small text-n-slate-11"
     >
       <span
         v-if="showTasks"
