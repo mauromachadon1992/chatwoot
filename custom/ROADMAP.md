@@ -264,8 +264,16 @@ and the card shape are in the agents' roadmap, Annexes A and B.
   set attributes, reset, read without permission) against `ee-local` and prints field-level diffs.
 - **Accept:** the harness runs and lists 15 failures; a changed contract line fails the hash test.
 
+**Status (2026-10-08).** Contract, schema and hash are in `custom/contracts/` (the same copy as in
+`flow-agents-ee`; both repositories compute `a73828044463…`). The harness and a reference
+implementation live in `flow-agents-ee` (`custom/harness/`): it passes 16/16 against the reference and
+3/16 against a server that does not speak the dialect. Here, `spec/custom/kanban/pro_contract_spec.rb`
+checks the hash and lists the 15 operations, each skipped by name with the sprint that delivers it.
+Still open: running the harness against this app in `ee-local` (needs C1) and turning each skipped
+example into a request spec as its sprint lands.
+
 ### C1: Pro routes and the `/kanban/tasks` conflict
-**Goal:** operations 1 to 11 answer in Pro's shape.
+**Goal:** operations 1 to 5 and 8 to 11 answer in Pro's shape (6 and 7 belong to C4).
 - **Rename first, in the same commit:** the "My tasks" list moves to `GET /kanban/my_tasks`; the
   store (`flowKanban.js`, `api/flowKanban.js`) and the S1.2 specs move with it. Nothing has shipped
   to staging, so this is the cheap moment.
@@ -279,7 +287,7 @@ and the card shape are in the agents' roadmap, Annexes A and B.
 - **Tests:** visibility (an agent without the board gets 404, never a different type), the old
   `/tasks` meaning gone, root keys, a card created from a conversation links it by `display_id`
   (with an internal id different from the display id, as the Conversation ids rule demands).
-- **Accept:** operations 1 to 11 pass in the harness.
+- **Accept:** operations 1 to 5 and 8 to 11 pass in the harness.
 
 ### C2: Pro fields on the card (a UI story)
 **Goal:** operations 12 to 14, and the fields the agent reads and writes.
