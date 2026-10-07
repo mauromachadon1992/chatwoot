@@ -26,6 +26,29 @@ test -n "$version"
 printf '\nENV CW_EDITION="ee"\n' >> docker/Dockerfile
 test -d enterprise && test -d custom
 
+# Hardening applied to the checkout instead of editing fazer.ai's files, so a sync from
+# upstream never conflicts. Each step fails the build when its target is gone, rather than
+# silently shipping the unhardened image.
+
+# Base images by digest (custom/docker/base-images.pins): a rebuild starts from the same bytes.
+while IFS='=' read -r ref digest; do
+  case "$ref" in '' | '#'*) continue ;; esac
+  grep -q -E "^FROM ${ref}( |\$)" docker/Dockerfile || { echo "base-images.pins: no 'FROM ${ref}' in docker/Dockerfile" >&2; exit 1; }
+  sed -i -E "s#^FROM ${ref}( |\$)#FROM ${ref}@${digest}\1#" docker/Dockerfile
+done < "$repo/custom/docker/base-images.pins"
+
+# No compiler toolchain in the runtime stage: the gems are compiled in the pre-builder.
+final="$(grep -n '^FROM ' docker/Dockerfile | tail -1 | cut -d: -f1)"
+before="$(grep -c '^  build-base \\$' docker/Dockerfile)"
+awk -v f="$final" 'NR > f && /^  build-base \\$/ { next } { print }' docker/Dockerfile > docker/Dockerfile.hardened
+mv docker/Dockerfile.hardened docker/Dockerfile
+test "$(grep -c '^  build-base \\$' docker/Dockerfile)" -eq $((before - 1))
+
+# Development tooling and agent configuration never enter the image (COPY . /app honors this).
+printf '%s\n' '' '# Flow: development tooling and agent configuration, not needed at runtime.' \
+  .github .circleci .devcontainer .husky .vscode .qlty .dependabot .claude .impeccable .windsurf \
+  .codex-review-waived e2e tests AGENTS.md CLAUDE.md >> .dockerignore
+
 # No org.opencontainers.image.source: it links the package to the (public) repository.
 echo "Building flow-chatwoot:${version}-${sha}-ee from ${branch}"
 docker build -f docker/Dockerfile \

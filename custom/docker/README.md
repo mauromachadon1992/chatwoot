@@ -38,6 +38,22 @@ sidekiq, with its pairings in the `chatwoot_staging_whatsapp_connector` database
 `org.opencontainers.image.{title,version,revision,created,ref.name}`, but not `.source`:
 that would link the package to the public repository.
 
+## What `build-ee` hardens
+
+It patches the clone, never fazer.ai's files in the repository, and fails the build when a
+patch finds nothing to change (so an upstream rewrite cannot silently ship an unhardened image):
+
+- **Base images by digest**, from `base-images.pins`. Move a pin deliberately (the file says how).
+- **No compiler toolchain in the runtime stage** (`build-base`): the gems are compiled in the
+  pre-builder. `gcc`, `make` and `cc` are not in the image.
+- **No development tooling or agent configuration** (`.github`, `.claude`, `e2e`, `tests`,
+  `AGENTS.md` and the like), through `.dockerignore`.
+
+There is no `HEALTHCHECK` in the image on purpose: rails and sidekiq share it, and a web probe
+would mark the worker unhealthy. Health is per service in each compose. Still open: the image
+runs as root (as fazer.ai's does); a non-root user needs the `storage` volume and
+`/app/log`, `/app/tmp` ownership settled first.
+
 ## Release
 
 1. Commit and push the branch.
