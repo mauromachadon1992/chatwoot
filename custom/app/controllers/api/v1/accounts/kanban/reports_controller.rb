@@ -8,9 +8,11 @@ class Api::V1::Accounts::Kanban::ReportsController < Api::V1::Accounts::Kanban::
     authorize board, :show?
     since, until_time = period
 
-    report = Custom::Kanban::FunnelReport.new(board: board, since: since, until_time: until_time,
-                                              assignee_id: params[:assignee_id].presence)
-    render json: { payload: report.call }
+    filters = { board: board, assignee_id: params[:assignee_id].presence }
+    report = Custom::Kanban::FunnelReport.new(**filters, since: since, until_time: until_time).call
+    report[:forecast] = Custom::Kanban::ForecastReport.new(**filters).call
+    report[:lost_reasons] = Custom::Kanban::LostReasonsReport.new(**filters, since: since, until_time: until_time).call
+    render json: { payload: report }
   end
 
   private

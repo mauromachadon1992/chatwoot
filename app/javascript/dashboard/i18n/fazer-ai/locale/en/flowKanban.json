@@ -71,7 +71,9 @@
       "DELETED": "Card deleted",
       "AUTOMATIC_NOTICE": "Opened automatically by a new conversation. Check the title, the assignee and the value.",
       "MARK_REVIEWED": "Mark as reviewed",
-      "STALE": "Stalled for {days} days in this stage"
+      "STALE": "Stalled for {days} days in this stage",
+      "EXPECTED_CLOSE": "Expected close date",
+      "EXPECTED_CLOSE_HINT": "Used by the report’s revenue forecast."
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "New board",
@@ -114,7 +116,9 @@
       "STALE_LABEL": "Alert when stalled for",
       "STALE_DAYS": "days",
       "STALE_NONE": "—",
-      "STALE_INVALID": "Use a whole number from 1 to 365, or leave it empty for no alert."
+      "STALE_INVALID": "Use a whole number from 1 to 365, or leave it empty for no alert.",
+      "CHANCE_LABEL": "Chance of winning",
+      "CHANCE_INVALID": "Use a whole number from 0 to 100, or leave it empty for the default."
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -242,7 +246,37 @@
       "EMPTY_BODY": "The funnel counts the deals created in the period. Pick a longer period or create cards on the board.",
       "HISTORY_NOTE": "Stage history started being recorded in this version. Older deals only count the stage they were in at that moment.",
       "ERROR": "The report could not be loaded.",
-      "RETRY": "Try again"
+      "RETRY": "Try again",
+      "FORECAST": {
+        "TITLE": "Revenue forecast",
+        "DESCRIPTION": "Open deals by expected close month. The weighted value counts each stage’s chance.",
+        "EMPTY_TITLE": "No open deals",
+        "EMPTY_BODY": "When there are open deals, the forecast shows here.",
+        "MONTH": "Month",
+        "DEALS": "Deals",
+        "VALUE": "Value",
+        "WEIGHTED": "Weighted",
+        "WEIGHTED_HINT": "Each deal’s value times the chance of winning of its stage.",
+        "TOTAL": "Total",
+        "PAST_DATE": "Past date",
+        "COVERAGE": "{withDate} of {total} open deals have an expected date",
+        "ROWS": {
+          "OVERDUE": "Date has passed",
+          "LATER": "Later",
+          "NO_DATE": "No date"
+        }
+      },
+      "LOST_REASONS": {
+        "TITLE": "Lost reasons",
+        "DESCRIPTION": "Why the period’s deals were lost.",
+        "EMPTY_TITLE": "No deals lost in the period",
+        "EMPTY_BODY": "When there are, the reasons show here.",
+        "REASON": "Reason",
+        "DEALS": "Deals",
+        "VALUE": "Value",
+        "NO_REASON": "No reason",
+        "BAR_LABEL": "{reason}: {count} of {total} lost deals"
+      }
     },
     "PRODUCTS": {
       "HEADER": "Products",
@@ -394,6 +428,93 @@
       "RULE_DEDUP": "A contact who already has an open deal on this board gets no second one.",
       "RULE_GROUPS": "Group conversations are skipped.",
       "RULE_ASSIGNEE": "The assignee is the conversation’s agent, when there is one; they are told in the bell."
+    },
+    "LOST": {
+      "TITLE": "Why was this deal lost?",
+      "DESCRIPTION": "It helps the team see what to do differently. You can skip it.",
+      "REASON": "Reason",
+      "NO_REASON": "No reason",
+      "EMPTY": "No reasons yet. An administrator creates the list in Settings → Kanban.",
+      "LOAD_FAILED": "The reasons could not be loaded. You can still mark it with no reason.",
+      "NOTE": "Note",
+      "NOTE_PLACEHOLDER": "E.g. found it cheaper elsewhere",
+      "CONFIRM": "Mark as lost"
+    },
+    "HISTORY": {
+      "SECTION": "History",
+      "ERROR": "The history could not be loaded.",
+      "RETRY": "Try again",
+      "SHOW_ALL": "Show all",
+      "LOAD_MORE": "Load more",
+      "BY_RULE": "Automation",
+      "BY_SYSTEM": "System",
+      "CREATED": "Deal created in {stage}",
+      "CREATED_AUTOMATIC": "Deal opened by a new conversation, in {stage}",
+      "MOVED": "Moved from {from} to {stage}",
+      "LOST": "Marked as lost in {stage}",
+      "LOST_WITH_REASON": "Lost in {stage}: {reason}",
+      "VALUE_CHANGED": "Value changed from {fromValue} to {toValue}",
+      "ASSIGNED": "Assigned to {assignee}",
+      "UNASSIGNED": "Assignee removed",
+      "TASK_CREATED": "Task scheduled: {task}",
+      "TASK_COMPLETED": "Task completed: {task}",
+      "CONVERSATION_LINKED": "Conversation #{conversation} linked",
+      "QUOTE_PREPARED": "Quote of {toValue} taken to conversation #{conversation}",
+      "NOTE": "“{note}”",
+      "TASK_REOPENED": "Task reopened: {task}"
+    },
+    "QUOTE": {
+      "BUTTON": "Send quote",
+      "BUTTON_HINT": "Builds the message from the products above.",
+      "TITLE": "Send quote",
+      "DESCRIPTION": "The message goes to the conversation’s reply box. You review it and send.",
+      "CONFIRM": "Add to reply",
+      "SEND_TO": "Conversation",
+      "CONVERSATION": "Conversation #{id} · {status}",
+      "MESSAGE": "Message",
+      "COUNT": "{count} of {max} characters",
+      "TOO_LONG": "Over {max} characters, the limit of one message. Shorten the text.",
+      "NO_LINES": "Add products to the deal to build a quote.",
+      "NO_CONVERSATION": "Link a conversation to this deal to send the quote.",
+      "FAILED": "The quote could not be taken to the conversation.",
+      "DISCOUNT": "{percent}% off",
+      "DEFAULT_TEMPLATE": "Hi {{contact}}! Here is the quote:\n\n{{items}}\n\nTotal: {{total}}\n\nAny questions, just reply to this message. — {{agent}}"
+    },
+    "SETTINGS": {
+      "HEADER": "Kanban",
+      "DESCRIPTION": "Lost reasons and the account’s quote message.",
+      "LOAD_FAILED": "The settings could not be loaded.",
+      "EXAMPLE": {
+        "CONTACT": "Maria",
+        "DEAL": "Maria’s works",
+        "ITEMS": "• 2 bags Portland cement 50kg — $79.80",
+        "AGENT": "Bruno"
+      },
+      "LOST_REASONS": {
+        "TITLE": "Lost reasons",
+        "DESCRIPTION": "The options agents see when they mark a deal as lost.",
+        "EMPTY_TITLE": "No reasons yet",
+        "EMPTY_BODY": "Create the most common ones, such as price, delivery time or a competitor.",
+        "NAME": "Reason name",
+        "NEW": "New reason",
+        "PLACEHOLDER": "E.g. Price",
+        "ADD": "Add",
+        "USED": "On {count} deal | On {count} deals",
+        "DELETE": "Delete reason",
+        "DELETE_CONFIRM": "Delete “{name}”? Deals lost for it stay lost, only without a reason. This cannot be undone."
+      },
+      "QUOTE": {
+        "TITLE": "Quote message",
+        "DESCRIPTION": "The text agents take to the conversation when they send a quote.",
+        "MESSAGE": "Message",
+        "EMPTY_IS_DEFAULT": "Empty uses the default message, in each agent’s language.",
+        "TOO_LONG": "At most {max} characters.",
+        "PLACEHOLDERS": "Available fields:",
+        "PREVIEW": "Preview",
+        "SAVE": "Save message",
+        "USE_DEFAULT": "Back to the default",
+        "SAVED": "Quote message saved."
+      }
     }
   }
 }

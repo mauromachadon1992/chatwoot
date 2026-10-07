@@ -60,12 +60,47 @@ class FlowKanbanAPI extends ApiClient {
     return axios.patch(`${this.url}/cards/${cardId}`, data);
   }
 
-  moveCard(cardId, { stageId, previousCardId, nextCardId }) {
+  // Onto a lost stage, `lostReasonId` and `lostNote` say why (both optional).
+  moveCard(
+    cardId,
+    { stageId, previousCardId, nextCardId, lostReasonId, lostNote }
+  ) {
     return axios.patch(`${this.url}/cards/${cardId}/move`, {
       stage_id: stageId,
       previous_card_id: previousCardId,
       next_card_id: nextCardId,
+      lost_reason_id: lostReasonId,
+      lost_note: lostNote,
     });
+  }
+
+  getCardEvents(cardId, { page } = {}) {
+    return axios.get(`${this.url}/cards/${cardId}/events`, {
+      params: { page },
+    });
+  }
+
+  // Writes the quote taken to a conversation in the deal's history.
+  recordQuote(cardId, conversationDisplayId) {
+    return axios.post(`${this.url}/cards/${cardId}/quote`, {
+      conversation_id: conversationDisplayId,
+    });
+  }
+
+  getLostReasons() {
+    return axios.get(`${this.url}/lost_reasons`);
+  }
+
+  createLostReason(name) {
+    return axios.post(`${this.url}/lost_reasons`, { name });
+  }
+
+  updateLostReason(reasonId, name) {
+    return axios.patch(`${this.url}/lost_reasons/${reasonId}`, { name });
+  }
+
+  deleteLostReason(reasonId) {
+    return axios.delete(`${this.url}/lost_reasons/${reasonId}`);
   }
 
   deleteCard(cardId) {

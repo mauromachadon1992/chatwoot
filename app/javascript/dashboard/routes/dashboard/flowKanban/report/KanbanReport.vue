@@ -4,6 +4,8 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ReportSummary from './ReportSummary.vue';
 import ReportFunnel from './ReportFunnel.vue';
+import ReportForecast from './ReportForecast.vue';
+import ReportLostReasons from './ReportLostReasons.vue';
 import { useFlowKanbanReport } from './useFlowKanbanReport';
 import SkeletonRows from '../SkeletonRows.vue';
 import EmptyState from '../EmptyState.vue';
@@ -79,6 +81,63 @@ const SKELETON_ROWS = 4;
             v-else
             :stages="report.stages"
             :created="report.summary.created"
+            :is-loading="isLoading"
+          />
+        </section>
+
+        <section
+          class="flex flex-col gap-4"
+          aria-labelledby="flow-forecast-title"
+        >
+          <div class="flex flex-col gap-1">
+            <h2 id="flow-forecast-title" class="text-heading-2 text-n-slate-12">
+              {{ t('FLOW_KANBAN.REPORT.FORECAST.TITLE') }}
+            </h2>
+            <p class="text-body-main text-n-slate-11">
+              {{ t('FLOW_KANBAN.REPORT.FORECAST.DESCRIPTION') }}
+            </p>
+          </div>
+
+          <SkeletonRows v-if="!report" :rows="SKELETON_ROWS" />
+
+          <EmptyState
+            v-else-if="!report.forecast.open_count"
+            framed
+            icon="i-lucide-trending-up"
+            :title="t('FLOW_KANBAN.REPORT.FORECAST.EMPTY_TITLE')"
+            :description="t('FLOW_KANBAN.REPORT.FORECAST.EMPTY_BODY')"
+          />
+
+          <ReportForecast
+            v-else
+            :forecast="report.forecast"
+            :is-loading="isLoading"
+          />
+        </section>
+
+        <section class="flex flex-col gap-4" aria-labelledby="flow-lost-title">
+          <div class="flex flex-col gap-1">
+            <h2 id="flow-lost-title" class="text-heading-2 text-n-slate-12">
+              {{ t('FLOW_KANBAN.REPORT.LOST_REASONS.TITLE') }}
+            </h2>
+            <p class="text-body-main text-n-slate-11">
+              {{ t('FLOW_KANBAN.REPORT.LOST_REASONS.DESCRIPTION') }}
+            </p>
+          </div>
+
+          <SkeletonRows v-if="!report" :rows="2" />
+
+          <EmptyState
+            v-else-if="!report.lost_reasons.total"
+            framed
+            icon="i-lucide-circle-x"
+            :title="t('FLOW_KANBAN.REPORT.LOST_REASONS.EMPTY_TITLE')"
+            :description="t('FLOW_KANBAN.REPORT.LOST_REASONS.EMPTY_BODY')"
+          />
+
+          <ReportLostReasons
+            v-else
+            :lost-reasons="report.lost_reasons"
             :is-loading="isLoading"
           />
         </section>

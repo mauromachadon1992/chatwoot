@@ -1,7 +1,7 @@
 class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::BaseController
   PER_STAGE = 50
 
-  before_action :card, only: [:show, :update, :move, :destroy]
+  before_action :card, only: [:show, :update, :move, :destroy, :quote]
 
   # The board view asks for every stage at once (first PER_STAGE cards of each, plus the
   # stage's total); a column's "load more" passes `stage_id` and `offset`. Both honour the
@@ -41,10 +41,23 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     broadcast_updated
   end
 
+  # Onto a lost stage the dashboard may send why (`lost_reason_id`, `lost_note`); leaving one
+  # forgets it (Card#clear_lost_reason).
   def move
     stage = @card.board.stages.find(params.require(:stage_id))
-    @card.move_to!(stage: stage, previous_card_id: params[:previous_card_id], next_card_id: params[:next_card_id])
+    @card.move_to!(stage: stage, previous_card_id: params[:previous_card_id], next_card_id: params[:next_card_id],
+                   attributes: lost_attributes(stage))
     broadcast_updated
+  end
+
+  # The quote an agent took to a conversation, for the deal's history. The message itself is
+  # composed in the dashboard and sent by the agent from the conversation.
+  def quote
+    link = @card.card_conversations.joins(:conversation).find_by!(conversations: { display_id: params.require(:conversation_id) })
+    authorize link.conversation, :show?
+    Custom::Kanban::CardEvent.record!(@card, 'quote_prepared', { display_id: link.conversation.display_id,
+                                                                 total_cents: @card.value_cents, lines: @card.items_count })
+    head :ok
   end
 
   def destroy
@@ -71,8 +84,15 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     }
   end
 
+  def lost_attributes(stage)
+    return {} unless stage.stage_type_lost?
+
+    reason = Custom::Kanban::LostReason.where(account: Current.account).find(params[:lost_reason_id]) if params[:lost_reason_id].present?
+    { lost_reason: reason, lost_note: params[:lost_note].presence }
+  end
+
   def card_params
-    params.permit(:title, :description, :assignee_id, :value_cents)
+    params.permit(:title, :description, :assignee_id, :value_cents, :expected_close_on)
   end
 
   # The board is set here, not left to validation, because the policy reads it.

@@ -27,6 +27,7 @@ import KanbanNotifications from './KanbanNotifications.vue';
 import KanbanFilters from './KanbanFilters.vue';
 import MyTasks from './MyTasks.vue';
 import EmptyState from './EmptyState.vue';
+import LostReasonDialog from './LostReasonDialog.vue';
 import KanbanReport from './report/KanbanReport.vue';
 import { DEFAULT_PERIOD, PERIODS } from './report/useFlowKanbanReport';
 import { useBoardFilters } from './useBoardFilters';
@@ -47,6 +48,7 @@ const isBoardMenuOpen = ref(false);
 const cardPanelRef = ref(null);
 const createDialogRef = ref(null);
 const settingsPanelRef = ref(null);
+const lostDialogRef = ref(null);
 const search = ref(kanban.filters.q);
 const highlightTaskId = ref(null);
 
@@ -165,8 +167,19 @@ const openTask = ({ taskId }) => {
 };
 
 const onMove = async move => {
+  const target = kanban.stages.find(stage => stage.id === move.toStageId);
+  let lost = {};
+  if (target?.stage_type === 'lost' && move.fromStageId !== move.toStageId) {
+    const answer = await lostDialogRef.value?.ask();
+    if (!answer) {
+      // Cancelled: the card was dragged already, so the board is read again to put it back.
+      await kanban.fetchCards();
+      return;
+    }
+    lost = answer;
+  }
   try {
-    await kanban.moveCard(move);
+    await kanban.moveCard({ ...move, ...lost });
   } catch {
     useAlert(t('FLOW_KANBAN.ERRORS.MOVE'));
   }
@@ -494,6 +507,7 @@ const SKELETON_CARDS = [3, 2, 4, 1];
     </div>
 
     <CardPanel ref="cardPanelRef" />
+    <LostReasonDialog ref="lostDialogRef" />
     <CardCreateDialog ref="createDialogRef" />
     <BoardSettingsPanel ref="settingsPanelRef" />
   </section>

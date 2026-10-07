@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_09_100000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1185,6 +1185,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
     t.index ["conversation_id"], name: "index_flow_kanban_card_conversations_on_conversation_id"
   end
 
+  create_table "flow_kanban_card_events", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "card_id", null: false
+    t.bigint "user_id"
+    t.string "kind", null: false
+    t.jsonb "data", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.index ["account_id", "kind", "created_at"], name: "index_flow_kanban_card_events_on_account_kind_created"
+    t.index ["card_id", "created_at"], name: "index_flow_kanban_card_events_on_card_and_created"
+  end
+
   create_table "flow_kanban_card_items", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.bigint "card_id", null: false
@@ -1239,16 +1250,29 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
     t.string "source", default: "manual", null: false
     t.boolean "needs_review", default: false, null: false
     t.datetime "stale_notified_at"
+    t.date "expected_close_on"
+    t.bigint "lost_reason_id"
+    t.text "lost_note"
     t.index ["account_id"], name: "index_flow_kanban_cards_on_account_id"
     t.index ["assignee_id"], name: "index_flow_kanban_cards_on_assignee_id"
     t.index ["board_id", "assignee_id"], name: "index_flow_kanban_cards_on_board_id_and_assignee_id"
+    t.index ["board_id", "expected_close_on"], name: "index_flow_kanban_cards_on_board_and_close"
     t.index ["board_id", "source", "created_at"], name: "index_flow_kanban_cards_on_board_source_created"
     t.index ["board_id"], name: "index_flow_kanban_cards_on_board_id"
     t.index ["contact_id"], name: "index_flow_kanban_cards_on_contact_id"
     t.index ["created_by_id"], name: "index_flow_kanban_cards_on_created_by_id"
+    t.index ["lost_reason_id"], name: "index_flow_kanban_cards_on_lost_reason"
     t.index ["stage_id", "position"], name: "index_flow_kanban_cards_on_stage_id_and_position"
     t.index ["stage_id", "stage_changed_at"], name: "index_flow_kanban_cards_on_stage_and_changed"
     t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
+  end
+
+  create_table "flow_kanban_lost_reasons", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "account_id, lower((name)::text)", name: "index_flow_kanban_lost_reasons_on_account_and_name", unique: true
   end
 
   create_table "flow_kanban_notifications", force: :cascade do |t|
@@ -1320,6 +1344,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "stale_after_days"
+    t.integer "win_probability"
     t.index ["account_id"], name: "index_flow_kanban_stages_on_account_id"
     t.index ["board_id", "position"], name: "index_flow_kanban_stages_on_board_id_and_position"
     t.index ["board_id"], name: "index_flow_kanban_stages_on_board_id"
@@ -2089,6 +2114,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
   add_foreign_key "flow_kanban_card_conversations", "conversations", on_delete: :cascade
   add_foreign_key "flow_kanban_card_conversations", "flow_kanban_boards", column: "board_id", on_delete: :cascade
   add_foreign_key "flow_kanban_card_conversations", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_events", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_events", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_card_events", "users", on_delete: :nullify
   add_foreign_key "flow_kanban_card_items", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_card_items", "flow_kanban_cards", column: "card_id", on_delete: :cascade
   add_foreign_key "flow_kanban_card_items", "flow_kanban_products", column: "product_id", on_delete: :nullify
@@ -2098,9 +2126,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
   add_foreign_key "flow_kanban_cards", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_cards", "contacts", on_delete: :cascade
   add_foreign_key "flow_kanban_cards", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_cards", "flow_kanban_lost_reasons", column: "lost_reason_id", on_delete: :nullify
   add_foreign_key "flow_kanban_cards", "flow_kanban_stages", column: "stage_id"
   add_foreign_key "flow_kanban_cards", "users", column: "assignee_id", on_delete: :nullify
   add_foreign_key "flow_kanban_cards", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_lost_reasons", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_notifications", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_notifications", "flow_kanban_card_tasks", column: "task_id", on_delete: :nullify
   add_foreign_key "flow_kanban_notifications", "flow_kanban_cards", column: "card_id", on_delete: :cascade

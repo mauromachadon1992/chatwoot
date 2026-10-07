@@ -18,7 +18,9 @@ import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import CardValueSection from './CardValueSection.vue';
 import CardTasksSection from './CardTasksSection.vue';
+import CardHistorySection from './CardHistorySection.vue';
 import StatePill from './StatePill.vue';
+import LostReasonDialog from './LostReasonDialog.vue';
 import { useFlowKanban } from './useFlowKanban';
 import SkeletonRows from './SkeletonRows.vue';
 
@@ -38,8 +40,15 @@ const {
 
 const panelRef = ref(null);
 const deleteDialogRef = ref(null);
+const lostDialogRef = ref(null);
 const card = ref(null);
-const form = ref({ title: '', description: '', assignee_id: '', stage_id: '' });
+const form = ref({
+  title: '',
+  description: '',
+  assignee_id: '',
+  stage_id: '',
+  expected_close_on: '',
+});
 const isSaving = ref(false);
 const isDeleting = ref(false);
 const isReviewing = ref(false);
@@ -81,7 +90,8 @@ const isDirty = computed(() => {
   return (
     form.value.title !== card.value.title ||
     form.value.description !== (card.value.description || '') ||
-    form.value.assignee_id !== (card.value.assignee?.id || '')
+    form.value.assignee_id !== (card.value.assignee?.id || '') ||
+    form.value.expected_close_on !== (card.value.expected_close_on || '')
   );
 });
 
@@ -91,6 +101,7 @@ const syncForm = source => {
     description: source.description || '',
     assignee_id: source.assignee?.id || '',
     stage_id: source.stage_id,
+    expected_close_on: source.expected_close_on || '',
   };
 };
 
@@ -145,6 +156,7 @@ const save = async () => {
       title: form.value.title.trim(),
       description: form.value.description,
       assignee_id: form.value.assignee_id || null,
+      expected_close_on: form.value.expected_close_on || null,
     });
     syncForm(card.value);
     useAlert(t('FLOW_KANBAN.CARD_FORM.SAVED'));
@@ -158,8 +170,21 @@ const save = async () => {
 // A stage picked here sends the card to the top of that column.
 const changeStage = async stageId => {
   if (!stageId || stageId === card.value.stage_id) return;
+  const target = board.value?.stages.find(stage => stage.id === stageId);
+  let lost = {};
+  if (target?.stage_type === 'lost') {
+    const answer = await lostDialogRef.value?.ask();
+    if (!answer) {
+      form.value.stage_id = card.value.stage_id;
+      return;
+    }
+    lost = answer;
+  }
   try {
-    const { data } = await FlowKanbanAPI.moveCard(card.value.id, { stageId });
+    const { data } = await FlowKanbanAPI.moveCard(card.value.id, {
+      stageId,
+      ...lost,
+    });
     kanban.upsertCard(data.payload);
   } catch {
     form.value.stage_id = card.value.stage_id;
@@ -262,6 +287,15 @@ defineExpose({ open });
           :max-length="5000"
           auto-height
           min-height="6rem"
+        />
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <Input
+          v-model="form.expected_close_on"
+          type="date"
+          :label="t('FLOW_KANBAN.CARD_FORM.EXPECTED_CLOSE')"
+          :message="t('FLOW_KANBAN.CARD_FORM.EXPECTED_CLOSE_HINT')"
         />
       </div>
 
@@ -372,6 +406,8 @@ defineExpose({ open });
           </li>
         </ul>
       </section>
+
+      <CardHistorySection :card="card" />
     </form>
 
     <template v-if="card" #footer>
@@ -398,6 +434,8 @@ defineExpose({ open });
       </div>
     </template>
   </SidePanel>
+
+  <LostReasonDialog ref="lostDialogRef" />
 
   <Dialog
     ref="deleteDialogRef"

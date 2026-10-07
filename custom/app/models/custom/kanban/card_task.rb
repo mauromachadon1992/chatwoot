@@ -22,8 +22,11 @@ class Custom::Kanban::CardTask < ApplicationRecord
   validate :user_belongs_to_account
 
   before_validation :inherit_account, on: :create
+  after_create :record_created_event
   # A new date, or a task taken up again, is announced again.
   before_update :rearm_reminder, if: -> { will_save_change_to_due_at? || (will_save_change_to_completed_at? && completed_at.nil?) }
+  after_update :record_completed_event, if: -> { saved_change_to_completed_at? && completed_at.present? }
+  after_update :record_reopened_event, if: -> { saved_change_to_completed_at? && completed_at.nil? }
   after_save :notify_assignee, if: :saved_change_to_user_id?
 
   def completed?
@@ -58,6 +61,18 @@ class Custom::Kanban::CardTask < ApplicationRecord
 
   def inherit_account
     self.account_id ||= card&.account_id
+  end
+
+  def record_created_event
+    Custom::Kanban::CardEvent.record!(card, 'task_created', { task_id: id, title: title, task_type: task_type, due_at: due_at.to_i })
+  end
+
+  def record_reopened_event
+    Custom::Kanban::CardEvent.record!(card, 'task_reopened', { task_id: id, title: title })
+  end
+
+  def record_completed_event
+    Custom::Kanban::CardEvent.record!(card, 'task_completed', { task_id: id, title: title })
   end
 
   # Whoever is handed the task is told, unless they gave it to themselves.

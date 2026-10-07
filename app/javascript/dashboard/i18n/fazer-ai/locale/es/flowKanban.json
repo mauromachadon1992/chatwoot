@@ -71,7 +71,9 @@
       "DELETED": "Tarjeta eliminada",
       "AUTOMATIC_NOTICE": "Abierta automáticamente por una conversación nueva. Revisa el título, el responsable y el valor.",
       "MARK_REVIEWED": "Marcar como revisada",
-      "STALE": "Detenida hace {days} días en esta etapa"
+      "STALE": "Detenida hace {days} días en esta etapa",
+      "EXPECTED_CLOSE": "Fecha prevista de cierre",
+      "EXPECTED_CLOSE_HINT": "La usa la previsión de ingresos del informe."
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "Nuevo embudo",
@@ -114,7 +116,9 @@
       "STALE_LABEL": "Avisar si está detenida por",
       "STALE_DAYS": "días",
       "STALE_NONE": "—",
-      "STALE_INVALID": "Usa un número entero de 1 a 365, o déjalo vacío para no avisar."
+      "STALE_INVALID": "Usa un número entero de 1 a 365, o déjalo vacío para no avisar.",
+      "CHANCE_LABEL": "Probabilidad de ganar",
+      "CHANCE_INVALID": "Usa un número entero de 0 a 100, o déjalo vacío para el valor por defecto."
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -242,7 +246,37 @@
       "EMPTY_BODY": "El embudo cuenta los negocios creados en el período. Elija un período más largo o cree tarjetas en el tablero.",
       "HISTORY_NOTE": "El historial de etapas empezó a registrarse en esta versión. Los negocios anteriores solo cuentan la etapa en la que estaban en ese momento.",
       "ERROR": "No se pudo cargar el informe.",
-      "RETRY": "Reintentar"
+      "RETRY": "Reintentar",
+      "FORECAST": {
+        "TITLE": "Previsión de ingresos",
+        "DESCRIPTION": "Negociaciones abiertas por mes de cierre previsto. El valor ponderado cuenta la probabilidad de cada etapa.",
+        "EMPTY_TITLE": "No hay negociaciones abiertas",
+        "EMPTY_BODY": "Cuando las haya, la previsión aparece aquí.",
+        "MONTH": "Mes",
+        "DEALS": "Negociaciones",
+        "VALUE": "Valor",
+        "WEIGHTED": "Ponderado",
+        "WEIGHTED_HINT": "El valor de cada negociación por la probabilidad de ganar de su etapa.",
+        "TOTAL": "Total",
+        "PAST_DATE": "Fecha vencida",
+        "COVERAGE": "{withDate} de {total} negociaciones abiertas tienen fecha prevista",
+        "ROWS": {
+          "OVERDUE": "La fecha ya pasó",
+          "LATER": "Después",
+          "NO_DATE": "Sin fecha"
+        }
+      },
+      "LOST_REASONS": {
+        "TITLE": "Motivos de pérdida",
+        "DESCRIPTION": "Por qué se perdieron las negociaciones del período.",
+        "EMPTY_TITLE": "Ninguna negociación perdida en el período",
+        "EMPTY_BODY": "Cuando las haya, los motivos aparecen aquí.",
+        "REASON": "Motivo",
+        "DEALS": "Negociaciones",
+        "VALUE": "Valor",
+        "NO_REASON": "Sin motivo",
+        "BAR_LABEL": "{reason}: {count} de {total} negociaciones perdidas"
+      }
     },
     "PRODUCTS": {
       "HEADER": "Productos",
@@ -394,6 +428,93 @@
       "RULE_DEDUP": "Un contacto que ya tiene una negociación abierta en este tablero no recibe otra.",
       "RULE_GROUPS": "Las conversaciones de grupo se ignoran.",
       "RULE_ASSIGNEE": "El responsable es el agente de la conversación, si lo hay; se le avisa en la campana."
+    },
+    "LOST": {
+      "TITLE": "¿Por qué se perdió esta negociación?",
+      "DESCRIPTION": "Ayuda al equipo a ver qué hacer diferente. Puedes omitirlo.",
+      "REASON": "Motivo",
+      "NO_REASON": "Sin motivo",
+      "EMPTY": "Aún no hay motivos. Un administrador crea la lista en Ajustes → Kanban.",
+      "LOAD_FAILED": "No se pudieron cargar los motivos. Aún puedes marcarla sin motivo.",
+      "NOTE": "Nota",
+      "NOTE_PLACEHOLDER": "Ej.: la encontró más barata en otro lado",
+      "CONFIRM": "Marcar como perdida"
+    },
+    "HISTORY": {
+      "SECTION": "Historial",
+      "ERROR": "No se pudo cargar el historial.",
+      "RETRY": "Intentar de nuevo",
+      "SHOW_ALL": "Mostrar todo",
+      "LOAD_MORE": "Cargar más",
+      "BY_RULE": "Automatización",
+      "BY_SYSTEM": "Sistema",
+      "CREATED": "Negociación creada en {stage}",
+      "CREATED_AUTOMATIC": "Negociación abierta por una conversación nueva, en {stage}",
+      "MOVED": "Movida de {from} a {stage}",
+      "LOST": "Marcada como perdida en {stage}",
+      "LOST_WITH_REASON": "Perdida en {stage}: {reason}",
+      "VALUE_CHANGED": "El valor cambió de {fromValue} a {toValue}",
+      "ASSIGNED": "Responsable: {assignee}",
+      "UNASSIGNED": "Responsable quitado",
+      "TASK_CREATED": "Tarea programada: {task}",
+      "TASK_COMPLETED": "Tarea completada: {task}",
+      "CONVERSATION_LINKED": "Conversación #{conversation} vinculada",
+      "QUOTE_PREPARED": "Presupuesto de {toValue} llevado a la conversación #{conversation}",
+      "NOTE": "«{note}»",
+      "TASK_REOPENED": "Tarea reabierta: {task}"
+    },
+    "QUOTE": {
+      "BUTTON": "Enviar presupuesto",
+      "BUTTON_HINT": "Arma el mensaje con los productos de arriba.",
+      "TITLE": "Enviar presupuesto",
+      "DESCRIPTION": "El mensaje va al campo de respuesta de la conversación. Lo revisas y lo envías.",
+      "CONFIRM": "Llevar al chat",
+      "SEND_TO": "Conversación",
+      "CONVERSATION": "Conversación #{id} · {status}",
+      "MESSAGE": "Mensaje",
+      "COUNT": "{count} de {max} caracteres",
+      "TOO_LONG": "Supera {max} caracteres, el límite de un mensaje. Acorta el texto.",
+      "NO_LINES": "Agrega productos a la negociación para armar un presupuesto.",
+      "NO_CONVERSATION": "Vincula una conversación a esta negociación para enviar el presupuesto.",
+      "FAILED": "No se pudo llevar el presupuesto a la conversación.",
+      "DISCOUNT": "{percent}% de descuento",
+      "DEFAULT_TEMPLATE": "¡Hola, {{contact}}! Te envío el presupuesto:\n\n{{items}}\n\nTotal: {{total}}\n\nCualquier duda, responde a este mensaje. — {{agent}}"
+    },
+    "SETTINGS": {
+      "HEADER": "Kanban",
+      "DESCRIPTION": "Motivos de pérdida y el mensaje de presupuesto de la cuenta.",
+      "LOAD_FAILED": "No se pudieron cargar los ajustes.",
+      "EXAMPLE": {
+        "CONTACT": "María",
+        "DEAL": "Obra de María",
+        "ITEMS": "• 2 sacos de cemento 50kg — $79,80",
+        "AGENT": "Bruno"
+      },
+      "LOST_REASONS": {
+        "TITLE": "Motivos de pérdida",
+        "DESCRIPTION": "Las opciones que ven los agentes al marcar una negociación como perdida.",
+        "EMPTY_TITLE": "Aún no hay motivos",
+        "EMPTY_BODY": "Crea los más comunes, como precio, plazo o competencia.",
+        "NAME": "Nombre del motivo",
+        "NEW": "Nuevo motivo",
+        "PLACEHOLDER": "Ej.: Precio",
+        "ADD": "Añadir",
+        "USED": "En {count} negociación | En {count} negociaciones",
+        "DELETE": "Eliminar motivo",
+        "DELETE_CONFIRM": "¿Eliminar “{name}”? Las negociaciones perdidas por él siguen perdidas, solo sin motivo. No se puede deshacer."
+      },
+      "QUOTE": {
+        "TITLE": "Mensaje de presupuesto",
+        "DESCRIPTION": "El texto que los agentes llevan a la conversación al enviar un presupuesto.",
+        "MESSAGE": "Mensaje",
+        "EMPTY_IS_DEFAULT": "Vacío usa el mensaje por defecto, en el idioma de cada agente.",
+        "TOO_LONG": "Máximo {max} caracteres.",
+        "PLACEHOLDERS": "Campos disponibles:",
+        "PREVIEW": "Vista previa",
+        "SAVE": "Guardar mensaje",
+        "USE_DEFAULT": "Volver al valor por defecto",
+        "SAVED": "Mensaje de presupuesto guardado."
+      }
     }
   }
 }

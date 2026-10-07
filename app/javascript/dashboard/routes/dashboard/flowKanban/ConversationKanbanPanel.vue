@@ -11,6 +11,7 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
 import { useFlowKanban } from './useFlowKanban';
 import SkeletonRows from './SkeletonRows.vue';
+import LostReasonDialog from './LostReasonDialog.vue';
 
 // The Kanban side of a conversation, for any channel: the cards it is on, the contact's
 // other cards it can join, and a shortcut to open a new card from it.
@@ -104,11 +105,24 @@ const run = async (cardId, action) => {
   }
 };
 
-const changeStage = (card, stageId) =>
-  run(card.id, async () => {
-    const { data } = await FlowKanbanAPI.moveCard(card.id, { stageId });
+const lostDialogRef = ref(null);
+
+const changeStage = async (card, stageId) => {
+  const target = stagesOf(card.board.id).find(stage => stage.id === stageId);
+  let lost = {};
+  if (target?.stage_type === 'lost') {
+    lost = await lostDialogRef.value?.ask();
+    // Cancelled: the picker is bound to the card, so it keeps showing the stage it is in.
+    if (!lost) return;
+  }
+  await run(card.id, async () => {
+    const { data } = await FlowKanbanAPI.moveCard(card.id, {
+      stageId,
+      ...lost,
+    });
     kanban.upsertCard(data.payload);
   });
+};
 
 const link = card =>
   run(card.id, () => kanban.linkConversation(card.id, displayId.value));
@@ -270,5 +284,7 @@ const stageOptionsFor = card =>
         </template>
       </section>
     </template>
+
+    <LostReasonDialog ref="lostDialogRef" />
   </div>
 </template>

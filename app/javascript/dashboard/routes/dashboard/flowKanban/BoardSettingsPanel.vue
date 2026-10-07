@@ -75,6 +75,8 @@ const loadStages = () => {
     ...stage,
     staleDraft: stage.stale_after_days ? String(stage.stale_after_days) : '',
     staleInvalid: false,
+    chanceDraft: stage.win_probability ?? '',
+    chanceInvalid: false,
   }));
 };
 
@@ -144,6 +146,18 @@ const commitStaleLimit = stage => {
     (!Number.isInteger(value) || value < STALE_MIN || value > STALE_MAX);
   if (stage.staleInvalid || value === (stage.stale_after_days ?? null)) return;
   saveStage(stage, { stale_after_days: value });
+};
+
+// The chance a deal in an open stage is won, 0 to 100, for the forecast; empty means the default.
+const CHANCE_MAX = 100;
+const commitWinChance = stage => {
+  const text = String(stage.chanceDraft ?? '').trim();
+  const value = text === '' ? null : Number(text);
+  stage.chanceInvalid =
+    value !== null &&
+    (!Number.isInteger(value) || value < 0 || value > CHANCE_MAX);
+  if (stage.chanceInvalid || value === (stage.win_probability ?? null)) return;
+  saveStage(stage, { win_probability: value });
 };
 
 // InlineInput edits stage.name in place; an empty or unchanged name puts the saved one back.
@@ -377,6 +391,44 @@ defineExpose({ open });
                   :model-value="stage.color"
                   @update:model-value="pickColor(stage, $event)"
                 />
+              </div>
+              <div
+                v-if="stage.stage_type === 'open'"
+                class="flex flex-wrap items-center gap-x-4 gap-y-2 ps-9"
+              >
+                <div class="flex flex-wrap items-center gap-2">
+                  <Icon
+                    icon="i-lucide-percent"
+                    class="flex-shrink-0 size-3.5 text-n-slate-10"
+                  />
+                  <label
+                    :for="`flow-chance-${stage.id}`"
+                    class="text-label-small text-n-slate-11"
+                  >
+                    {{ t('FLOW_KANBAN.BOARD_FORM.CHANCE_LABEL') }}
+                  </label>
+                  <Input
+                    :id="`flow-chance-${stage.id}`"
+                    v-model="stage.chanceDraft"
+                    type="number"
+                    min="0"
+                    max="100"
+                    size="sm"
+                    class="w-20"
+                    :placeholder="String(stage.effective_probability)"
+                    :message-type="stage.chanceInvalid ? 'error' : 'info'"
+                    @blur="commitWinChance(stage)"
+                    @keydown.enter.prevent="commitWinChance(stage)"
+                  />
+                  <span class="text-label-small text-n-slate-11">%</span>
+                  <span
+                    v-if="stage.chanceInvalid"
+                    role="alert"
+                    class="w-full text-label-small text-n-ruby-11"
+                  >
+                    {{ t('FLOW_KANBAN.BOARD_FORM.CHANCE_INVALID') }}
+                  </span>
+                </div>
               </div>
               <div
                 v-if="hasFeature('stale_alerts') && stage.stage_type === 'open'"

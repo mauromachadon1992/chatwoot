@@ -230,7 +230,14 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
 
     // vuedraggable has already put the card in its new slot; this records the move and
     // asks the server for the position between the neighbours the agent saw.
-    async moveCard({ card, fromStageId, toStageId, newIndex }) {
+    async moveCard({
+      card,
+      fromStageId,
+      toStageId,
+      newIndex,
+      lostReasonId,
+      lostNote,
+    }) {
       const column = this.columns[toStageId];
       if (fromStageId !== toStageId) {
         this.columns[fromStageId].total -= 1;
@@ -246,6 +253,8 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
           stageId: toStageId,
           previousCardId: previousCard?.id,
           nextCardId: nextCard?.id,
+          lostReasonId,
+          lostNote,
         });
         this.upsertCard(data.payload);
       } catch (error) {

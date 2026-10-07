@@ -12,6 +12,7 @@ import FlowKanbanAPI from 'dashboard/api/flowKanban';
 import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
 import CardItemRow from './CardItemRow.vue';
+import QuoteDialog from './QuoteDialog.vue';
 import MoneyInput from './MoneyInput.vue';
 import { useFlowKanban } from './useFlowKanban';
 
@@ -33,6 +34,7 @@ const productOptions = ref([]);
 const productPick = ref('');
 const catalogIsEmpty = ref(false);
 const isAdding = ref(false);
+const quoteDialogRef = ref(null);
 
 const hasItems = computed(() => props.card.items?.length > 0);
 const productsPath = computed(() =>
@@ -140,6 +142,21 @@ onMounted(() => searchProducts());
       </div>
     </template>
 
+    <div v-if="hasItems" class="flex items-center gap-2 flex-wrap">
+      <Button
+        faded
+        blue
+        sm
+        type="button"
+        icon="i-lucide-file-text"
+        :label="t('FLOW_KANBAN.QUOTE.BUTTON')"
+        @click="quoteDialogRef?.open()"
+      />
+      <span class="text-label-small text-n-slate-11">
+        {{ t('FLOW_KANBAN.QUOTE.BUTTON_HINT') }}
+      </span>
+    </div>
+
     <div v-if="catalogIsEmpty" class="flex items-center gap-2 flex-wrap">
       <span class="text-body-main text-n-slate-11">
         {{
@@ -170,5 +187,7 @@ onMounted(() => searchProducts());
       @search="onSearch"
       @update:model-value="addProduct"
     />
+
+    <QuoteDialog ref="quoteDialogRef" :card="card" />
   </section>
 </template>

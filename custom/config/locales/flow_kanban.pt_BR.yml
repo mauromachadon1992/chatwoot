@@ -25,6 +25,7 @@ pt_BR:
         hint: Um negócio que fica tempo demais numa etapa é sinalizado e o agente é avisado, nas etapas com limite definido.
     settings:
       unsupported_currency: Moeda não suportada.
+      quote_template_too_long: A mensagem de orçamento pode ter até 2000 caracteres.
     task_reminder:
       due_soon: 'Tarefa vence em %{minutes} min: %{title} (%{card})'
       overdue: 'Tarefa atrasada: %{title} (%{card})'

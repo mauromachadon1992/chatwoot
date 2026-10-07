@@ -44,6 +44,15 @@ module Custom::Concerns::Account
     self.settings = (settings || {}).merge(Custom::Kanban::Currency::SETTINGS_KEY => code)
   end
 
+  # The message a quote is composed from; nil means the dashboard's default for the agent's language.
+  def flow_kanban_quote_template
+    settings&.dig('flow_kanban_quote_template').presence
+  end
+
+  def flow_kanban_quote_template=(template)
+    self.settings = (settings || {}).merge('flow_kanban_quote_template' => template.presence)
+  end
+
   def white_label_enabled?
     ActiveModel::Type::Boolean.new.cast(settings&.dig('white_label_enabled')) == true
   end

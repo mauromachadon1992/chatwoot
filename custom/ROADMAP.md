@@ -1,7 +1,7 @@
 # Kanban roadmap: sprints and phases
 
-Status: **S0 to S2 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). S3 onwards proposed; see "Decisions to confirm".
+Status: **S0 to S4 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
+Coolify token). S5 onwards proposed; see "Decisions to confirm".
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,

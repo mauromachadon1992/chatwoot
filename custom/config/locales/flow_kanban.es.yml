@@ -25,6 +25,7 @@ es:
         hint: Una negociación que se queda demasiado en una etapa se marca y se avisa a su agente, en las etapas con límite.
     settings:
       unsupported_currency: Moneda no admitida.
+      quote_template_too_long: El mensaje de presupuesto puede tener hasta 2000 caracteres.
     task_reminder:
       due_soon: 'Tarea vence en %{minutes} min: %{title} (%{card})'
       overdue: 'Tarea vencida: %{title} (%{card})'

@@ -271,3 +271,29 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   (`cards.stale_notified_at`, cleared by any move). With the feature off, deals are left unclaimed,
   so turning it back on catches up. The board's *Situation* filter shows stalled deals or deals
   with an overdue task (`status=stale|overdue_tasks`).
+
+### Sprints 3 and 4 (ROADMAP.md)
+
+- **Deal history** (`flow_kanban_card_events`, `GET kanban/cards/:id/events`, a *History* section in
+  the card panel): append-only, written where the change happens: creation (manual or automatic),
+  stage moves (with who, or that a rule did; a stage deleted with its deals moves them too), value
+  and assignee changes, tasks scheduled, completed and reopened, conversations linked, quotes
+  taken to a conversation. `data` keeps names as they were, so renaming a stage later does not
+  rewrite the past. Backfilled from `stage_transitions`. It is what webhooks and the AI summary
+  will read (Sprints 6 and 7).
+- **Lost reasons** (`flow_kanban_lost_reasons`, Settings → Kanban): a short list an administrator
+  keeps. Moving a deal onto a lost stage asks why (board drag, stage picker in the card panel, the
+  conversation panel) in one dialog; "No reason" and cancelling are both allowed, so the drag never
+  blocks. The reason and note live only while the deal is in a lost stage. Deleting a reason keeps
+  the deals and empties theirs.
+- **Forecast fields:** `cards.expected_close_on` (2000 to ten years ahead) and
+  `stages.win_probability` (0–100, open stages only; Won is 100, Lost 0, an unset open stage 50).
+- **Report** (*Report* view): the *Revenue forecast* by close month, weighted and unweighted, with
+  rows for overdue, later and no date (never dropped) and a pill when only some open deals have a
+  date; and *Lost reasons* with the deals lost without one counted as "No reason".
+- **Quotes** (`Send quote` in the card's value section): the message is built from the product
+  lines and the account's template (Settings → Kanban, with `{{contact}}`, `{{deal}}`, `{{items}}`,
+  `{{total}}`, `{{agent}}` and a live preview; empty means the default in the agent's language),
+  shown for review, and put in the reply box of the linked conversation as a draft by its
+  `display_id` (`draft-<display_id>-REPLY`, see AGENTS.md, "Conversation ids"). Nothing is sent
+  from the dialog; `POST kanban/cards/:id/quote` only writes the history. PDF is not built.

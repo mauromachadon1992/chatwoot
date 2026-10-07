@@ -71,7 +71,9 @@
       "DELETED": "Card excluído",
       "AUTOMATIC_NOTICE": "Aberto automaticamente por uma conversa nova. Confira o título, o responsável e o valor.",
       "MARK_REVIEWED": "Marcar como revisado",
-      "STALE": "Parado há {days} dias nesta etapa"
+      "STALE": "Parado há {days} dias nesta etapa",
+      "EXPECTED_CLOSE": "Previsão de fechamento",
+      "EXPECTED_CLOSE_HINT": "Usada na previsão de receita do relatório."
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "Novo funil",
@@ -114,7 +116,9 @@
       "STALE_LABEL": "Alertar se parado por",
       "STALE_DAYS": "dias",
       "STALE_NONE": "—",
-      "STALE_INVALID": "Use um número inteiro de 1 a 365, ou deixe vazio para não alertar."
+      "STALE_INVALID": "Use um número inteiro de 1 a 365, ou deixe vazio para não alertar.",
+      "CHANCE_LABEL": "Chance de ganhar",
+      "CHANCE_INVALID": "Use um número inteiro de 0 a 100, ou deixe vazio para o padrão."
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -242,7 +246,37 @@
       "EMPTY_BODY": "O funil conta os negócios criados no período. Escolha um período maior ou crie cards no quadro.",
       "HISTORY_NOTE": "O histórico de etapas começou a ser registrado nesta versão. Negócios mais antigos contam só a etapa em que estavam naquele momento.",
       "ERROR": "Não foi possível carregar o relatório.",
-      "RETRY": "Tentar de novo"
+      "RETRY": "Tentar de novo",
+      "FORECAST": {
+        "TITLE": "Previsão de receita",
+        "DESCRIPTION": "Negócios abertos por mês de fechamento previsto. O valor ponderado considera a chance de cada etapa.",
+        "EMPTY_TITLE": "Nenhum negócio aberto",
+        "EMPTY_BODY": "Quando houver negócios abertos, a previsão aparece aqui.",
+        "MONTH": "Mês",
+        "DEALS": "Negócios",
+        "VALUE": "Valor",
+        "WEIGHTED": "Ponderado",
+        "WEIGHTED_HINT": "Valor de cada negócio multiplicado pela chance de ganhar da sua etapa.",
+        "TOTAL": "Total",
+        "PAST_DATE": "Data vencida",
+        "COVERAGE": "{withDate} de {total} negócios abertos têm data prevista",
+        "ROWS": {
+          "OVERDUE": "Data já passou",
+          "LATER": "Depois",
+          "NO_DATE": "Sem data"
+        }
+      },
+      "LOST_REASONS": {
+        "TITLE": "Motivos de perda",
+        "DESCRIPTION": "Por que os negócios do período foram perdidos.",
+        "EMPTY_TITLE": "Nenhum negócio perdido no período",
+        "EMPTY_BODY": "Quando houver, os motivos aparecem aqui.",
+        "REASON": "Motivo",
+        "DEALS": "Negócios",
+        "VALUE": "Valor",
+        "NO_REASON": "Sem motivo",
+        "BAR_LABEL": "{reason}: {count} de {total} negócios perdidos"
+      }
     },
     "PRODUCTS": {
       "HEADER": "Produtos",
@@ -394,6 +428,93 @@
       "RULE_DEDUP": "Um contato que já tem negócio aberto neste funil não ganha outro.",
       "RULE_GROUPS": "Conversas de grupo são ignoradas.",
       "RULE_ASSIGNEE": "O responsável é o agente da conversa, quando houver; ele é avisado no sino."
+    },
+    "LOST": {
+      "TITLE": "Por que este negócio foi perdido?",
+      "DESCRIPTION": "Isso ajuda a equipe a entender o que fazer diferente. Você pode pular.",
+      "REASON": "Motivo",
+      "NO_REASON": "Sem motivo",
+      "EMPTY": "Nenhum motivo cadastrado. Um administrador cria a lista em Configurações → Kanban.",
+      "LOAD_FAILED": "Não foi possível carregar os motivos. Você ainda pode marcar sem motivo.",
+      "NOTE": "Observação",
+      "NOTE_PLACEHOLDER": "Ex.: achou mais barato em outra loja",
+      "CONFIRM": "Marcar como perdido"
+    },
+    "HISTORY": {
+      "SECTION": "Histórico",
+      "ERROR": "Não foi possível carregar o histórico.",
+      "RETRY": "Tentar de novo",
+      "SHOW_ALL": "Mostrar tudo",
+      "LOAD_MORE": "Carregar mais",
+      "BY_RULE": "Automação",
+      "BY_SYSTEM": "Sistema",
+      "CREATED": "Negócio criado em {stage}",
+      "CREATED_AUTOMATIC": "Negócio aberto por uma conversa nova, em {stage}",
+      "MOVED": "Movido de {from} para {stage}",
+      "LOST": "Marcado como perdido em {stage}",
+      "LOST_WITH_REASON": "Perdido em {stage}: {reason}",
+      "VALUE_CHANGED": "Valor mudou de {fromValue} para {toValue}",
+      "ASSIGNED": "Responsável: {assignee}",
+      "UNASSIGNED": "Responsável removido",
+      "TASK_CREATED": "Tarefa agendada: {task}",
+      "TASK_COMPLETED": "Tarefa concluída: {task}",
+      "CONVERSATION_LINKED": "Conversa #{conversation} vinculada",
+      "QUOTE_PREPARED": "Orçamento de {toValue} levado à conversa #{conversation}",
+      "NOTE": "“{note}”",
+      "TASK_REOPENED": "Tarefa reaberta: {task}"
+    },
+    "QUOTE": {
+      "BUTTON": "Enviar orçamento",
+      "BUTTON_HINT": "Monta a mensagem com os produtos acima.",
+      "TITLE": "Enviar orçamento",
+      "DESCRIPTION": "A mensagem vai para o campo de resposta da conversa. Você revisa e envia.",
+      "CONFIRM": "Levar à conversa",
+      "SEND_TO": "Conversa",
+      "CONVERSATION": "Conversa #{id} · {status}",
+      "MESSAGE": "Mensagem",
+      "COUNT": "{count} de {max} caracteres",
+      "TOO_LONG": "Passa de {max} caracteres, o limite de uma mensagem. Encurte o texto.",
+      "NO_LINES": "Adicione produtos ao negócio para montar um orçamento.",
+      "NO_CONVERSATION": "Vincule uma conversa a este negócio para enviar o orçamento.",
+      "FAILED": "Não foi possível levar o orçamento para a conversa.",
+      "DISCOUNT": "{percent}% de desconto",
+      "DEFAULT_TEMPLATE": "Olá, {{contact}}! Segue o orçamento:\n\n{{items}}\n\nTotal: {{total}}\n\nQualquer dúvida, é só responder esta mensagem. — {{agent}}"
+    },
+    "SETTINGS": {
+      "HEADER": "Kanban",
+      "DESCRIPTION": "Motivos de perda e a mensagem de orçamento da conta.",
+      "LOAD_FAILED": "Não foi possível carregar as configurações.",
+      "EXAMPLE": {
+        "CONTACT": "Maria",
+        "DEAL": "Obra da Maria",
+        "ITEMS": "• 2 sc Cimento CP II 50kg — R$ 79,80",
+        "AGENT": "Bruno"
+      },
+      "LOST_REASONS": {
+        "TITLE": "Motivos de perda",
+        "DESCRIPTION": "As opções que os agentes veem ao marcar um negócio como perdido.",
+        "EMPTY_TITLE": "Nenhum motivo ainda",
+        "EMPTY_BODY": "Crie os motivos mais comuns, como preço, prazo ou concorrência.",
+        "NAME": "Nome do motivo",
+        "NEW": "Novo motivo",
+        "PLACEHOLDER": "Ex.: Preço",
+        "ADD": "Adicionar",
+        "USED": "Em {count} negócio | Em {count} negócios",
+        "DELETE": "Excluir motivo",
+        "DELETE_CONFIRM": "Excluir “{name}”? Os negócios perdidos por esse motivo continuam perdidos, só ficam sem motivo. Não dá para desfazer."
+      },
+      "QUOTE": {
+        "TITLE": "Mensagem de orçamento",
+        "DESCRIPTION": "O texto que os agentes levam para a conversa ao enviar um orçamento.",
+        "MESSAGE": "Mensagem",
+        "EMPTY_IS_DEFAULT": "Vazio usa a mensagem padrão, no idioma de cada agente.",
+        "TOO_LONG": "No máximo {max} caracteres.",
+        "PLACEHOLDERS": "Campos disponíveis:",
+        "PREVIEW": "Prévia",
+        "SAVE": "Salvar mensagem",
+        "USE_DEFAULT": "Voltar ao padrão",
+        "SAVED": "Mensagem de orçamento salva."
+      }
     }
   }
 }

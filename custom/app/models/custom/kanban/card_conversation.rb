@@ -7,6 +7,7 @@ class Custom::Kanban::CardConversation < ApplicationRecord
   validate :conversation_belongs_to_account
 
   before_validation { self.board_id ||= card&.board_id }
+  after_create { Custom::Kanban::CardEvent.record!(card, 'conversation_linked', { display_id: conversation.display_id }) }
 
   private
 

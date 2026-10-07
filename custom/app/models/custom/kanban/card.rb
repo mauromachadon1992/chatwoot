@@ -1,4 +1,7 @@
 class Custom::Kanban::Card < ApplicationRecord
+  include Custom::Kanban::CardHistory
+  include Custom::Kanban::CardOutcome
+
   # Cards are ordered by a float `position`, so a move rewrites one row: the card lands
   # halfway between its new neighbours. Only when two neighbours get closer than MIN_GAP is
   # the whole stage renumbered, which takes ~50 moves into the same slot.
@@ -64,9 +67,11 @@ class Custom::Kanban::Card < ApplicationRecord
   end
 
   # Moves the card to `stage`, between the cards the dashboard showed around the drop point.
-  # Either neighbour may be nil (top or bottom of the column, or an empty column).
-  def move_to!(stage:, previous_card_id: nil, next_card_id: nil)
+  # Either neighbour may be nil (top or bottom of the column, or an empty column). `attributes`
+  # are saved with the move, inside the lock (why a deal was lost, when it lands on a lost stage).
+  def move_to!(stage:, previous_card_id: nil, next_card_id: nil, attributes: {})
     with_lock do
+      assign_attributes(attributes)
       siblings = stage.cards.where.not(id: id)
       previous_card = previous_card_id.present? ? siblings.find(previous_card_id) : nil
       next_card = next_card_id.present? ? siblings.find(next_card_id) : nil
@@ -137,7 +142,8 @@ class Custom::Kanban::Card < ApplicationRecord
   end
 
   def state_data
-    { source: source, needs_review: needs_review, stale_days: stale_days }
+    { source: source, needs_review: needs_review, stale_days: stale_days, expected_close_on: expected_close_on&.iso8601,
+      lost_reason: lost_reason&.push_event_data, lost_note: lost_note }
   end
 
   def timestamps_data
