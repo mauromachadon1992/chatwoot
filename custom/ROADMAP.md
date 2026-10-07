@@ -119,7 +119,7 @@ no behavioural change for users.
   and assignee. Agents see their own by default; administrators get a `SegmentedControl`
   *Mine / Everyone*. Completing a row is inline and reversible ("Undo" toast). The bell's task
   notifications deep-link to the right row.
-- **API:** `GET kanban/tasks?scope=mine|all&status=…&page`, filtered by visible boards; counts for
+- **API:** `GET kanban/my_tasks?scope=mine|all&status=…&page`, filtered by visible boards; counts for
   the tab badge.
 - **States:** empty ("Nothing due. Schedule the next step on a deal."), loading skeleton, error
   with retry, a long list (paginate by group, never one endless scroll).
@@ -276,8 +276,8 @@ example into a request spec as its sprint lands.
 ### C1: Pro routes and the `/kanban/tasks` conflict
 **Goal:** operations 1 to 5 and 8 to 11 answer in Pro's shape (6 and 7 belong to C4).
 - **Rename first, in the same commit:** the "My tasks" list moves to `GET /kanban/my_tasks`; the
-  store (`flowKanban.js`, `api/flowKanban.js`) and the S1.2 specs move with it. Nothing has shipped
-  to staging, so this is the cheap moment.
+  store (`flowKanban.js`, `api/flowKanban.js`) and the S1.2 specs move with it. It had
+  already reached the staging image (S1.2), so it moved in one image with its frontend.
 - `GET /kanban/tasks[?board_id=]` returns cards in Pro's shape; `GET /kanban/tasks/:id` returns the
   bare card (labels as an array of strings); `POST /kanban/tasks` creates, deriving the contact from
   the conversation and the first open stage when no step is given.
@@ -289,6 +289,15 @@ example into a request spec as its sprint lands.
   `/tasks` meaning gone, root keys, a card created from a conversation links it by `display_id`
   (with an internal id different from the display id, as the Conversation ids rule demands).
 - **Accept:** operations 1 to 5 and 8 to 11 pass in the harness.
+
+**Built (2026-10-07), measured with the agents' harness against a running stack: 1/16 before, 10/16 now.**
+Operations 1 to 5 and 8 to 11 pass (C1), and the conversation's `kanban_task` (operation 15, the read
+half of C3). Also done: the rename to `/kanban/my_tasks`, the `X-Flow-Kanban-Dialect` header and
+`capabilities` in the settings (from C5, early), the stage `description`, the agents' service user and
+`HumanAdministrator` (the security finding of the review: an administrator token in the agents' hands
+must not reach webhooks, imports or automations), and `.gitattributes` for the contract. A board made
+with the `{board:}` root key gets no default stages (the caller defines its own); this is a decision to
+confirm against a real Pro board. See README, "Phase P".
 
 ### C2: Pro fields on the card (a UI story)
 **Goal:** operations 12 to 14, and the fields the agent reads and writes.

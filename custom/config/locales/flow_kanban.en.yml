@@ -32,6 +32,8 @@ en:
     settings:
       unsupported_currency: Currency not supported.
       quote_template_too_long: The quote message can have up to 2000 characters.
+    pro:
+      contact_needed: 'a deal needs a contact: send conversation_id (the conversation display id) or contact_id'
     ai:
       nothing_to_summarize: 'There are no messages in the linked conversations to summarize yet.'
       rate_limited: 'You have asked for many summaries. Try again in %{minutes} min.'

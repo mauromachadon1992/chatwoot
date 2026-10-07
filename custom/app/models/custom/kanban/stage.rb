@@ -16,6 +16,7 @@ class Custom::Kanban::Stage < ApplicationRecord
   DEFAULT_OPEN_PROBABILITY = 50
 
   validates :name, presence: true, length: { maximum: 80 }
+  validates :description, length: { maximum: 120 }
   validates :color, format: { with: COLOR_FORMAT }
   validates :stale_after_days, numericality: { only_integer: true, in: STALE_DAYS_RANGE }, allow_nil: true
   validates :win_probability, numericality: { only_integer: true, in: 0..100 }, allow_nil: true
@@ -34,7 +35,7 @@ class Custom::Kanban::Stage < ApplicationRecord
   end
 
   def push_event_data
-    { id: id, board_id: board_id, name: name, color: color, stage_type: stage_type, position: position,
+    { id: id, board_id: board_id, name: name, description: description, color: color, stage_type: stage_type, position: position,
       stale_after_days: stale_after_days, win_probability: win_probability, effective_probability: effective_probability }
   end
 

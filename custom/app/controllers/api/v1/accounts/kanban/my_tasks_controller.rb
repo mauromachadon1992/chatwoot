@@ -1,12 +1,12 @@
 # My tasks: the follow-ups of every deal the agent can see, in one list. An agent gets their
 # own; an administrator may also ask for everyone's (`scope=all`).
 #
-#   GET kanban/tasks?scope=mine|all&status=open|done&board_id=&page=&today_ends_at=&count_only=
+#   GET kanban/my_tasks?scope=mine|all&status=open|done&board_id=&page=&today_ends_at=&count_only=
 #
 # Open tasks come by due date, done ones (the last 7 days) most recent first. Grouping into
 # overdue, today and upcoming is the dashboard's, in the viewer's own time zone; `today_ends_at`
 # (the end of the viewer's day, ISO 8601) lets the server count today's for the tab badge.
-class Api::V1::Accounts::Kanban::TasksController < Api::V1::Accounts::Kanban::BaseController
+class Api::V1::Accounts::Kanban::MyTasksController < Api::V1::Accounts::Kanban::BaseController
   PER_PAGE = 100
   DONE_WINDOW = 7.days
 

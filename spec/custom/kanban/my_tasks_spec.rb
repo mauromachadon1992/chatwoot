@@ -16,7 +16,7 @@ RSpec.describe 'Kanban my tasks', type: :request do
   end
 
   def tasks_url(params = {})
-    "/api/v1/accounts/#{account.id}/kanban/tasks?#{params.to_query}"
+    "/api/v1/accounts/#{account.id}/kanban/my_tasks?#{params.to_query}"
   end
 
   def payload
@@ -96,7 +96,7 @@ RSpec.describe 'Kanban my tasks', type: :request do
   end
 
   it 'pages through a long list' do
-    stub_const('Api::V1::Accounts::Kanban::TasksController::PER_PAGE', 2)
+    stub_const('Api::V1::Accounts::Kanban::MyTasksController::PER_PAGE', 2)
     3.times { |index| task(due_at: now + (index + 1).hours) }
 
     get tasks_url(page: 1), headers: agent.create_new_auth_token, as: :json
@@ -111,7 +111,7 @@ RSpec.describe 'Kanban my tasks', type: :request do
   it 'does not reach another account' do
     other = create(:account)
 
-    get "/api/v1/accounts/#{other.id}/kanban/tasks", headers: agent.create_new_auth_token, as: :json
+    get "/api/v1/accounts/#{other.id}/kanban/my_tasks", headers: agent.create_new_auth_token, as: :json
 
     expect(response).to have_http_status(:unauthorized)
   end

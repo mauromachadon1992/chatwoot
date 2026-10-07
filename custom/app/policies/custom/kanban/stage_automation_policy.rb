@@ -15,9 +15,5 @@ class Custom::Kanban::StageAutomationPolicy < ApplicationPolicy
     administrator?
   end
 
-  private
-
-  def administrator?
-    account_user&.administrator?
-  end
+  include Custom::Kanban::HumanAdministrator
 end

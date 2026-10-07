@@ -24,7 +24,7 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
     ActiveRecord::Base.transaction do
       board.save!
       assign_restrictions(board)
-      create_default_stages(board)
+      create_default_stages(board) unless pro_dialect?
     end
     Custom::Kanban::Broadcaster.board_updated(board.reload)
     render json: { payload: board.push_event_data }
@@ -55,8 +55,19 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
     authorize @board
   end
 
+  # `{board: {...}}` is the Pro dialect's root key; the dashboard sends the fields flat. A board made
+  # with the root key gets no default stages: the caller (the Agents' funnel wizard) creates its own
+  # steps, and Flow's four would sit beside them.
+  def board_source
+    params[:board].is_a?(ActionController::Parameters) ? params[:board] : params
+  end
+
+  def pro_dialect?
+    params[:board].is_a?(ActionController::Parameters)
+  end
+
   def board_params
-    params.permit(:name, :description, :position, auto_create: [:enabled, :daily_cap, { inbox_ids: [] }])
+    board_source.permit(:name, :description, :position, auto_create: [:enabled, :daily_cap, { inbox_ids: [] }])
   end
 
   def assign_restrictions(board)

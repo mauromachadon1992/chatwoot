@@ -67,6 +67,7 @@ stack: `custom/docker/README.md`.
 | `app/javascript/dashboard/routes/dashboard/Dashboard.vue` | `useWhiteLabel()`: brand after login |
 | `app/javascript/dashboard/routes/dashboard/settings/account/components/EmailBranding.vue` | notice when a white label manages the brand |
 | `db/schema.rb` | our `flow_kanban_*` tables, white label domain index |
+| `app/views/api/v1/conversations/partials/_conversation.json.jbuilder` | one line: `json.partial! 'custom/…'` (the conversation's `kanban_task`) |
 | `theme/colors.js` | `n-brand` reads `--blue-9` (fallback `#2781F6`), so the white label re-colours it |
 | `app/views/layouts/vueapp.html.erb` | inlines the accent ramps: the login page's (installation) and the white label's (account) |
 | `.husky/pre-commit` | `xargs -r`, so a commit without Ruby files does not run rubocop on the whole repo |
@@ -242,7 +243,7 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
 - **Usage numbers** (`Custom::Kanban::Metrics`, `rake "flow:kanban:metrics[ACCOUNT_ID,DAYS]"`):
   deals by source, automatic ones awaiting review, stalled now, tasks done late, notifications
   opened. Counts and rates only.
-- **My tasks** (`GET kanban/tasks`, the *Tasks* view next to Board and Report): every open
+- **My tasks** (`GET kanban/my_tasks`, the *Tasks* view next to Board and Report): every open
   follow-up of the deals the agent can see, grouped Overdue / Today / Upcoming in the viewer's own
   day, plus done in the last week, where ticking again reopens. Administrators may switch to the
   whole team (`scope=all`; an agent asking for it gets 401). `count_only` with `today_ends_at`
@@ -417,3 +418,42 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   Chatwoot shell, not ours: the sidebar search placeholder and two unnamed buttons, the sidebar
   profile avatar, the white-label icon without `alt` and the floating help button. The brand
   colour is chosen per account, so contrast of brand-coloured text depends on the palette.
+
+### Phase P: the Pro dialect for the fazer.ai agents (ROADMAP.md, C0 to C4)
+
+The agents' client (`flow-agents-ee`, the fazer.ai agents unchanged) talks to the Chatwoot Pro's Kanban
+routes. Flow answers them in a compatibility layer, so the agents need no edit; the contract is
+`custom/contracts/pro-kanban.md` and its schema, with the hash in `CONTRACT.sha256` (and a
+`.gitattributes` that keeps those files LF, as the hash is over their bytes).
+
+- **Measured, not assumed:** the agents' harness (`custom/harness/run.ts` there) runs their real
+  `ChatwootClient` through the cycle against a running stack. Before this work 1 of 16 checks passed;
+  now **10 of 16** pass: operations 1 to 5 (boards, steps), 8 to 11 (deals) and 15 (the conversation's
+  deal). Waiting: 6 and 7 (`update_inboxes`, `update_agents`, C4) and 12 to 14 with the reset (priority,
+  dates, labels, attributes on the card, C2).
+- **Routes** (`Api::V1::Accounts::Kanban::Compat::*`): `GET|POST kanban/boards/:id/steps`;
+  `GET|POST kanban/tasks`, `GET kanban/tasks/:id` (the bare card), `POST kanban/tasks/:id/move`.
+  A Pro "task" is a Flow card and a "step" a stage (`cancelled` is a lost stage). Boards also take the
+  `{board: {...}}` root key (a board made that way gets no default stages: the caller's steps are the
+  funnel). **`GET kanban/tasks` used to be "My tasks"**: it is `GET kanban/my_tasks` now, because the
+  same address answering two different types is the worst failure (the agent got a 200 with follow-ups
+  where it expected deals).
+- **Answers are a superset:** every field the contract requires is there (`labels: []`,
+  `custom_attributes: {}`, nulls) next to Flow's own (`value_cents`, `stage_id`, `conversation_ids`);
+  `value` is a number in the account's currency out and cents in, never through a float.
+  `insert_before_task_id` puts the deal directly above that card of the target step.
+- **The conversation's deal** (`kanban_task` in `GET conversations/:display_id`, one line in the shared
+  jbuilder): the most recently updated *open* deal linked to it on a board the caller sees, else `null`.
+  Only on the single read (a list would ask the database per row), only for people signed in with a
+  user token, and never in what reaches a contact: the cable presenter builds that from an allowlist.
+- **Announced:** every Kanban answer carries `X-Flow-Kanban-Dialect: pro-v1`, and
+  `GET kanban/settings` returns `api_version`, `dialect` and `capabilities`.
+- **The agents' service user** (`rake "flow:kanban:agent_bot[EMAIL]"`, `UNMARK=1` to clear): an
+  administrator by role (the dialect needs one to make boards and steps) marked `flow_service: agent_bot`.
+  It does everything on the deals, and nothing on webhooks, imports or automations
+  (`Custom::Kanban::HumanAdministrator`), so a leaked or misled agent token cannot point a webhook at an
+  attacker. The mark cannot be unset through the profile endpoint.
+- **Stage description** (`flow_kanban_stages.description`, at most 120 characters): in the API only for
+  now; the dashboard edits it in C2.
+- **Specs:** `spec/custom/kanban/pro_dialect_spec.rb` (each operation, visibility, the leak, the service
+  user) and `pro_contract_spec.rb` (the hash, and that all 15 operations are accounted for).

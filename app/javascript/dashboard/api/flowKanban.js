@@ -208,7 +208,7 @@ class FlowKanbanAPI extends ApiClient {
 
   // My tasks. `todayEndsAt` is the end of the viewer's day, so the server can count "today".
   getTasks({ scope, status, page, boardId, todayEndsAt, countOnly } = {}) {
-    return axios.get(`${this.url}/tasks`, {
+    return axios.get(`${this.url}/my_tasks`, {
       params: {
         scope,
         status,

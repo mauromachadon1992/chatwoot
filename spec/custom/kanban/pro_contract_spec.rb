@@ -4,7 +4,7 @@ require 'rails_helper'
 # same copy as in flow-agents-ee). Each operation is filled in by its sprint of Phase P in
 # custom/ROADMAP.md and skipped by name until then, so this list and the harness report stay the
 # same 15 lines.
-RSpec.describe 'Pro Kanban contract' do
+RSpec.describe 'Pro Kanban contract', type: :request do
   contract_files = %w[custom/contracts/pro-kanban.md custom/contracts/pro-kanban.v1.schema.json]
 
   operations = [
@@ -31,7 +31,15 @@ RSpec.describe 'Pro Kanban contract' do
     expect(actual).to eq(Rails.root.join('custom/contracts/CONTRACT.sha256').read.strip)
   end
 
-  operations.each do |number, request, sprint|
+  # Answered and proven in pro_dialect_spec.rb (and by the Agents' harness); the rest wait for their sprint.
+  answered = [1, 2, 3, 4, 5, 8, 9, 10, 11, 15]
+
+  it 'accounts for all 15 operations, answered or waiting for a sprint' do
+    expect(operations.map(&:first)).to eq((1..15).to_a)
+    expect(answered - operations.map(&:first)).to be_empty
+  end
+
+  operations.reject { |number, _request, _sprint| answered.include?(number) }.each do |number, request, sprint|
     it "answers operation #{number}, #{request}, in the Pro shape", skip: "Phase P, #{sprint}" do
       expect(number).to be_positive
     end

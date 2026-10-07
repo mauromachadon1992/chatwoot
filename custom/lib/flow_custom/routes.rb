@@ -9,6 +9,7 @@ module FlowCustom::Routes
                 resources :stages, only: [:create, :update, :destroy] do
                   collection { patch :reorder }
                 end
+                resources :steps, only: [:index, :create], controller: 'compat/steps'
                 resources :cards, only: [:index] do
                   collection { get :export }
                 end
@@ -28,7 +29,11 @@ module FlowCustom::Routes
                 resources :events, only: [:index], controller: 'card_events'
                 resource :ai_summary, only: [:create], controller: 'ai_summaries'
               end
-              resources :tasks, only: [:index]
+              # `kanban/tasks` is the Pro dialect's deals; the agent's own follow-ups are `kanban/my_tasks`.
+              resources :my_tasks, only: [:index], controller: 'my_tasks'
+              resources :tasks, only: [:index, :show, :create], controller: 'compat/tasks' do
+                member { post :move }
+              end
               resources :ai_drafts, only: [], controller: 'ai_summaries' do
                 member { post :decide }
               end

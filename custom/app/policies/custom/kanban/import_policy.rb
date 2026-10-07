@@ -20,9 +20,5 @@ class Custom::Kanban::ImportPolicy < ApplicationPolicy
     administrator?
   end
 
-  private
-
-  def administrator?
-    account_user&.administrator?
-  end
+  include Custom::Kanban::HumanAdministrator
 end

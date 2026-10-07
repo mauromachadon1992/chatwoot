@@ -4,6 +4,8 @@
 # language.
 class Api::V1::Accounts::Kanban::SettingsController < Api::V1::Accounts::Kanban::BaseController
   QUOTE_TEMPLATE_MAX_LENGTH = 2_000
+  # What the Pro dialect already answers (contract operations): a client reads this instead of probing.
+  CAPABILITIES = %w[boards.read boards.write steps.read steps.write tasks.read tasks.create tasks.move conversation.kanban_task].freeze
 
   def show
     render json: { payload: payload }
@@ -39,6 +41,6 @@ class Api::V1::Accounts::Kanban::SettingsController < Api::V1::Accounts::Kanban:
 
   def payload
     { currency: Current.account.flow_kanban_currency, currencies: Custom::Kanban::Currency::SUPPORTED,
-      quote_template: Current.account.flow_kanban_quote_template }
+      quote_template: Current.account.flow_kanban_quote_template, api_version: 1, dialect: DIALECT, capabilities: CAPABILITIES }
   end
 end

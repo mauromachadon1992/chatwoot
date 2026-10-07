@@ -11,5 +11,14 @@ namespace :flow do
 
       puts JSON.pretty_generate(Custom::Kanban::Metrics.new(account, since: days.days.ago).to_h)
     end
+
+    desc 'Marks a user as the fazer.ai agents\' service user, or with UNMARK=1 clears it: rake "flow:kanban:agent_bot[agents@example.com]"'
+    task :agent_bot, [:email] => :environment do |_task, args|
+      user = User.from_email(args[:email].to_s)
+      abort 'Usage: rake "flow:kanban:agent_bot[EMAIL]" (UNMARK=1 to clear)' unless user
+
+      ENV['UNMARK'].present? ? Custom::Kanban::ServiceUser.unmark!(user) : Custom::Kanban::ServiceUser.mark!(user)
+      puts "#{user.email}: agent_bot=#{Custom::Kanban::ServiceUser.agent_bot?(user)}"
+    end
   end
 end

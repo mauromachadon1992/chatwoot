@@ -32,6 +32,8 @@ pt_BR:
     settings:
       unsupported_currency: Moeda não suportada.
       quote_template_too_long: A mensagem de orçamento pode ter até 2000 caracteres.
+    pro:
+      contact_needed: 'um negócio precisa de um contato: envie conversation_id (o display id da conversa) ou contact_id'
     ai:
       nothing_to_summarize: 'Ainda não há mensagens nas conversas vinculadas para resumir.'
       rate_limited: 'Você pediu muitos resumos. Tente de novo em %{minutes} min.'
