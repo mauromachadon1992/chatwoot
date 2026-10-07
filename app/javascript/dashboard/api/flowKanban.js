@@ -102,6 +102,43 @@ class FlowKanbanAPI extends ApiClient {
     return axios.delete(`${this.url}/cards/${cardId}/items/${itemId}`);
   }
 
+  getCardTasks(cardId) {
+    return axios.get(`${this.url}/cards/${cardId}/tasks`);
+  }
+
+  createCardTask(cardId, data) {
+    return axios.post(`${this.url}/cards/${cardId}/tasks`, data);
+  }
+
+  updateCardTask(cardId, taskId, data) {
+    return axios.patch(`${this.url}/cards/${cardId}/tasks/${taskId}`, data);
+  }
+
+  removeCardTask(cardId, taskId) {
+    return axios.delete(`${this.url}/cards/${cardId}/tasks/${taskId}`);
+  }
+
+  getAutomations(boardId) {
+    return axios.get(`${this.url}/boards/${boardId}/automations`);
+  }
+
+  createAutomation(boardId, data) {
+    return axios.post(`${this.url}/boards/${boardId}/automations`, data);
+  }
+
+  updateAutomation(boardId, automationId, data) {
+    return axios.patch(
+      `${this.url}/boards/${boardId}/automations/${automationId}`,
+      data
+    );
+  }
+
+  removeAutomation(boardId, automationId) {
+    return axios.delete(
+      `${this.url}/boards/${boardId}/automations/${automationId}`
+    );
+  }
+
   getProducts({ q, page, active } = {}) {
     return axios.get(`${this.url}/products`, { params: { q, page, active } });
   }

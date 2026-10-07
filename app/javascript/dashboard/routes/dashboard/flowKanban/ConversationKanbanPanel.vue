@@ -9,7 +9,6 @@ import FlowKanbanAPI from 'dashboard/api/flowKanban';
 
 import Button from 'dashboard/components-next/button/Button.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
-import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
 import { useFlowKanban } from './useFlowKanban';
 
 // The Kanban side of a conversation, for any channel: the cards it is on, the contact's
@@ -146,8 +145,9 @@ const stageOptionsFor = card =>
 
 <template>
   <div class="flex flex-col gap-4 px-2 pb-2">
-    <div v-if="isLoading" class="flex justify-center py-4">
-      <Spinner :size="20" />
+    <div v-if="isLoading" class="flex flex-col gap-2" aria-hidden="true">
+      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
+      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
     </div>
 
     <template v-else>

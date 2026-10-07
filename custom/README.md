@@ -190,3 +190,23 @@ label (`/super_admin/accounts/:id/white_label`). Values live in `accounts.settin
   step). The dashboard shows it under Kanban → Report.
 - The board gets `value_cents` and `items_count` per card and `total_value_cents` per stage;
   the lines go only with the card detail (`GET kanban/cards/:id`) and the item endpoints.
+
+### Tasks and stage automations (phase 3)
+
+- **Tasks** (`flow_kanban_card_tasks`, `kanban/cards/:id/tasks`): a title, a type (call,
+  meeting, e-mail, follow-up, other), a due date and the agent it is assigned to (the creator
+  by default; it must belong to the account). Whoever may work the card may schedule and
+  complete its tasks, the way they may change its product lines; a card an agent cannot see
+  answers 404 for its tasks too. The client sends `completed: true|false` and the server
+  stamps the time. The board gets `tasks: { open, overdue, next_due_at }` per card and the
+  card shows the overdue count (or the open one) as a badge.
+- **Automations** (`flow_kanban_stage_automations`, `kanban/boards/:id/automations`, administrators
+  only): when a linked conversation reaches a status, or receives a label, the card moves to
+  the rule's stage. The target stage must belong to the board. `Custom::Kanban::StageAutomationRunner`
+  runs from the conversation listener, so a card move never triggers a rule: the oldest
+  matching active rule wins, a card already in that stage is left alone, and the move goes
+  through `Card#move_to!`, so the stage history the funnel report reads stays right. A label
+  rule fires only when the label is new on the conversation (`cached_label_list` in the
+  event's `changed_attributes`).
+- **Not built yet:** reminders for tasks about to fall due (a job that notifies the assignee),
+  a task filter on the board, and rules for other triggers.

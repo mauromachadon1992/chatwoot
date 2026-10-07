@@ -16,8 +16,8 @@ import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
-import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
 import CardValueSection from './CardValueSection.vue';
+import CardTasksSection from './CardTasksSection.vue';
 import { useFlowKanban } from './useFlowKanban';
 
 const { t } = useI18n();
@@ -176,8 +176,10 @@ defineExpose({ open });
     :title="card?.title || t('FLOW_KANBAN.CARD_FORM.EDIT_TITLE')"
     width="lg"
   >
-    <div v-if="!card" class="flex justify-center py-12">
-      <Spinner :size="24" />
+    <div v-if="!card" class="flex flex-col gap-6" aria-hidden="true">
+      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
+      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
+      <div class="h-24 rounded-lg bg-n-alpha-2 animate-pulse" />
     </div>
 
     <form v-else class="flex flex-col gap-8" @submit.prevent="save">
@@ -212,6 +214,8 @@ defineExpose({ open });
       </div>
 
       <CardValueSection :card="card" @update:card="onValueChange" />
+
+      <CardTasksSection :card="card" />
 
       <section class="flex flex-col gap-3">
         <h4 class="text-heading-3 text-n-slate-12">

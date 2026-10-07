@@ -277,7 +277,8 @@ action or a state lives.
   `{ id, name, icon }` options and treats clearing as "all".
 - **Multiple choice:** `TagMultiSelectComboBox`.
 - **Two to four options:** a segmented control (`ButtonGroup` plus ghost `Button`s with
-  `role="radio"`), so every option stays visible.
+  `role="radio"`), so every option stays visible. `flowKanban/SegmentedControl.vue` is that
+  pattern with text options.
 - **Colour:** `ColorPicker`, saved with a debounce.
 - **Labels:** a `<label class="flex flex-col gap-1.5 text-label text-n-slate-12">` wrapping the control.
 - **Never** a native `<select>`, `<input>` or `<button>` in a Vue screen.

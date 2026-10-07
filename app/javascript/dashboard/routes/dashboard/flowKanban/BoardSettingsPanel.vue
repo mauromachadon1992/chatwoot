@@ -14,6 +14,7 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import ButtonGroup from 'dashboard/components-next/buttonGroup/ButtonGroup.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
+import BoardAutomationsSection from './BoardAutomationsSection.vue';
 import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue';
 import ColorPicker from 'dashboard/components-next/colorpicker/ColorPicker.vue';
@@ -374,6 +375,12 @@ defineExpose({ open });
           {{ t('FLOW_KANBAN.BOARD_FORM.STAGES_AUTOSAVE') }}
         </p>
       </section>
+
+      <BoardAutomationsSection
+        v-if="!isCreating"
+        :board-id="boardId"
+        :stages="stages"
+      />
     </form>
 
     <template #footer>

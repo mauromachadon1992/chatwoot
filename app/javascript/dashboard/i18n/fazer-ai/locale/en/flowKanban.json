@@ -32,7 +32,9 @@
       "NO_CONVERSATIONS": "No conversations",
       "CONVERSATIONS": "{count} conversation | {count} conversations",
       "RESTRICTED_CONVERSATION": "Conversation from an inbox you cannot access",
-      "VALUE": "Deal value"
+      "VALUE": "Deal value",
+      "TASKS_OPEN": "Open tasks: {count}",
+      "TASKS_OVERDUE": "Overdue tasks: {count}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "New card",
@@ -269,6 +271,56 @@
         "LABEL": "Deal currency",
         "HINT": "Applies to every Kanban value in this account. Changing it does not convert values already entered.",
         "SAVED": "Currency updated"
+      }
+    },
+    "TASKS": {
+      "SECTION": "Tasks",
+      "OPEN_COUNT": "{count} open",
+      "EMPTY": "No tasks. Schedule the next step of this deal.",
+      "TITLE": "Task title",
+      "TITLE_PLACEHOLDER": "E.g. Call to confirm the quote",
+      "DUE": "Due",
+      "TYPE": "Type",
+      "ADD": "Schedule",
+      "COMPLETE": "Complete task",
+      "REOPEN": "Reopen task",
+      "DELETE": "Delete task",
+      "OVERDUE": "Overdue",
+      "FAILED": "The task could not be saved.",
+      "TYPES": {
+        "CALL": "Call",
+        "MEETING": "Meeting",
+        "EMAIL": "Email",
+        "FOLLOW_UP": "Follow-up",
+        "CUSTOM": "Other"
+      },
+      "TODAY": "Today",
+      "ASSIGNEE": "Assignee"
+    },
+    "AUTOMATIONS": {
+      "SECTION": "Automations",
+      "HINT": "Move cards on their own when the conversation changes. The first matching rule wins.",
+      "EMPTY": "No automations on this board.",
+      "TRIGGER": "Trigger",
+      "TRIGGERS": {
+        "CONVERSATION_STATUS_CHANGED": "Status change",
+        "LABEL_ADDED": "Label added"
+      },
+      "STATUS": "Status",
+      "LABEL": "Label",
+      "LABEL_PLACEHOLDER": "Label name",
+      "MOVE_TO": "Move to",
+      "STAGE": "Stage",
+      "ADD": "Add",
+      "ACTIVE": "Rule active",
+      "DELETE": "Delete automation",
+      "RULE_STATUS": "When the conversation becomes {status}, move to {stage}",
+      "RULE_LABEL": "When it receives the label “{label}”, move to {stage}",
+      "STATUSES": {
+        "OPEN": "Open",
+        "PENDING": "Pending",
+        "RESOLVED": "Resolved",
+        "SNOOZED": "Snoozed"
       }
     }
   }

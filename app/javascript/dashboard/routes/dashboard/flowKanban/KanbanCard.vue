@@ -42,6 +42,9 @@ const showTimeInStage = computed(
 const showLastActivity = computed(
   () => cardFields.value.has('last_activity') && lastActivityAt.value > 0
 );
+// Follow-ups are part of working the deal, not a field an account can switch off.
+const tasks = computed(() => props.card.tasks || { open: 0, overdue: 0 });
+const showTasks = computed(() => tasks.value.open > 0);
 </script>
 
 <template>
@@ -99,9 +102,34 @@ const showLastActivity = computed(
     />
 
     <div
-      v-if="showTimeInStage || showLastActivity"
+      v-if="showTimeInStage || showLastActivity || showTasks"
       class="flex flex-wrap items-center gap-x-3 gap-y-1 text-label-small text-n-slate-10"
     >
+      <span
+        v-if="showTasks"
+        v-tooltip.top="
+          tasks.overdue
+            ? t('FLOW_KANBAN.CARD.TASKS_OVERDUE', { count: tasks.overdue })
+            : t('FLOW_KANBAN.CARD.TASKS_OPEN', { count: tasks.open })
+        "
+        class="inline-flex items-center gap-1 tabular-nums"
+        :class="tasks.overdue ? 'text-n-ruby-11' : 'text-n-slate-11'"
+      >
+        <Icon
+          :icon="
+            tasks.overdue ? 'i-lucide-alarm-clock' : 'i-lucide-list-checks'
+          "
+          class="size-3.5"
+        />
+        {{ tasks.overdue || tasks.open }}
+        <span class="sr-only">
+          {{
+            tasks.overdue
+              ? t('FLOW_KANBAN.CARD.TASKS_OVERDUE', { count: tasks.overdue })
+              : t('FLOW_KANBAN.CARD.TASKS_OPEN', { count: tasks.open })
+          }}
+        </span>
+      </span>
       <span
         v-if="showTimeInStage"
         v-tooltip.top="t('FLOW_KANBAN.CARD.TIME_IN_STAGE')"

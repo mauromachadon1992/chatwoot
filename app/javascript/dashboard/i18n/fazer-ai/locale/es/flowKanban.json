@@ -32,7 +32,9 @@
       "NO_CONVERSATIONS": "Sin conversaciones",
       "CONVERSATIONS": "{count} conversación | {count} conversaciones",
       "RESTRICTED_CONVERSATION": "Conversación de una bandeja de entrada sin acceso",
-      "VALUE": "Valor del negocio"
+      "VALUE": "Valor del negocio",
+      "TASKS_OPEN": "Tareas abiertas: {count}",
+      "TASKS_OVERDUE": "Tareas vencidas: {count}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Nueva tarjeta",
@@ -269,6 +271,56 @@
         "LABEL": "Moneda de los negocios",
         "HINT": "Vale para todos los valores del Kanban de esta cuenta. Cambiarla no convierte los valores ya registrados.",
         "SAVED": "Moneda actualizada"
+      }
+    },
+    "TASKS": {
+      "SECTION": "Tareas",
+      "OPEN_COUNT": "{count} abiertas",
+      "EMPTY": "Sin tareas. Programa el siguiente paso de esta negociación.",
+      "TITLE": "Título de la tarea",
+      "TITLE_PLACEHOLDER": "Ej.: Llamar para confirmar el presupuesto",
+      "DUE": "Plazo",
+      "TYPE": "Tipo",
+      "ADD": "Programar",
+      "COMPLETE": "Completar tarea",
+      "REOPEN": "Reabrir tarea",
+      "DELETE": "Eliminar tarea",
+      "OVERDUE": "Vencida",
+      "FAILED": "No se pudo guardar la tarea.",
+      "TYPES": {
+        "CALL": "Llamada",
+        "MEETING": "Reunión",
+        "EMAIL": "Correo",
+        "FOLLOW_UP": "Seguimiento",
+        "CUSTOM": "Otra"
+      },
+      "TODAY": "Hoy",
+      "ASSIGNEE": "Responsable"
+    },
+    "AUTOMATIONS": {
+      "SECTION": "Automatizaciones",
+      "HINT": "Mueve las tarjetas solas cuando cambie la conversación. Vale la primera regla que coincida.",
+      "EMPTY": "Sin automatizaciones en este tablero.",
+      "TRIGGER": "Disparador",
+      "TRIGGERS": {
+        "CONVERSATION_STATUS_CHANGED": "Cambio de estado",
+        "LABEL_ADDED": "Etiqueta añadida"
+      },
+      "STATUS": "Estado",
+      "LABEL": "Etiqueta",
+      "LABEL_PLACEHOLDER": "Nombre de la etiqueta",
+      "MOVE_TO": "Mover a",
+      "STAGE": "Etapa",
+      "ADD": "Añadir",
+      "ACTIVE": "Regla activa",
+      "DELETE": "Eliminar automatización",
+      "RULE_STATUS": "Cuando la conversación pase a {status}, mover a {stage}",
+      "RULE_LABEL": "Cuando reciba la etiqueta “{label}”, mover a {stage}",
+      "STATUSES": {
+        "OPEN": "Abierta",
+        "PENDING": "Pendiente",
+        "RESOLVED": "Resuelta",
+        "SNOOZED": "Pospuesta"
       }
     }
   }

@@ -32,7 +32,9 @@
       "NO_CONVERSATIONS": "Sem conversas",
       "CONVERSATIONS": "{count} conversa | {count} conversas",
       "RESTRICTED_CONVERSATION": "Conversa de uma caixa de entrada sem acesso",
-      "VALUE": "Valor do negócio"
+      "VALUE": "Valor do negócio",
+      "TASKS_OPEN": "Tarefas em aberto: {count}",
+      "TASKS_OVERDUE": "Tarefas atrasadas: {count}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Novo card",
@@ -269,6 +271,56 @@
         "LABEL": "Moeda dos negócios",
         "HINT": "Vale para todos os valores do Kanban desta conta. Trocar a moeda não converte valores já cadastrados.",
         "SAVED": "Moeda atualizada"
+      }
+    },
+    "TASKS": {
+      "SECTION": "Tarefas",
+      "OPEN_COUNT": "{count} em aberto",
+      "EMPTY": "Nenhuma tarefa. Agende o próximo passo desta negociação.",
+      "TITLE": "Título da tarefa",
+      "TITLE_PLACEHOLDER": "Ex.: Ligar para confirmar o orçamento",
+      "DUE": "Prazo",
+      "TYPE": "Tipo",
+      "ADD": "Agendar",
+      "COMPLETE": "Concluir tarefa",
+      "REOPEN": "Reabrir tarefa",
+      "DELETE": "Excluir tarefa",
+      "OVERDUE": "Atrasada",
+      "FAILED": "Não foi possível salvar a tarefa.",
+      "TYPES": {
+        "CALL": "Ligação",
+        "MEETING": "Reunião",
+        "EMAIL": "E-mail",
+        "FOLLOW_UP": "Retorno",
+        "CUSTOM": "Outra"
+      },
+      "TODAY": "Hoje",
+      "ASSIGNEE": "Responsável"
+    },
+    "AUTOMATIONS": {
+      "SECTION": "Automações",
+      "HINT": "Mova os cards sozinhos quando a conversa mudar. Vale a primeira regra que combinar.",
+      "EMPTY": "Nenhuma automação neste funil.",
+      "TRIGGER": "Gatilho",
+      "TRIGGERS": {
+        "CONVERSATION_STATUS_CHANGED": "Mudança de status",
+        "LABEL_ADDED": "Etiqueta adicionada"
+      },
+      "STATUS": "Status",
+      "LABEL": "Etiqueta",
+      "LABEL_PLACEHOLDER": "Nome da etiqueta",
+      "MOVE_TO": "Mover para",
+      "STAGE": "Etapa",
+      "ADD": "Adicionar",
+      "ACTIVE": "Regra ativa",
+      "DELETE": "Excluir automação",
+      "RULE_STATUS": "Quando a conversa ficar {status}, mover para {stage}",
+      "RULE_LABEL": "Quando receber a etiqueta “{label}”, mover para {stage}",
+      "STATUSES": {
+        "OPEN": "Aberta",
+        "PENDING": "Pendente",
+        "RESOLVED": "Resolvida",
+        "SNOOZED": "Adiada"
       }
     }
   }
