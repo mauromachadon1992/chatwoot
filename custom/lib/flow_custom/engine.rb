@@ -17,6 +17,18 @@ class FlowCustom::Engine < Rails::Engine
     end
   end
 
+  # The task reminder runs every minute. Registered here, as a dynamic cron entry, instead of in
+  # config/schedule.yml, so a merge from upstream never conflicts with it and the host's cleanup of
+  # `schedule` entries leaves it alone. Creating it again on each worker start is a no-op.
+  initializer 'flow_custom.cron' do
+    Sidekiq.configure_server do |config|
+      config.on(:startup) do
+        Sidekiq::Cron::Job.create(name: 'flow_kanban_task_reminders', cron: '* * * * *', queue: 'scheduled_jobs',
+                                  class: 'Custom::Kanban::TaskReminderJob')
+      end
+    end
+  end
+
   # Prepended so these routes are matched before any catch-all the host declares.
   initializer 'flow_custom.routes' do |app|
     app.routes.prepend(&FlowCustom::Routes::DRAW)

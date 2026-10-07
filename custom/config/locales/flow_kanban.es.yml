@@ -16,6 +16,10 @@ es:
       last_activity: Última actividad
     settings:
       unsupported_currency: Moneda no admitida.
+    task_reminder:
+      due_soon: 'Tarea vence en %{minutes} min: %{title} (%{card})'
+      overdue: 'Tarea vencida: %{title} (%{card})'
+      open: Abrir el tablero
   activerecord:
     errors:
       models:

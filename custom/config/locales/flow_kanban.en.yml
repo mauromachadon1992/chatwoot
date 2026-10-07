@@ -16,6 +16,10 @@ en:
       last_activity: Last activity
     settings:
       unsupported_currency: Currency not supported.
+    task_reminder:
+      due_soon: 'Task due in %{minutes} min: %{title} (%{card})'
+      overdue: 'Task overdue: %{title} (%{card})'
+      open: Open the board
   activerecord:
     errors:
       models:

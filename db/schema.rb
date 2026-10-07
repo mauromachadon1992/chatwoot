@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_06_230000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_07_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1214,8 +1214,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_06_230000) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "reminded_at"
     t.index ["account_id", "user_id", "due_at"], name: "index_flow_kanban_tasks_on_account_user_due"
     t.index ["card_id", "completed_at"], name: "index_flow_kanban_tasks_on_card_and_completed"
+    t.index ["due_at"], name: "index_flow_kanban_tasks_awaiting_reminder", where: "((completed_at IS NULL) AND (reminded_at IS NULL))"
   end
 
   create_table "flow_kanban_cards", force: :cascade do |t|

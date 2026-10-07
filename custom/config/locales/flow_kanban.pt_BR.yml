@@ -16,6 +16,10 @@ pt_BR:
       last_activity: Última atividade
     settings:
       unsupported_currency: Moeda não suportada.
+    task_reminder:
+      due_soon: 'Tarefa vence em %{minutes} min: %{title} (%{card})'
+      overdue: 'Tarefa atrasada: %{title} (%{card})'
+      open: Abrir o funil
   activerecord:
     errors:
       models:

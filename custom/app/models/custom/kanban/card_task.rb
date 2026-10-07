@@ -6,8 +6,14 @@ class Custom::Kanban::CardTask < ApplicationRecord
   belongs_to :card, class_name: 'Custom::Kanban::Card', inverse_of: :tasks
   belongs_to :user
 
+  # A task is announced this long before it falls due, and still for this long after: a task
+  # that has been overdue for longer is not news, and the badge on the card says so.
+  REMINDER_LEAD = 15.minutes
+  REMINDER_GRACE = 1.hour
+
   scope :open_tasks, -> { where(completed_at: nil) }
   scope :overdue, -> { open_tasks.where(due_at: ...Time.current) }
+  scope :due_for_reminder, ->(now = Time.current) { open_tasks.where(reminded_at: nil, due_at: (now - REMINDER_GRACE)..(now + REMINDER_LEAD)) }
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :description, length: { maximum: 5_000 }
@@ -16,6 +22,8 @@ class Custom::Kanban::CardTask < ApplicationRecord
   validate :user_belongs_to_account
 
   before_validation :inherit_account, on: :create
+  # A new date, or a task taken up again, is announced again.
+  before_update :rearm_reminder, if: -> { will_save_change_to_due_at? || (will_save_change_to_completed_at? && completed_at.nil?) }
 
   def completed?
     completed_at.present?
@@ -49,6 +57,10 @@ class Custom::Kanban::CardTask < ApplicationRecord
 
   def inherit_account
     self.account_id ||= card&.account_id
+  end
+
+  def rearm_reminder
+    self.reminded_at = nil
   end
 
   def user_belongs_to_account

@@ -208,5 +208,15 @@ label (`/super_admin/accounts/:id/white_label`). Values live in `accounts.settin
   through `Card#move_to!`, so the stage history the funnel report reads stays right. A label
   rule fires only when the label is new on the conversation (`cached_label_list` in the
   event's `changed_attributes`).
-- **Not built yet:** reminders for tasks about to fall due (a job that notifies the assignee),
-  a task filter on the board, and rules for other triggers.
+- **Task reminders** (`Custom::Kanban::TaskReminderJob`): every minute, an open task due within
+  15 minutes (or overdue by less than an hour) is announced once to its assignee, as a
+  `kanban.task.reminder` cable event the dashboard shows as a toast linking to the board. The
+  text is written by the server in the account's language
+  (`flow_kanban.task_reminder` in `custom/config/locales`). `reminded_at` is the claim, so
+  several workers never announce a task twice; a new date, or a task taken up again, is
+  announced again. Only an agent who still sees the board gets it, and it reaches only an
+  agent with the dashboard open: one who was away finds the overdue badge on the card. The
+  engine registers the cron entry (`flow_kanban_task_reminders`) when a Sidekiq server starts,
+  so `config/schedule.yml` stays upstream's.
+- **Not built yet:** reminders by e-mail or in Chatwoot's notification centre, a task filter on
+  the board, and rules for other triggers.
