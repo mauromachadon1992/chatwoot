@@ -481,7 +481,7 @@ defineExpose({ open });
           class="self-start"
           @click="addStage"
         />
-        <p class="text-label-small text-n-slate-10">
+        <p class="text-label-small text-n-slate-11">
           {{ t('FLOW_KANBAN.BOARD_FORM.STAGES_AUTOSAVE') }}
         </p>
       </section>

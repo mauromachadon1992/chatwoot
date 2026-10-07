@@ -17,6 +17,13 @@ class Api::V1::Accounts::Kanban::ProductsController < Api::V1::Accounts::Kanban:
     }
   end
 
+  # The whole catalog (or what the search matches) as a CSV the importer can read back.
+  def export
+    authorize Custom::Kanban::Product, :index?
+    products = Custom::Kanban::Product.where(account: Current.account).search(params[:q]).ordered
+    send_data Custom::Kanban::CsvExport.products(products), type: 'text/csv; charset=utf-8', filename: 'products.csv'
+  end
+
   def create
     product = Custom::Kanban::Product.new(product_params.merge(account: Current.account))
     authorize product

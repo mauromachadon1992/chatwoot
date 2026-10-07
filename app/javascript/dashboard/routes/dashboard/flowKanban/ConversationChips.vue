@@ -28,7 +28,7 @@ const STATUS_DOT = {
         v-if="inboxFor(conversation.inbox_id)"
         :to="conversationPath(conversation.display_id)"
         :title="inboxFor(conversation.inbox_id).name"
-        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-n-alpha-2 text-label-small text-n-slate-11 hover:text-n-slate-12"
+        class="inline-flex items-center gap-1 px-1.5 py-0.5 min-h-6 rounded-md bg-n-alpha-2 text-label-small text-n-slate-11 hover:text-n-slate-12"
         @click.stop
       >
         <span
@@ -44,7 +44,7 @@ const STATUS_DOT = {
       <span
         v-else
         :title="t('FLOW_KANBAN.CARD.RESTRICTED_CONVERSATION')"
-        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-n-alpha-1 text-label-small text-n-slate-10"
+        class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-n-alpha-1 text-label-small text-n-slate-11"
       >
         <Icon :icon="inboxIcon(null)" class="size-3" />
         #{{ conversation.display_id }}

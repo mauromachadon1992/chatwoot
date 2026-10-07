@@ -42,7 +42,9 @@
       "TASKS_OVERDUE": "Overdue tasks: {count}",
       "STALE": "Stalled {days} d",
       "AUTOMATIC": "Automatic",
-      "AUTOMATIC_HINT": "Opened by a new conversation. Goes away once someone reviews the deal."
+      "AUTOMATIC_HINT": "Opened by a new conversation. Goes away once someone reviews the deal.",
+      "OPEN": "Open",
+      "OPEN_TITLE": "Open the deal {title}"
     },
     "CARD_FORM": {
       "CREATE_TITLE": "New card",
@@ -618,6 +620,190 @@
         "SAVE": "Save message",
         "USE_DEFAULT": "Back to the default",
         "SAVED": "Quote message saved."
+      },
+      "WEBHOOKS": {
+        "TITLE": "Webhooks",
+        "DESCRIPTION": "Tell another system when something happens to a deal. Applies to every board of the account; each delivery is signed with a secret.",
+        "ADD": "Add webhook",
+        "EDIT": "Edit webhook",
+        "DELETE": "Delete webhook",
+        "DELETE_CONFIRM": "{url} stops receiving events. Its delivery history is deleted too.",
+        "SAVE": "Save",
+        "CANCEL": "Cancel",
+        "ACTIVE": "Webhook on",
+        "EMPTY_TITLE": "No webhooks yet",
+        "EMPTY_BODY": "Add an https address to hear about deals created, moved, won or lost.",
+        "LIMIT": "An account can have up to {max} webhooks.",
+        "MORE_EVENTS": "+{count}",
+        "URL": "Address",
+        "URL_HINT": "Must start with https://. Local and internal network addresses are not accepted.",
+        "EVENTS_LABEL": "Notify when",
+        "EVENTS": {
+          "DEAL_CREATED": "A deal is created",
+          "DEAL_MOVED": "A deal changes stage",
+          "DEAL_WON": "A deal is won",
+          "DEAL_LOST": "A deal is lost",
+          "DEAL_VALUE_CHANGED": "A deal’s value changes",
+          "TASK_CREATED": "A task is created"
+        },
+        "PROBLEMS": {
+          "URL_EMPTY": "Enter the address.",
+          "URL_HTTPS": "Use a full address, starting with https://",
+          "EVENTS": "Pick at least one event."
+        },
+        "STATUS": {
+          "SUCCESS": "Delivered",
+          "FAILED": "Failed",
+          "RETRYING": "Retrying",
+          "PENDING": "Queued",
+          "NONE": "Nothing sent"
+        },
+        "ERRORS": {
+          "BLOCKED_ADDRESS": "The address points to an internal network and was blocked.",
+          "UNRESOLVED_HOST": "The address could not be found.",
+          "WEBHOOK_OFF": "The webhook was turned off before sending."
+        },
+        "TEST": {
+          "BUTTON": "Send test",
+          "OK": "Test delivered: answer {status} in {ms} ms.",
+          "FAILED": "The test failed. {reason}"
+        },
+        "LOG": {
+          "OPEN": "View deliveries",
+          "TITLE": "Latest deliveries",
+          "CLOSE": "Close",
+          "EMPTY": "Nothing was sent yet. Use “Send test” to check the address.",
+          "PING": "Test",
+          "ATTEMPTS": "{count} attempt | {count} attempts"
+        },
+        "SECRET": {
+          "TITLE": "Save the secret now",
+          "DESCRIPTION": "It will not be shown again. The receiver uses it to check the event came from here.",
+          "DONE": "I saved it",
+          "COPY": "Copy",
+          "COPIED": "Copied",
+          "COPY_FAILED": "Could not copy. Select the text and copy it by hand.",
+          "HOW": "Each delivery carries the X-Flow-Signature header (t=time,v1=signature). The signature is the HMAC-SHA256 of “time.body” with this secret."
+        }
+      },
+      "DATA": {
+        "TITLE": "Import and export",
+        "DESCRIPTION": "Bring products and deals from a spreadsheet into the Kanban, or download them as CSV. Nothing is written before you check it.",
+        "PRODUCTS": "Products",
+        "PRODUCTS_HINT": "The account catalog. Importing the same file again duplicates nothing: the SKU (or the name, without a SKU) identifies a product.",
+        "DEALS": "Deals",
+        "DEALS_HINT": "The deals of one board. The contact is found by e-mail or phone; a deal with the same title for the same contact is skipped.",
+        "BOARD": "Board",
+        "EXPORT": "Export CSV",
+        "IMPORT": "Import CSV",
+        "PRODUCTS_IMPORTED": "Products imported.",
+        "DEALS_IMPORTED": "Deals imported."
+      },
+      "IMPORT": {
+        "TITLE": {
+          "PRODUCTS": "Import products",
+          "DEALS": "Import deals"
+        },
+        "INTRO": {
+          "PRODUCTS": "Choose a CSV file with the products. The first line must name the columns: name, SKU, unit and price.",
+          "DEALS": "Choose a CSV file with the deals. The first line must name the columns; each deal needs the contact’s e-mail or phone."
+        },
+        "LIMITS": "Up to {mb} MB and {rows} rows, UTF-8, separated by comma or semicolon.",
+        "NOTHING_YET": "You check the columns and the rows before anything is written.",
+        "CHOOSE": "Choose file",
+        "READING": "Reading the file…",
+        "FILE_PROBLEM": {
+          "NONE": "Choose a file.",
+          "TYPE": "The file must be a CSV (.csv).",
+          "SIZE": "The file is over {max} MB.",
+          "EMPTY": "The file is empty."
+        },
+        "ROWS": "{count} row | {count} rows",
+        "COLUMNS": "Columns",
+        "COLUMNS_HINT": "Check which column of the file is each field. When you change one, the rows are read again.",
+        "REQUIRED": "(required)",
+        "NOT_IMPORTED": "Do not import",
+        "MISSING": "Pick the column for: {fields}.",
+        "FIELDS": {
+          "PRODUCTS": {
+            "NAME": "Name",
+            "SKU": "SKU",
+            "UNIT": "Unit",
+            "PRICE": "Price"
+          },
+          "DEALS": {
+            "TITLE": "Title",
+            "CONTACT_NAME": "Contact name",
+            "CONTACT_EMAIL": "Contact e-mail",
+            "CONTACT_PHONE": "Contact phone",
+            "STAGE": "Stage",
+            "VALUE": "Value",
+            "EXPECTED_CLOSE_ON": "Expected close date",
+            "ASSIGNEE_EMAIL": "Assignee e-mail"
+          }
+        },
+        "SUMMARY": {
+          "CREATE": "{count} to create",
+          "UPDATE": "{count} to update",
+          "SKIP": "{count} unchanged",
+          "ERROR": "{count} with errors"
+        },
+        "ACTIONS": {
+          "CREATE": "Create",
+          "UPDATE": "Update",
+          "SKIP": "Unchanged",
+          "ERROR": "Error"
+        },
+        "PREVIEW": "First rows",
+        "LINE": "Line",
+        "RESULT": "What happens",
+        "PROBLEMS": "{count} row with a problem | {count} rows with problems",
+        "PROBLEMS_HINT": "These rows are left out. The others are imported and you can download the problem ones afterwards.",
+        "AT_LINE": "Line {line}:",
+        "MORE_PROBLEMS": "And {count} more. All of them are in the error file.",
+        "RUN": "Import {count} rows",
+        "CANCEL": "Cancel",
+        "HIDE": "Close",
+        "CLOSE": "Done",
+        "RUNNING": "Importing… {done} of {total}",
+        "PROGRESS": "Import progress",
+        "CAN_LEAVE": "You can close this window: the import keeps going in the background.",
+        "FINISHED": {
+          "DONE": "Import finished",
+          "FAILED": "The import failed"
+        },
+        "RESULT_SUMMARY": "{created} created, {updated} updated, {skipped} unchanged and {errors} with errors.",
+        "FAILED_BODY": "Something went wrong and the import stopped. What was already written stays; you can try again with the same file without duplicating.",
+        "DOWNLOAD_ERRORS": "Download the {count} rows with errors"
+      }
+    },
+    "EXPORT_DEALS": "Export deals (CSV)",
+    "AI": {
+      "SECTION": "AI summary",
+      "GENERATED_BY_AI": "Generated by AI",
+      "HINT": "Ask for a draft of what is going on in this deal and a suggested next task. Only what you can see yourself in the linked conversations goes to the assistant.",
+      "NO_CONVERSATIONS": "Link a conversation to the deal to be able to summarize it.",
+      "SUMMARIZE": "Summarize deal",
+      "GENERATING": "The assistant is reading the deal…",
+      "RETRY": "Try again",
+      "BACK": "Back",
+      "USED": "Conversations: {conversations} · Messages: {messages}.",
+      "USED_PARTIAL": "Conversations: {conversations} · Messages: {messages}. Only the most recent: the rest did not fit.",
+      "REVIEW": "It is a draft: check it before using it.",
+      "SUMMARY": "Summary",
+      "ADD_TO_DESCRIPTION": "Add to description",
+      "DISCARD": "Discard",
+      "SAVE_HINT": "The text goes into the card’s description; save the card to keep it.",
+      "TOO_LONG": "It does not fit the description (up to 5,000 characters). Shorten the summary.",
+      "ADDED": "Summary added to the description. Save the card to keep it.",
+      "SUGGESTED_TASK": "Suggested next task",
+      "SCHEDULE_TASK": "Schedule task",
+      "DISCARD_TASK": "Discard suggestion",
+      "TASK_SCHEDULED": "Task scheduled.",
+      "DONE": "Done",
+      "ERRORS": {
+        "FAILED": "The assistant could not answer now. Nothing was changed; try again in a moment.",
+        "NETWORK": "Could not reach the server. Check the connection and try again."
       }
     }
   }

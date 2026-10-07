@@ -67,6 +67,7 @@ const rows = computed(() =>
           </th>
           <td class="py-3 pe-4">
             <span
+              role="group"
               class="flex items-center gap-3"
               :aria-label="
                 t('FLOW_KANBAN.REPORT.LOST_REASONS.BAR_LABEL', {

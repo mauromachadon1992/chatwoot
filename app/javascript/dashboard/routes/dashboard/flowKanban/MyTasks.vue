@@ -259,16 +259,20 @@ onMounted(load);
               class="flex items-center gap-3 px-3 py-3 transition-colors duration-500 focus-visible:outline-2 focus-visible:outline-n-brand"
               :class="{ 'bg-n-blue-3': highlighted === task.id }"
             >
-              <Checkbox
-                :model-value="!!task.completed_at"
-                :disabled="busy.has(task.id)"
-                :aria-label="
-                  task.completed_at
-                    ? t('FLOW_KANBAN.TASKS.REOPEN')
-                    : t('FLOW_KANBAN.TASKS.COMPLETE')
-                "
-                @update:model-value="toggle(task, $event)"
-              />
+              <label class="flex">
+                <span class="sr-only">
+                  {{
+                    task.completed_at
+                      ? t('FLOW_KANBAN.TASKS.REOPEN')
+                      : t('FLOW_KANBAN.TASKS.COMPLETE')
+                  }}
+                </span>
+                <Checkbox
+                  :model-value="!!task.completed_at"
+                  :disabled="busy.has(task.id)"
+                  @update:model-value="toggle(task, $event)"
+                />
+              </label>
               <Icon
                 :icon="TASK_TYPE_ICONS[task.task_type]"
                 class="flex-shrink-0 size-4 text-n-slate-10"
@@ -278,7 +282,7 @@ onMounted(load);
                   class="text-body-main truncate"
                   :class="
                     task.completed_at
-                      ? 'line-through text-n-slate-10'
+                      ? 'line-through text-n-slate-11'
                       : 'text-n-slate-12'
                   "
                 >
@@ -326,8 +330,12 @@ onMounted(load);
                 :name="task.user.name"
                 :size="24"
                 rounded-full
+                aria-hidden="true"
                 class="flex-shrink-0"
               />
+              <span v-if="showAssignee" class="sr-only">{{
+                task.user.name
+              }}</span>
             </li>
           </ul>
 

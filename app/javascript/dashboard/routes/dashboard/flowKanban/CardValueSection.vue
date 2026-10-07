@@ -101,7 +101,7 @@ onMounted(() => searchProducts());
       <h4 class="text-heading-3 text-n-slate-12">
         {{ t('FLOW_KANBAN.VALUE.SECTION') }}
       </h4>
-      <span class="text-label-small text-n-slate-10">
+      <span class="text-label-small text-n-slate-11">
         {{ t('FLOW_KANBAN.VALUE.ITEMS_AUTOSAVE') }}
       </span>
     </div>

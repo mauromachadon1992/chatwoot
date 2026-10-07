@@ -10,6 +10,7 @@ import {
 import { vOnClickOutside } from '@vueuse/components';
 import { useAdmin } from 'dashboard/composables/useAdmin';
 import { useAlert } from 'dashboard/composables';
+import FlowKanbanAPI from 'dashboard/api/flowKanban';
 import { useFlowKanbanStore } from 'dashboard/stores/flowKanban';
 
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -32,6 +33,7 @@ import KanbanReport from './report/KanbanReport.vue';
 import { DEFAULT_PERIOD, PERIODS } from './report/useFlowKanbanReport';
 import { useBoardFilters } from './useBoardFilters';
 import { endOfLocalDay } from './tasks';
+import { filenameFrom, saveBlob } from './csv';
 
 const { t } = useI18n();
 const vuexStore = useStore();
@@ -45,6 +47,27 @@ const isMobile = useBreakpoints(breakpointsTailwind).smaller('md');
 const controlSize = computed(() => (isMobile.value ? 'md' : 'sm'));
 
 const isBoardMenuOpen = ref(false);
+const isExporting = ref(false);
+
+// The deals the board shows now (its filters included) as a CSV.
+const exportDeals = async () => {
+  if (isExporting.value || !kanban.activeBoard) return;
+  isExporting.value = true;
+  try {
+    const response = await FlowKanbanAPI.exportDeals(
+      kanban.activeBoard.id,
+      kanban.activeFilterParams
+    );
+    saveBlob(
+      response.data,
+      filenameFrom(response.headers['content-disposition'], 'deals.csv')
+    );
+  } catch {
+    useAlert(t('FLOW_KANBAN.ERRORS.GENERIC'));
+  } finally {
+    isExporting.value = false;
+  }
+};
 const cardPanelRef = ref(null);
 const createDialogRef = ref(null);
 const settingsPanelRef = ref(null);
@@ -241,6 +264,16 @@ const SKELETON_CARDS = [3, 2, 4, 1];
             @open-task="openTask"
           />
           <Button
+            v-tooltip.bottom="t('FLOW_KANBAN.EXPORT_DEALS')"
+            ghost
+            slate
+            md
+            icon="i-lucide-download"
+            :is-loading="isExporting"
+            :aria-label="t('FLOW_KANBAN.EXPORT_DEALS')"
+            @click="exportDeals"
+          />
+          <Button
             v-if="isAdmin"
             v-tooltip.bottom="t('FLOW_KANBAN.BOARD_SETTINGS')"
             ghost
@@ -398,6 +431,16 @@ const SKELETON_CARDS = [3, 2, 4, 1];
 
           <template v-if="!isMobile">
             <KanbanNotifications @open-card="openCard" @open-task="openTask" />
+            <Button
+              v-tooltip.bottom="t('FLOW_KANBAN.EXPORT_DEALS')"
+              ghost
+              slate
+              sm
+              icon="i-lucide-download"
+              :is-loading="isExporting"
+              :aria-label="t('FLOW_KANBAN.EXPORT_DEALS')"
+              @click="exportDeals"
+            />
             <Button
               v-if="isAdmin"
               v-tooltip.bottom="t('FLOW_KANBAN.BOARD_SETTINGS')"

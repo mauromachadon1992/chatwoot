@@ -103,6 +103,75 @@ class FlowKanbanAPI extends ApiClient {
     return axios.delete(`${this.url}/lost_reasons/${reasonId}`);
   }
 
+  createAiSummary(cardId) {
+    return axios.post(`${this.url}/cards/${cardId}/ai_summary`);
+  }
+
+  decideAiDraft(draftId, decision) {
+    return axios.post(`${this.url}/ai_drafts/${draftId}/decide`, { decision });
+  }
+
+  exportProducts() {
+    return axios.get(`${this.url}/products/export`, { responseType: 'blob' });
+  }
+
+  exportDeals(boardId, filters = {}) {
+    return axios.get(`${this.url}/boards/${boardId}/cards/export`, {
+      params: filters,
+      responseType: 'blob',
+    });
+  }
+
+  createImport({ file, kind, boardId }) {
+    const body = new FormData();
+    body.append('file', file);
+    body.append('kind', kind);
+    if (boardId) body.append('board_id', boardId);
+    return axios.post(`${this.url}/imports`, body);
+  }
+
+  updateImport(importId, mapping) {
+    return axios.patch(`${this.url}/imports/${importId}`, { mapping });
+  }
+
+  runImport(importId) {
+    return axios.post(`${this.url}/imports/${importId}/run`);
+  }
+
+  getImport(importId) {
+    return axios.get(`${this.url}/imports/${importId}`);
+  }
+
+  downloadImportErrors(importId) {
+    return axios.get(`${this.url}/imports/${importId}/errors`, {
+      responseType: 'blob',
+    });
+  }
+
+  getWebhooks() {
+    return axios.get(`${this.url}/webhooks`);
+  }
+
+  createWebhook(data) {
+    return axios.post(`${this.url}/webhooks`, data);
+  }
+
+  updateWebhook(webhookId, data) {
+    return axios.patch(`${this.url}/webhooks/${webhookId}`, data);
+  }
+
+  deleteWebhook(webhookId) {
+    return axios.delete(`${this.url}/webhooks/${webhookId}`);
+  }
+
+  getWebhookDeliveries(webhookId) {
+    return axios.get(`${this.url}/webhooks/${webhookId}/deliveries`);
+  }
+
+  testWebhook(webhookId) {
+    return axios.post(`${this.url}/webhooks/${webhookId}/test`);
+  }
+
   deleteCard(cardId) {
     return axios.delete(`${this.url}/cards/${cardId}`);
   }

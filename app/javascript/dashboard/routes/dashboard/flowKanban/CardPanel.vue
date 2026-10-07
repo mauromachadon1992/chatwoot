@@ -19,6 +19,8 @@ import Icon from 'dashboard/components-next/icon/Icon.vue';
 import CardValueSection from './CardValueSection.vue';
 import CardTasksSection from './CardTasksSection.vue';
 import CardHistorySection from './CardHistorySection.vue';
+import CardAiSection from './CardAiSection.vue';
+import { appendToDescription } from './aiSummary';
 import StatePill from './StatePill.vue';
 import LostReasonDialog from './LostReasonDialog.vue';
 import { useFlowKanban } from './useFlowKanban';
@@ -52,6 +54,12 @@ const form = ref({
 const isSaving = ref(false);
 const isDeleting = ref(false);
 const isReviewing = ref(false);
+const tasksKey = ref(0);
+
+// The accepted AI summary goes under the description in the form; the card's own Save keeps it.
+const addSummary = summary => {
+  form.value.description = appendToDescription(form.value.description, summary);
+};
 
 const staleDays = computed(() =>
   hasFeature('stale_alerts') ? card.value?.stale_days : null
@@ -243,7 +251,7 @@ defineExpose({ open });
           </p>
           <Button
             faded
-            blue
+            slate
             sm
             type="button"
             icon="i-lucide-check"
@@ -301,7 +309,15 @@ defineExpose({ open });
 
       <CardValueSection :card="card" @update:card="onValueChange" />
 
-      <CardTasksSection :card="card" />
+      <CardTasksSection :key="tasksKey" :card="card" />
+
+      <CardAiSection
+        v-if="hasFeature('ai_summary')"
+        :card="card"
+        :description="form.description"
+        @accept-summary="addSummary"
+        @task-created="tasksKey += 1"
+      />
 
       <section class="flex flex-col gap-3">
         <h4 class="text-heading-3 text-n-slate-12">
@@ -313,6 +329,7 @@ defineExpose({ open });
             :name="card.contact.name || ''"
             :size="36"
             rounded-full
+            aria-hidden="true"
           />
           <div class="flex flex-col flex-1 min-w-0">
             <span class="text-heading-3 truncate text-n-slate-12">

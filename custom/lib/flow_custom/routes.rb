@@ -9,7 +9,9 @@ module FlowCustom::Routes
                 resources :stages, only: [:create, :update, :destroy] do
                   collection { patch :reorder }
                 end
-                resources :cards, only: [:index]
+                resources :cards, only: [:index] do
+                  collection { get :export }
+                end
                 resources :automations, only: [:index, :create, :update, :destroy] do
                   collection { get :runs }
                 end
@@ -24,13 +26,32 @@ module FlowCustom::Routes
                 resources :items, only: [:create, :update, :destroy], controller: 'card_items'
                 resources :tasks, only: [:index, :create, :update, :destroy], controller: 'card_tasks'
                 resources :events, only: [:index], controller: 'card_events'
+                resource :ai_summary, only: [:create], controller: 'ai_summaries'
               end
               resources :tasks, only: [:index]
+              resources :ai_drafts, only: [], controller: 'ai_summaries' do
+                member { post :decide }
+              end
               resources :notifications, only: [:index, :update] do
                 collection { post :read_all }
               end
-              resources :products, only: [:index, :create, :update, :destroy]
+              resources :products, only: [:index, :create, :update, :destroy] do
+                collection { get :export }
+              end
+              resources :imports, only: [:create, :show, :update] do
+                member do
+                  post :run
+                  get :errors
+                end
+              end
               resources :lost_reasons, only: [:index, :create, :update, :destroy]
+              resources :webhooks, only: [:index, :create, :update, :destroy] do
+                member do
+                  get :deliveries
+                  post :test
+                  post :rotate_secret
+                end
+              end
               resource :settings, only: [:show, :update]
               get 'conversations/:conversation_id/cards', to: 'conversation_cards#index', as: :conversation_cards
             end

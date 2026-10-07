@@ -150,7 +150,7 @@ onMounted(load);
                 {{ t('FLOW_KANBAN.HISTORY.NOTE', { note: row.view.note }) }}
               </p>
               <p
-                class="flex flex-wrap items-center gap-x-1 text-label-small text-n-slate-10"
+                class="flex flex-wrap items-center gap-x-1 text-label-small text-n-slate-11"
               >
                 <Avatar
                   v-if="row.event.user"
@@ -158,6 +158,7 @@ onMounted(load);
                   :name="row.event.user.name"
                   :size="14"
                   rounded-full
+                  aria-hidden="true"
                 />
                 <span>
                   {{

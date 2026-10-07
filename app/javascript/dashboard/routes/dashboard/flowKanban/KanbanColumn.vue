@@ -121,7 +121,7 @@ const onChange = event => {
         <template #footer>
           <div
             v-if="!column.cards.length"
-            class="flex items-center justify-center h-24 text-label-small text-center border border-dashed rounded-lg border-n-slate-6 text-n-slate-10"
+            class="flex items-center justify-center h-24 text-label-small text-center border border-dashed rounded-lg border-n-slate-6 text-n-slate-11"
           >
             {{ t('FLOW_KANBAN.EMPTY.COLUMN') }}
           </div>

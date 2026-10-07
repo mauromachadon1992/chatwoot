@@ -1,8 +1,9 @@
 # Kanban roadmap: sprints and phases
 
-Status: **S0 to S5 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). **Phase P (C0 to C6), compatibility with fazer.ai agents, proposed**: C0 to C4 run
-before S6. S6 onwards proposed; see "Decisions to confirm".
+Status: **S0 to S8 built** (hardening done; rollout is yours) (2026-10-08; S0.1 publishing and staging
+wait for confirmation and a Coolify token). **Phase P (C0 to C6), compatibility with fazer.ai agents:
+C0 done, C1 to C6 proposed.** S6 to S8 were built before Phase P, which changes C6 and settles the AI
+assistant (see C6 and "Decisions to confirm").
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,
@@ -76,7 +77,7 @@ of the previous phases; recalibrate after Sprint 1, and treat the order, not the
 
 Dependencies: S3's card events ledger feeds S5 (run log), S6 (webhooks) and S7 (summary input).
 S2's auto-create needs S0's toggle pattern. S4's forecast needs S3's fields. S7 needs the licence
-check below. C0 to C4 need nothing new from S6 and ship before it; C6 needs S6.1.
+check below. C0 to C4 need nothing from S6 to S8 (already built); C6 builds on S6's webhook sender.
 
 ---
 
@@ -349,17 +350,36 @@ example into a request spec as its sprint lands.
 - **Accept:** a test agent configured with HTTP tools marks a deal lost with a reason, schedules a
   task, adds a product line and reads the quote, each as the `agent_bot` actor.
 
-### C6: Events to the agent (needs S6.1)
+### C6: Events to the agent (builds on S6; design open)
 **Goal:** Flow tells the agent about a deal without custom code in the agents' fork.
-- Sign S6.1's webhooks the way the agents' generic receptor expects: HMAC-SHA256 over the raw body in
-  `x-webhook-signature`, with an `event_id` as the idempotency key.
-- A rule action `nudge_agent` that posts `{event_id, conversation_ref, text}` to that receptor so
-  the agent speaks in the conversation. The `conversation_ref` exists only after the agent has used
-  an HTTP tool in that conversation, so a deal without a live conversation cannot be nudged this way;
-  that case would need a mapper inside the agents' fork (a pull request upstream).
-- **Tests:** retried event handled once; an invisible board never leaks; the agent never nudges
-  outside the WhatsApp 24 h window (the agents' own rule), and the log says it was skipped.
-- **Accept:** a stalled deal with a live conversation produces one agent message.
+
+**What S6 shipped, and why it does not fit the agents' receptor as is.**
+- S6 webhooks (`flow_kanban_webhooks`) send `{event, occurred_at, account_id, deal, data}` for
+  `deal.created|moved|won|lost|value_changed` and `task.created`, signed `X-Flow-Signature:
+  t=<timestamp>,v1=<hex>` (HMAC-SHA256 over `"<timestamp>.<body>"`).
+- The agents' generic receptor expects `{event_id, conversation_ref, text}` with HMAC-SHA256 over the
+  raw body in `x-webhook-signature`, and speaks into that conversation. The shapes, the signature and
+  the purpose differ, and an S6 payload carries no conversation.
+- S6 also refuses targets that are not public HTTPS (loopback, private ranges, link-local). The
+  agents' container on the same Docker network is therefore **not a valid S6 webhook target**; it
+  would need a public HTTPS address.
+
+**Design to decide before building.** `conversation_ref` is minted by the agents the first time one
+of its HTTP tools runs in a conversation, so Flow cannot compute it. Two ways to give Flow a
+reference without code in the agents' fork:
+1. A Flow HTTP tool the agent calls once per conversation, passing `{{conversation_ref}}` and the
+   display id; Flow stores it on the card's conversation link. Then a rule action `nudge_agent` posts
+   `{event_id, conversation_ref, text}` signed the agents' way, through its own narrow sender
+   (`FLOW_AGENTS_BASE_URL` as an explicit allowlist entry, so S6's strict guard stays strict).
+   `event_id` is the rule's episode key, so a retry acts once.
+2. Do not nudge from Flow at all: the agents already re-engage on their own follow-ups (24 h window
+   aware); use Flow rules only to create tasks for humans.
+
+Recommendation: **option 2 first** (nothing to build, no new surface); option 1 only if a pilot shows
+stalled deals the agent's own follow-ups miss.
+- **Tests (option 1):** retried event handled once; an invisible board never leaks; no nudge outside
+  the WhatsApp 24 h window (the agents' own rule), logged as skipped.
+- **Accept (option 1):** a stalled deal with a registered conversation produces one agent message.
 
 **Metrics (phase P):** operations passing in the harness (0 to 15); field-level differences (zero);
 agent actions in the deal history with the correct actor (all).
@@ -421,6 +441,8 @@ so connecting the agent costs no code.
 - **Tests:** dedup keys (SKU, contact e-mail or phone), idempotent re-import, a formula-injection
   guard on export (`=`, `+`, `-`, `@` prefixes).
 
+**Built:** see README, "Sprint 6". Decision 5 went with the recommendation (own table).
+
 **Metric:** deals/products imported; webhook deliveries succeeded ÷ attempted.
 
 ### S7: Assistance with AI (#8)
@@ -440,6 +462,16 @@ so connecting the agent costs no code.
   until accepted; failures leave the card unchanged.
 - **Accept:** a deal with two conversations produces a draft in the agent's language.
 
+**Spike result (go).** Assistant: **Captain**, through `Captain::BaseTaskService` (the same base
+as its own conversation summary); nothing from fazer.ai Agents is called from inside the app. Plan:
+this installation is Enterprise (`INSTALLATION_PRICING_PLAN=enterprise`, `captain_tasks` on, 100,000
+responses available), not the community plan the ee-local once reported. Credentials: no
+`CAPTAIN_OPEN_AI_API_KEY` is set in dev, so the live call could not be tried: tests replace the AI
+call, and a super admin must add the key (Settings → Captain) before the first real summary.
+Cost: one call is at most about 30,000 characters in (about 8,000 tokens) and 300 tokens out with
+the default `gpt-4.1-mini`, a fraction of a cent, and 10 an hour per agent caps it. Data: see README,
+"Sprint 7". **Built:** see README, "Sprint 7".
+
 **Metric:** drafts accepted ÷ generated.
 
 ---
@@ -455,6 +487,19 @@ so connecting the agent costs no code.
   signing, import limits.
 - **Rollout:** features on per account, pilot board first, one retrospective; docs and `PRODUCT.md`
   refreshed; the roadmap closed or re-planned.
+
+**Built:** the audit, the performance review and the security review (README, "Sprint 8"); `PRODUCT.md`
+and the README refreshed. **Left for the rollout, in this order** (none needs code):
+1. Build the image (`build-ee`), check it in `ee-local`, publish it (`publish-ghcr`) and promote it on
+   Coolify staging (needs a valid Coolify token).
+2. In Super Admin, turn on per account what the pilot needs: *Automatic deals* (and pick the pilot board
+   and inbox in the board settings), leave *AI deal summary* off until a Captain API key is set.
+3. Pilot with one board for two weeks, then read the metrics of section 6 with
+   `rake "flow:kanban:metrics[ACCOUNT_ID,DAYS]"`, and note what surprised.
+4. Re-plan from the retrospective. Candidates already named: stale-alert preferences per agent, quote as
+   PDF, an `hmac` verification snippet for webhook receivers, a Kanban export limit for agents if the
+   pilot asks for one, running the image as a non-root user, and clearing the Trivy findings that
+   only an upstream sync fixes.
 
 ---
 
@@ -500,7 +545,7 @@ so connecting the agent costs no code.
 1. **Cadence:** is "one releasable increment per sprint, about a week" the right size for you?
 2. **Pilot:** which board and which inbox pilot the automatic deals (S2.1)?
 3. **Order:** keep Phase 2 (revenue) before Phase 3 (leverage), or bring #9 automations forward?
-4. **AI assistant:** Captain or fazer.ai Agents for S7, and may the spike check the licence first?
+4. ~~**AI assistant:** Captain or fazer.ai Agents for S7?~~ **Settled by S7: Captain** (`Custom::Kanban::DealSummaryService` builds on `Captain::BaseTaskService`). The fazer.ai agents are not the engine of the summary.
 5. **Webhooks:** own table (recommended) or Chatwoot's `Webhook` with an upstream hook?
 6. **Quote:** text into the composer now and PDF later, as planned?
 7. **Roles:** lost reasons, probabilities, stale thresholds and rules are administrator-only; agree?
@@ -512,3 +557,5 @@ so connecting the agent costs no code.
     card the agent sees (C3)?
 11. **Board agents:** is a per-agent board restriction (C4) wanted, or should `update_agents` be
     accepted and ignored?
+12. **Nudging the agent from Flow (C6):** option 2 (no nudge; the agents' own follow-ups plus human
+    tasks) or option 1 (store `conversation_ref`, add the `nudge_agent` action)?

@@ -23,9 +23,45 @@ en:
       stale_alerts:
         label: Stalled-deal alerts
         hint: A deal that stays too long in a stage is flagged and its agent is told, on the stages given a limit.
+      webhooks:
+        label: Webhooks
+        hint: An administrator can send deal events (created, moved, won, lost, value changed, task created) to an address.
+      ai_summary:
+        label: 'AI deal summary'
+        hint: 'Agents can ask for a draft summary of a deal and a suggested next task. The text of the deal and of the conversations they can open is sent to the AI provider Captain uses.'
     settings:
       unsupported_currency: Currency not supported.
       quote_template_too_long: The quote message can have up to 2000 characters.
+    ai:
+      nothing_to_summarize: 'There are no messages in the linked conversations to summarize yet.'
+      rate_limited: 'You have asked for many summaries. Try again in %{minutes} min.'
+      disabled: 'The AI summary is not turned on for this account.'
+      not_configured: 'The AI assistant is not set up. Ask an administrator to add the Captain API key.'
+      quota: 'The account has used its AI responses for this period.'
+      failed: 'The assistant could not answer now. Nothing was changed; try again in a moment.'
+    imports:
+      file:
+        too_big: 'The file is over 2 MB.'
+        encoding: 'The file is not UTF-8. Save it as CSV UTF-8 and try again.'
+        empty: 'The file has no header row.'
+        no_rows: 'The file has a header but no rows.'
+        too_many_rows: 'The file has more than %{max} rows. Split it and import in parts.'
+        malformed: 'The file is not a valid CSV (check quotes and separators).'
+      errors:
+        name_blank: 'the name is empty'
+        name_too_long: 'the name is over %{max} characters'
+        sku_too_long: 'the SKU is over %{max} characters'
+        unit_unknown: 'unknown unit (use one of %{units})'
+        price_invalid: 'the price is not an amount'
+        repeated_in_file: 'this item is repeated in the file'
+        email_invalid: 'the e-mail is not valid'
+        phone_invalid: 'the phone must be a number with country code, like +5511999998888'
+        contact_missing: 'needs an e-mail or a phone to find or create the contact'
+        stage_unknown: 'no stage called "%{name}" (stages: %{stages})'
+        value_invalid: 'the value is not an amount'
+        date_invalid: 'the date must be YYYY-MM-DD or DD/MM/YYYY'
+        assignee_unknown: 'no agent with the e-mail %{email}'
+        unexpected: 'something went wrong with this row'
     task_reminder:
       due_soon: 'Task due in %{minutes} min: %{title} (%{card})'
       overdue: 'Task overdue: %{title} (%{card})'
@@ -37,6 +73,13 @@ en:
           attributes:
             value_cents:
               follows_items: follows the sum of the products; remove the products to type a value
+        custom/kanban/webhook:
+          attributes:
+            url:
+              https: must be a full https address
+            events:
+              empty: pick at least one event
+          too_many: an account can have at most %{max} webhooks
         custom/kanban/stage_automation:
           attributes:
             trigger_config:
