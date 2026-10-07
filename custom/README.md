@@ -152,6 +152,8 @@ label (`/super_admin/accounts/:id/white_label`). Values live in `accounts.settin
 
 ## Kanban
 
+What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROADMAP.md).
+
 - Backend: `app/models/custom/kanban/*`, `app/controllers/api/v1/accounts/kanban/*`,
   `app/policies/custom/kanban/*`. Tables are prefixed `flow_kanban_`.
 - Frontend: `app/javascript/dashboard/routes/dashboard/flowKanban/`,
