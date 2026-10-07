@@ -1,7 +1,7 @@
 # Kanban roadmap: sprints and phases
 
-Status: **S0 to S5 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). S6 onwards proposed; see "Decisions to confirm".
+Status: **S0 to S6 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
+Coolify token). S7 onwards proposed; see "Decisions to confirm".
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,
@@ -265,6 +265,8 @@ delivery log and a "Send test" button.
 - **States:** wrong file, missing columns, partial failure, huge file.
 - **Tests:** dedup keys (SKU, contact e-mail or phone), idempotent re-import, a formula-injection
   guard on export (`=`, `+`, `-`, `@` prefixes).
+
+**Built:** see README, "Sprint 6". Decision 5 went with the recommendation (own table).
 
 **Metric:** deals/products imported; webhook deliveries succeeded ÷ attempted.
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_10_100000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_12_100000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1277,6 +1277,29 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_100000) do
     t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
   end
 
+  create_table "flow_kanban_imports", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "board_id"
+    t.string "kind", null: false
+    t.string "filename", null: false
+    t.string "status", default: "analyzed", null: false
+    t.text "source"
+    t.string "delimiter", default: ",", null: false
+    t.jsonb "headers", default: [], null: false
+    t.jsonb "mapping", default: {}, null: false
+    t.integer "total_rows", default: 0, null: false
+    t.integer "processed_rows", default: 0, null: false
+    t.integer "created_count", default: 0, null: false
+    t.integer "updated_count", default: 0, null: false
+    t.integer "skipped_count", default: 0, null: false
+    t.integer "error_count", default: 0, null: false
+    t.jsonb "errors_log", default: [], null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_imports_on_account_id"
+  end
+
   create_table "flow_kanban_lost_reasons", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.string "name", null: false
@@ -1357,6 +1380,33 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_100000) do
     t.index ["account_id"], name: "index_flow_kanban_stages_on_account_id"
     t.index ["board_id", "position"], name: "index_flow_kanban_stages_on_board_id_and_position"
     t.index ["board_id"], name: "index_flow_kanban_stages_on_board_id"
+  end
+
+  create_table "flow_kanban_webhook_deliveries", force: :cascade do |t|
+    t.bigint "webhook_id", null: false
+    t.bigint "card_id"
+    t.string "event", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.string "status", default: "pending", null: false
+    t.integer "attempts", default: 0, null: false
+    t.integer "http_status"
+    t.string "error"
+    t.integer "duration_ms"
+    t.datetime "delivered_at"
+    t.datetime "created_at", null: false
+    t.index ["created_at"], name: "index_flow_kanban_webhook_deliveries_on_time"
+    t.index ["webhook_id", "created_at"], name: "index_flow_kanban_webhook_deliveries_on_webhook_and_time"
+  end
+
+  create_table "flow_kanban_webhooks", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.string "url", null: false
+    t.string "events", default: [], null: false, array: true
+    t.string "secret", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_flow_kanban_webhooks_on_account_id"
   end
 
   create_table "flow_login_pages", force: :cascade do |t|
@@ -2141,6 +2191,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_100000) do
   add_foreign_key "flow_kanban_cards", "flow_kanban_stages", column: "stage_id"
   add_foreign_key "flow_kanban_cards", "users", column: "assignee_id", on_delete: :nullify
   add_foreign_key "flow_kanban_cards", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_imports", "accounts"
+  add_foreign_key "flow_kanban_imports", "users"
   add_foreign_key "flow_kanban_lost_reasons", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_notifications", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_notifications", "flow_kanban_card_tasks", column: "task_id", on_delete: :nullify
@@ -2155,6 +2207,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_10_100000) do
   add_foreign_key "flow_kanban_stage_transitions", "users", on_delete: :nullify
   add_foreign_key "flow_kanban_stages", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_stages", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_webhook_deliveries", "flow_kanban_webhooks", column: "webhook_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_webhooks", "accounts"
   add_foreign_key "group_members", "contacts"
   add_foreign_key "group_members", "contacts", column: "group_contact_id"
   add_foreign_key "inboxes", "portals"

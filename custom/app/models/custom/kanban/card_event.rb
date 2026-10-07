@@ -12,6 +12,10 @@ class Custom::Kanban::CardEvent < ApplicationRecord
 
   validates :kind, inclusion: { in: KINDS }
 
+  # Webhooks are told after the change is committed, so a receiver never hears about a deal
+  # that was rolled back.
+  after_create_commit { Custom::Kanban::WebhookDispatcher.call(self) }
+
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }
 
   # The actor is whoever is signed in; a rule or a job leaves it empty.

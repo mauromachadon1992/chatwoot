@@ -16,10 +16,12 @@ import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue'
 import TextArea from 'dashboard/components-next/textarea/TextArea.vue';
 import EmptyState from './EmptyState.vue';
 import SkeletonRows from './SkeletonRows.vue';
+import DataSection from './DataSection.vue';
+import WebhooksSection from './WebhooksSection.vue';
 import { QUOTE_PLACEHOLDERS, placeholderText, renderQuote } from './quote';
 import { useFlowKanban } from './useFlowKanban';
 
-// Settings → Kanban: why deals are lost, and the message a quote is composed from.
+// Settings → Kanban: why deals are lost, the message a quote is composed from, and the webhooks.
 // Administrators only (the route's permissions). Each change saves at once.
 const { t } = useI18n();
 const store = useStore();
@@ -362,6 +364,10 @@ onMounted(load);
             />
           </div>
         </section>
+
+        <DataSection />
+
+        <WebhooksSection />
       </div>
     </template>
   </SettingsLayout>

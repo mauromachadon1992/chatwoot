@@ -23,9 +23,35 @@ pt_BR:
       stale_alerts:
         label: Alerta de negócio parado
         hint: Um negócio que fica tempo demais numa etapa é sinalizado e o agente é avisado, nas etapas com limite definido.
+      webhooks:
+        label: Webhooks
+        hint: Um administrador pode enviar eventos dos negócios (criado, movido, ganho, perdido, valor alterado, tarefa criada) a um endereço.
     settings:
       unsupported_currency: Moeda não suportada.
       quote_template_too_long: A mensagem de orçamento pode ter até 2000 caracteres.
+    imports:
+      file:
+        too_big: 'O arquivo tem mais de 2 MB.'
+        encoding: 'O arquivo não está em UTF-8. Salve como CSV UTF-8 e tente de novo.'
+        empty: 'O arquivo não tem linha de cabeçalho.'
+        no_rows: 'O arquivo tem cabeçalho, mas nenhuma linha.'
+        too_many_rows: 'O arquivo tem mais de %{max} linhas. Divida e importe em partes.'
+        malformed: 'O arquivo não é um CSV válido (confira aspas e separadores).'
+      errors:
+        name_blank: 'o nome está vazio'
+        name_too_long: 'o nome passa de %{max} caracteres'
+        sku_too_long: 'o SKU passa de %{max} caracteres'
+        unit_unknown: 'unidade desconhecida (use uma de %{units})'
+        price_invalid: 'o preço não é um valor'
+        repeated_in_file: 'este item se repete no arquivo'
+        email_invalid: 'o e-mail não é válido'
+        phone_invalid: 'o telefone precisa ser um número com código do país, como +5511999998888'
+        contact_missing: 'precisa de e-mail ou telefone para achar ou criar o contato'
+        stage_unknown: 'não existe etapa chamada "%{name}" (etapas: %{stages})'
+        value_invalid: 'o valor não é um valor monetário'
+        date_invalid: 'a data precisa ser AAAA-MM-DD ou DD/MM/AAAA'
+        assignee_unknown: 'não há agente com o e-mail %{email}'
+        unexpected: 'algo deu errado com esta linha'
     task_reminder:
       due_soon: 'Tarefa vence em %{minutes} min: %{title} (%{card})'
       overdue: 'Tarefa atrasada: %{title} (%{card})'
@@ -37,6 +63,13 @@ pt_BR:
           attributes:
             value_cents:
               follows_items: segue a soma dos produtos; remova os produtos para digitar um valor
+        custom/kanban/webhook:
+          attributes:
+            url:
+              https: deve ser um endereço https completo
+            events:
+              empty: escolha ao menos um evento
+          too_many: uma conta pode ter no máximo %{max} webhooks
         custom/kanban/stage_automation:
           attributes:
             trigger_config:

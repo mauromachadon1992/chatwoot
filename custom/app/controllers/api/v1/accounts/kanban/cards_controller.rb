@@ -13,6 +13,14 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     render json: { payload: stages.map { |stage| column(stage, offset) } }
   end
 
+  # The board's deals, with the filters it is viewed with, as a CSV. Only boards the person sees.
+  def export
+    board = find_visible_board(params[:board_id])
+    cards = filtered(Custom::Kanban::Card.where(board: board)).joins(:stage).reorder('flow_kanban_stages.position, flow_kanban_cards.position')
+    send_data Custom::Kanban::CsvExport.deals(cards), type: 'text/csv; charset=utf-8',
+                                                      filename: "deals-#{board.name.parameterize.presence || board.id}.csv"
+  end
+
   def show
     render json: { payload: @card.push_event_data(with_items: true) }
   end

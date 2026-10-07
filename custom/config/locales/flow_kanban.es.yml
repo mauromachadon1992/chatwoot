@@ -23,9 +23,35 @@ es:
       stale_alerts:
         label: Alerta de negociación detenida
         hint: Una negociación que se queda demasiado en una etapa se marca y se avisa a su agente, en las etapas con límite.
+      webhooks:
+        label: Webhooks
+        hint: Un administrador puede enviar eventos de los negocios (creado, movido, ganado, perdido, valor cambiado, tarea creada) a una dirección.
     settings:
       unsupported_currency: Moneda no admitida.
       quote_template_too_long: El mensaje de presupuesto puede tener hasta 2000 caracteres.
+    imports:
+      file:
+        too_big: 'El archivo pesa más de 2 MB.'
+        encoding: 'El archivo no está en UTF-8. Guárdalo como CSV UTF-8 e inténtalo de nuevo.'
+        empty: 'El archivo no tiene fila de encabezado.'
+        no_rows: 'El archivo tiene encabezado pero ninguna fila.'
+        too_many_rows: 'El archivo tiene más de %{max} filas. Divídelo e importa por partes.'
+        malformed: 'El archivo no es un CSV válido (revisa comillas y separadores).'
+      errors:
+        name_blank: 'el nombre está vacío'
+        name_too_long: 'el nombre pasa de %{max} caracteres'
+        sku_too_long: 'el SKU pasa de %{max} caracteres'
+        unit_unknown: 'unidad desconocida (usa una de %{units})'
+        price_invalid: 'el precio no es un importe'
+        repeated_in_file: 'este elemento se repite en el archivo'
+        email_invalid: 'el correo no es válido'
+        phone_invalid: 'el teléfono debe ser un número con código de país, como +5511999998888'
+        contact_missing: 'necesita correo o teléfono para encontrar o crear el contacto'
+        stage_unknown: 'no hay etapa llamada "%{name}" (etapas: %{stages})'
+        value_invalid: 'el valor no es un importe'
+        date_invalid: 'la fecha debe ser AAAA-MM-DD o DD/MM/AAAA'
+        assignee_unknown: 'no hay agente con el correo %{email}'
+        unexpected: 'algo salió mal con esta fila'
     task_reminder:
       due_soon: 'Tarea vence en %{minutes} min: %{title} (%{card})'
       overdue: 'Tarea vencida: %{title} (%{card})'
@@ -37,6 +63,13 @@ es:
           attributes:
             value_cents:
               follows_items: sigue la suma de los productos; quite los productos para escribir un valor
+        custom/kanban/webhook:
+          attributes:
+            url:
+              https: debe ser una dirección https completa
+            events:
+              empty: elige al menos un evento
+          too_many: una cuenta puede tener como máximo %{max} webhooks
         custom/kanban/stage_automation:
           attributes:
             trigger_config:

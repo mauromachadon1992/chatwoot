@@ -321,3 +321,38 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   (the board settings are already a side panel) as *When* + ordered *Then* steps with up/down/remove,
   inline errors after the first save attempt and the server's message. An empty board offers three
   starters (won when resolved, chase a silent customer, fast first contact).
+
+### Sprint 6: connect and import (ROADMAP.md)
+
+- **Webhooks** (`flow_kanban_webhooks`, `flow_kanban_webhook_deliveries`, Settings → Kanban → Webhooks,
+  administrators only, up to 10 per account): own table, so no upstream constant is touched. A webhook
+  is **account-level**: it hears about every board of the account, which is why agents cannot see or
+  change it. Events: `deal.created`, `deal.moved`, `deal.won`, `deal.lost`, `deal.value_changed`,
+  `task.created`; a move onto a won or lost stage is both `deal.moved` and `deal.won`/`deal.lost`.
+  They come from the card events ledger: `CardEvent` `after_create_commit` →
+  `WebhookDispatcher` (the payload is built then, so a retry or a deleted deal still sends what
+  happened) → `WebhookDeliveryJob`. Switch: the `webhooks` account feature (on by default; it sends
+  nothing until an address is added).
+- **Delivery:** `POST` JSON with `X-Flow-Event`, `X-Flow-Delivery` and
+  `X-Flow-Signature: t=<unix time>,v1=<hex>`, where the signature is HMAC-SHA256 of
+  `"<time>.<body>"` with the webhook's secret (shown once, on creation). Five attempts in all
+  (after 1 min, 5 min, 30 min, 2 h) for a timeout, a 5xx, 408 or 429; any other answer is final. Only
+  https is accepted, with no user:password; the address is resolved first and refused when it points
+  to a private, loopback or link-local network (the connection goes to the address that was checked,
+  and redirects are not followed). *Send test* sends a signed `ping` now and shows the answer; the
+  log shows the last 50 deliveries and is kept 30 days (`NotificationCleanupJob`).
+- **Export** (`GET kanban/products/export`, `GET kanban/boards/:id/cards/export`): UTF-8 with BOM,
+  money as a plain decimal, at most 20,000 rows, and a cell that starts with `=`, `+`, `-`, `@`, a tab
+  or a return gets a leading apostrophe so a spreadsheet does not read it as a formula. The deals
+  export takes the board's filters (the toolbar's download button sends the ones in use) and only
+  works for boards the person sees. The first columns are the ones the importers read.
+- **Import** (`flow_kanban_imports`, Settings → Kanban → Import and export, administrators only):
+  upload → **dry run** (columns guessed from the header, editable; the first rows with what would
+  happen to each; every problem by line; nothing written) → run in the background
+  (`ImportJob`, claimed once, progress polled) → result and a downloadable error file. Limits: 2 MB,
+  5,000 rows, UTF-8, comma or semicolon. Products are matched by SKU (by name without one), so a
+  second import of the same file changes nothing. Deals go into one board: the contact is found by
+  e-mail or phone (and created when new), a deal with the same title for the same contact is skipped,
+  the stage is read by name (the first open one when empty), values accept `1.234,56` and `1234.56`,
+  dates `AAAA-MM-DD` or `DD/MM/AAAA`. Imported deals fire the deal-created rules and webhooks like
+  any other. The file is dropped when the run ends and finished imports after 7 days.

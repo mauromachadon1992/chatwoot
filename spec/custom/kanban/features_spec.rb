@@ -4,8 +4,8 @@ RSpec.describe 'Kanban account features', type: :request do
   let(:account) { create(:account) }
 
   describe Custom::Kanban::Features do
-    it 'gives an account that never chose the defaults: stalled alerts on, automatic deals off' do
-      expect(account.flow_kanban_features).to eq(%w[stale_alerts])
+    it 'gives an account that never chose the defaults: stalled alerts and webhooks on, automatic deals off' do
+      expect(account.flow_kanban_features).to eq(%w[stale_alerts webhooks])
       expect(described_class.enabled?(account, :stale_alerts)).to be(true)
       expect(described_class.enabled?(account, :auto_create)).to be(false)
     end

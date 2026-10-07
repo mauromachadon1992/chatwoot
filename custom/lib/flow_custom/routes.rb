@@ -9,7 +9,9 @@ module FlowCustom::Routes
                 resources :stages, only: [:create, :update, :destroy] do
                   collection { patch :reorder }
                 end
-                resources :cards, only: [:index]
+                resources :cards, only: [:index] do
+                  collection { get :export }
+                end
                 resources :automations, only: [:index, :create, :update, :destroy] do
                   collection { get :runs }
                 end
@@ -29,8 +31,22 @@ module FlowCustom::Routes
               resources :notifications, only: [:index, :update] do
                 collection { post :read_all }
               end
-              resources :products, only: [:index, :create, :update, :destroy]
+              resources :products, only: [:index, :create, :update, :destroy] do
+                collection { get :export }
+              end
+              resources :imports, only: [:create, :show, :update] do
+                member do
+                  post :run
+                  get :errors
+                end
+              end
               resources :lost_reasons, only: [:index, :create, :update, :destroy]
+              resources :webhooks, only: [:index, :create, :update, :destroy] do
+                member do
+                  get :deliveries
+                  post :test
+                end
+              end
               resource :settings, only: [:show, :update]
               get 'conversations/:conversation_id/cards', to: 'conversation_cards#index', as: :conversation_cards
             end

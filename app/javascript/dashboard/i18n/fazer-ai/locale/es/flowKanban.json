@@ -618,7 +618,163 @@
         "SAVE": "Guardar mensaje",
         "USE_DEFAULT": "Volver al valor por defecto",
         "SAVED": "Mensaje de presupuesto guardado."
+      },
+      "WEBHOOKS": {
+        "TITLE": "Webhooks",
+        "DESCRIPTION": "Avisa a otro sistema cuando algo pase en los negocios. Vale para todos los embudos de la cuenta; cada envío se firma con un secreto.",
+        "ADD": "Añadir webhook",
+        "EDIT": "Editar webhook",
+        "DELETE": "Eliminar webhook",
+        "DELETE_CONFIRM": "La dirección {url} deja de recibir avisos. Su historial de envíos también se borra.",
+        "SAVE": "Guardar",
+        "CANCEL": "Cancelar",
+        "ACTIVE": "Webhook activo",
+        "EMPTY_TITLE": "Aún no hay webhooks",
+        "EMPTY_BODY": "Añade una dirección https para recibir avisos de negocios creados, movidos, ganados o perdidos.",
+        "LIMIT": "Una cuenta puede tener hasta {max} webhooks.",
+        "MORE_EVENTS": "+{count}",
+        "URL": "Dirección",
+        "URL_HINT": "Debe empezar con https://. No se aceptan direcciones locales ni de red interna.",
+        "EVENTS_LABEL": "Avisar cuando",
+        "EVENTS": {
+          "DEAL_CREATED": "Se cree un negocio",
+          "DEAL_MOVED": "Un negocio cambie de etapa",
+          "DEAL_WON": "Se gane un negocio",
+          "DEAL_LOST": "Se pierda un negocio",
+          "DEAL_VALUE_CHANGED": "Cambie el valor de un negocio",
+          "TASK_CREATED": "Se cree una tarea"
+        },
+        "PROBLEMS": {
+          "URL_EMPTY": "Indica la dirección.",
+          "URL_HTTPS": "Usa una dirección completa, empezando por https://",
+          "EVENTS": "Elige al menos un aviso."
+        },
+        "STATUS": {
+          "SUCCESS": "Entregado",
+          "FAILED": "Falló",
+          "RETRYING": "Reintentando",
+          "PENDING": "En cola",
+          "NONE": "Sin envíos"
+        },
+        "ERRORS": {
+          "BLOCKED_ADDRESS": "La dirección apunta a una red interna y se bloqueó.",
+          "UNRESOLVED_HOST": "No se pudo encontrar la dirección.",
+          "WEBHOOK_OFF": "El webhook se apagó antes del envío."
+        },
+        "TEST": {
+          "BUTTON": "Enviar prueba",
+          "OK": "Prueba entregada: respuesta {status} en {ms} ms.",
+          "FAILED": "La prueba falló. {reason}"
+        },
+        "LOG": {
+          "OPEN": "Ver envíos",
+          "TITLE": "Últimos envíos",
+          "CLOSE": "Cerrar",
+          "EMPTY": "Aún no se envió nada. Usa “Enviar prueba” para revisar la dirección.",
+          "PING": "Prueba",
+          "ATTEMPTS": "{count} intento | {count} intentos"
+        },
+        "SECRET": {
+          "TITLE": "Guarda el secreto ahora",
+          "DESCRIPTION": "No se mostrará de nuevo. Quien recibe lo usa para comprobar que el aviso vino de aquí.",
+          "DONE": "Ya lo guardé",
+          "COPY": "Copiar",
+          "COPIED": "Copiado",
+          "COPY_FAILED": "No se pudo copiar. Selecciona el texto y cópialo a mano.",
+          "HOW": "Cada envío trae el encabezado X-Flow-Signature (t=hora,v1=firma). La firma es el HMAC-SHA256 de “hora.cuerpo” con este secreto."
+        }
+      },
+      "DATA": {
+        "TITLE": "Importar y exportar",
+        "DESCRIPTION": "Lleva productos y negocios de una hoja de cálculo al Kanban, o descárgalos en CSV. No se guarda nada antes de que lo revises.",
+        "PRODUCTS": "Productos",
+        "PRODUCTS_HINT": "El catálogo de la cuenta. Importar de nuevo el mismo archivo no duplica nada: el SKU (o el nombre, sin SKU) identifica el producto.",
+        "DEALS": "Negocios",
+        "DEALS_HINT": "Los negocios de un embudo. El contacto se encuentra por correo o teléfono; un negocio con el mismo título para el mismo contacto se omite.",
+        "BOARD": "Embudo",
+        "EXPORT": "Exportar CSV",
+        "IMPORT": "Importar CSV",
+        "PRODUCTS_IMPORTED": "Productos importados.",
+        "DEALS_IMPORTED": "Negocios importados."
+      },
+      "IMPORT": {
+        "TITLE": {
+          "PRODUCTS": "Importar productos",
+          "DEALS": "Importar negocios"
+        },
+        "INTRO": {
+          "PRODUCTS": "Elige un archivo CSV con los productos. La primera línea debe nombrar las columnas: nombre, SKU, unidad y precio.",
+          "DEALS": "Elige un archivo CSV con los negocios. La primera línea debe nombrar las columnas; cada negocio necesita correo o teléfono del contacto."
+        },
+        "LIMITS": "Hasta {mb} MB y {rows} filas, UTF-8, separado por coma o punto y coma.",
+        "NOTHING_YET": "Revisas las columnas y las filas antes de que se guarde nada.",
+        "CHOOSE": "Elegir archivo",
+        "READING": "Leyendo el archivo…",
+        "FILE_PROBLEM": {
+          "NONE": "Elige un archivo.",
+          "TYPE": "El archivo debe ser un CSV (.csv).",
+          "SIZE": "El archivo pesa más de {max} MB.",
+          "EMPTY": "El archivo está vacío."
+        },
+        "ROWS": "{count} fila | {count} filas",
+        "COLUMNS": "Columnas",
+        "COLUMNS_HINT": "Revisa qué columna del archivo es cada campo. Al cambiar una, las filas se leen de nuevo.",
+        "REQUIRED": "(obligatorio)",
+        "NOT_IMPORTED": "No importar",
+        "MISSING": "Elige la columna de: {fields}.",
+        "FIELDS": {
+          "PRODUCTS": {
+            "NAME": "Nombre",
+            "SKU": "SKU",
+            "UNIT": "Unidad",
+            "PRICE": "Precio"
+          },
+          "DEALS": {
+            "TITLE": "Título",
+            "CONTACT_NAME": "Nombre del contacto",
+            "CONTACT_EMAIL": "Correo del contacto",
+            "CONTACT_PHONE": "Teléfono del contacto",
+            "STAGE": "Etapa",
+            "VALUE": "Valor",
+            "EXPECTED_CLOSE_ON": "Fecha prevista de cierre",
+            "ASSIGNEE_EMAIL": "Correo del responsable"
+          }
+        },
+        "SUMMARY": {
+          "CREATE": "{count} por crear",
+          "UPDATE": "{count} por actualizar",
+          "SKIP": "{count} sin cambios",
+          "ERROR": "{count} con error"
+        },
+        "ACTIONS": {
+          "CREATE": "Crear",
+          "UPDATE": "Actualizar",
+          "SKIP": "Sin cambios",
+          "ERROR": "Error"
+        },
+        "PREVIEW": "Primeras filas",
+        "LINE": "Línea",
+        "RESULT": "Qué pasa",
+        "PROBLEMS": "{count} fila con problema | {count} filas con problemas",
+        "PROBLEMS_HINT": "Estas filas quedan fuera. Las demás se importan y puedes descargar las que tienen problema después.",
+        "AT_LINE": "Línea {line}:",
+        "MORE_PROBLEMS": "Y {count} más. Todas van en el archivo de errores.",
+        "RUN": "Importar {count} filas",
+        "CANCEL": "Cancelar",
+        "HIDE": "Cerrar",
+        "CLOSE": "Listo",
+        "RUNNING": "Importando… {done} de {total}",
+        "PROGRESS": "Progreso de la importación",
+        "CAN_LEAVE": "Puedes cerrar esta ventana: la importación sigue en segundo plano.",
+        "FINISHED": {
+          "DONE": "Importación terminada",
+          "FAILED": "La importación falló"
+        },
+        "RESULT_SUMMARY": "{created} creados, {updated} actualizados, {skipped} sin cambios y {errors} con error.",
+        "FAILED_BODY": "Algo salió mal y la importación se detuvo. Lo ya guardado se queda; puedes intentarlo de nuevo con el mismo archivo sin duplicar.",
+        "DOWNLOAD_ERRORS": "Descargar las {count} filas con error"
       }
-    }
+    },
+    "EXPORT_DEALS": "Exportar negocios (CSV)"
   }
 }
