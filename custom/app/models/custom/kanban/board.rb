@@ -9,6 +9,7 @@ class Custom::Kanban::Board < ApplicationRecord
   # Cards first: they reference the stages, so the stages can only go once the cards are gone.
   has_many :cards, class_name: 'Custom::Kanban::Card', dependent: :delete_all
   has_many :stages, -> { order(:position, :id) }, class_name: 'Custom::Kanban::Stage', dependent: :delete_all, inverse_of: :board
+  has_many :stage_automations, class_name: 'Custom::Kanban::StageAutomation', dependent: :delete_all, inverse_of: :board
 
   validates :name, presence: true, length: { maximum: 120 }
   validate :restrictions_belong_to_account

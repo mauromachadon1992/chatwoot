@@ -21,6 +21,7 @@ class Custom::Kanban::Card < ApplicationRecord
   has_many :items, -> { order(:position, :id) }, class_name: 'Custom::Kanban::CardItem', dependent: :delete_all,
                                                  inverse_of: :card
   has_many :stage_transitions, class_name: 'Custom::Kanban::StageTransition', dependent: :delete_all
+  has_many :tasks, class_name: 'Custom::Kanban::CardTask', dependent: :delete_all, inverse_of: :card
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :value_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: MAX_VALUE_CENTS }
@@ -89,10 +90,9 @@ class Custom::Kanban::Card < ApplicationRecord
       position: position,
       value_cents: value_cents,
       items_count: items_count,
+      tasks: task_summary,
       created_by_id: created_by_id,
-      stage_changed_at: stage_changed_at&.to_i,
-      created_at: created_at.to_i,
-      updated_at: updated_at.to_i,
+      **timestamps_data,
       contact: contact_data,
       assignee: assignee&.push_event_data,
       conversations: card_conversations.map { |link| conversation_data(link.conversation) }
@@ -108,6 +108,16 @@ class Custom::Kanban::Card < ApplicationRecord
     return next_card.position - POSITION_STEP if next_card
 
     (siblings.minimum(:position) || POSITION_STEP) - POSITION_STEP
+  end
+
+  def timestamps_data
+    { stage_changed_at: stage_changed_at&.to_i, created_at: created_at.to_i, updated_at: updated_at.to_i }
+  end
+
+  # What the board shows about the follow-ups; the tasks themselves go only to whoever opens the card.
+  def task_summary
+    open_tasks = tasks.reject(&:completed?)
+    { open: open_tasks.size, overdue: open_tasks.count(&:overdue?), next_due_at: open_tasks.map(&:due_at).min&.to_i }
   end
 
   def contact_data
