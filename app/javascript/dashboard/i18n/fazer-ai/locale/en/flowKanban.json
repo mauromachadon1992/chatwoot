@@ -350,28 +350,131 @@
     },
     "AUTOMATIONS": {
       "SECTION": "Automations",
-      "HINT": "Move cards on their own when the conversation changes. The first matching rule wins.",
-      "EMPTY": "No automations on this board.",
-      "TRIGGER": "Trigger",
+      "HINT": "Let the board work on its own: when something happens to a deal, rules act in the order they were created.",
+      "EMPTY_TITLE": "No automations yet",
+      "EMPTY": "Start from one of these templates and adjust it.",
+      "NEW": "New automation",
+      "WHEN": "When",
+      "THEN": "Then",
+      "STEP": "Step {n}",
       "TRIGGERS": {
-        "CONVERSATION_STATUS_CHANGED": "Status change",
-        "LABEL_ADDED": "Label added"
+        "CONVERSATION_STATUS_CHANGED": "A conversation status changes",
+        "LABEL_ADDED": "A label is added",
+        "DEAL_CREATED": "A deal is created",
+        "DEAL_STALLED": "A deal stalls",
+        "NO_REPLY": "Nobody replies for a while"
+      },
+      "TRIGGER_HINT": {
+        "DEAL_CREATED": "Applies to every new deal, made by hand or by a conversation.",
+        "DEAL_STALLED": "Fires when a deal passes its stage’s day limit. Set the limit on each stage."
       },
       "STATUS": "Status",
-      "LABEL": "Label",
-      "LABEL_PLACEHOLDER": "Label name",
-      "MOVE_TO": "Move to",
-      "STAGE": "Stage",
-      "ADD": "Add",
-      "ACTIVE": "Rule active",
-      "DELETE": "Delete automation",
-      "RULE_STATUS": "When the conversation becomes {status}, move to {stage}",
-      "RULE_LABEL": "When it receives the label “{label}”, move to {stage}",
       "STATUSES": {
         "OPEN": "Open",
         "PENDING": "Pending",
         "RESOLVED": "Resolved",
         "SNOOZED": "Snoozed"
+      },
+      "LABEL": "Label",
+      "LABEL_PLACEHOLDER": "Choose a label",
+      "SIDE": "Who is silent",
+      "SIDES": {
+        "CUSTOMER": "Customer",
+        "AGENT": "Team"
+      },
+      "HOURS": "Hours without a reply",
+      "HOURS_HINT": "From 1 to 720 hours, counted from the last message.",
+      "ACTIONS": {
+        "MOVE_TO_STAGE": "Move to a stage",
+        "CREATE_TASK": "Create a task",
+        "ASSIGN_AGENT": "Assign to an agent",
+        "ADD_LABEL": "Label the conversation"
+      },
+      "STAGE": "Stage",
+      "AGENT": "Agent",
+      "AGENT_PLACEHOLDER": "Choose an agent",
+      "TASK_TITLE": "Task title",
+      "TASK_TITLE_PLACEHOLDER": "E.g. Call the customer",
+      "TASK_TYPE": "Type",
+      "ASSIGNEE": "Assigned to",
+      "DUE_IN_HOURS": "Due in (hours)",
+      "DUE_HINT": "0 is due right away; 48 is due in 2 days.",
+      "ADD_STEP": "Add step",
+      "MAX_STEPS": "At most {max} steps.",
+      "MOVE_UP": "Move step up",
+      "MOVE_DOWN": "Move step down",
+      "REMOVE_STEP": "Remove step",
+      "CANCEL": "Cancel",
+      "SAVE": "Save automation",
+      "PROBLEMS": {
+        "LABEL": "Choose a label.",
+        "HOURS": "Use a whole number from {min} to {max}.",
+        "AGENT": "Choose an agent.",
+        "TITLE": "Give the task a title.",
+        "DUE": "Use a whole number from {min} to {max}."
+      },
+      "ACTIVE": "Rule on",
+      "EDIT": "Edit automation",
+      "DELETE": "Delete automation",
+      "DELETE_CONFIRM": "This rule stops acting: {rule} Deals stay as they are.",
+      "NEEDS_ATTENTION": {
+        "LABEL": "Needs attention",
+        "STAGE_MISSING": "the chosen stage was deleted",
+        "AGENT_MISSING": "the chosen agent is no longer on the account",
+        "LABEL_MISSING": "the chosen label was deleted"
+      },
+      "RUNS": "Recent runs",
+      "RUNS_EMPTY": "When a rule acts, you will see here what it did.",
+      "SENTENCE": "When {trigger}: {actions}.",
+      "TRIGGER_TEXT": {
+        "CONVERSATION_STATUS_CHANGED": "a conversation becomes {status}",
+        "LABEL_ADDED": "the label “{label}” is added",
+        "DEAL_CREATED": "a deal is created",
+        "DEAL_STALLED": "a deal passes its stage limit",
+        "NO_REPLY_CUSTOMER": "the customer is silent for {hours} h",
+        "NO_REPLY_AGENT": "the team leaves the customer unanswered for {hours} h"
+      },
+      "ACTION_TEXT": {
+        "MOVE": "move to {stage}",
+        "TASK": "create the task “{title}”, due {due}, for {agent}",
+        "ASSIGN": "assign to {agent}",
+        "LABEL": "label with “{label}”",
+        "DEAL_AGENT": "the deal’s agent"
+      },
+      "DUE": {
+        "NOW": "now",
+        "DAYS": "in {n} day | in {n} days",
+        "HOURS": "in {n} hour | in {n} hours"
+      },
+      "RESULT": {
+        "FAILED": "a step failed",
+        "SKIPPED": "skipped, {reason}",
+        "MOVE_TO_STAGE": "moved to {stage}",
+        "CREATE_TASK": "task “{title}” created for {agent}",
+        "ASSIGN_AGENT": "assigned to {agent}",
+        "ADD_LABEL": "label “{label}” added"
+      },
+      "REASONS": {
+        "ALREADY_THERE": "it was already in that stage",
+        "NO_AGENT": "no agent",
+        "AGENT_CANNOT_SEE_BOARD": "the agent cannot see this board",
+        "ALREADY_ASSIGNED": "already the assigned agent",
+        "ALREADY_LABELLED": "the conversation already had the label",
+        "NO_CONVERSATION": "no linked conversation"
+      },
+      "STARTERS": {
+        "WON_WHEN_RESOLVED": "Won when the conversation is resolved",
+        "WON_WHEN_RESOLVED_HINT": "Moves the deal to the won stage.",
+        "CHASE_SILENT_CUSTOMER": "Chase a silent customer",
+        "CHASE_SILENT_CUSTOMER_HINT": "Creates a task after 24 h without a customer reply.",
+        "CHASE_SILENT_CUSTOMER_TASK": "Follow up with the customer",
+        "FIRST_CONTACT": "Fast first contact",
+        "FIRST_CONTACT_HINT": "Creates a task for the deal’s agent on every new deal.",
+        "FIRST_CONTACT_TASK": "Make the first contact"
+      },
+      "UNKNOWN": {
+        "STAGE": "a stage that no longer exists",
+        "AGENT": "an agent who is no longer on the account"
       }
     },
     "NOTIFICATIONS": {
@@ -461,7 +564,8 @@
       "CONVERSATION_LINKED": "Conversation #{conversation} linked",
       "QUOTE_PREPARED": "Quote of {toValue} taken to conversation #{conversation}",
       "NOTE": "“{note}”",
-      "TASK_REOPENED": "Task reopened: {task}"
+      "TASK_REOPENED": "Task reopened: {task}",
+      "AUTOMATION_RAN": "Automation ran: {results}"
     },
     "QUOTE": {
       "BUTTON": "Send quote",

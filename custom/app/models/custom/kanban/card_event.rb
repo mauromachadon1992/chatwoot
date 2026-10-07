@@ -4,7 +4,7 @@
 # stage or deleting a task does not rewrite the past.
 class Custom::Kanban::CardEvent < ApplicationRecord
   KINDS = %w[created stage_moved value_changed assignee_changed task_created task_completed
-             conversation_linked quote_prepared task_reopened].freeze
+             conversation_linked quote_prepared task_reopened automation_ran].freeze
 
   belongs_to :account
   belongs_to :card, class_name: 'Custom::Kanban::Card'

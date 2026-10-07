@@ -350,28 +350,131 @@
     },
     "AUTOMATIONS": {
       "SECTION": "Automatizaciones",
-      "HINT": "Mueve las tarjetas solas cuando cambie la conversación. Vale la primera regla que coincida.",
-      "EMPTY": "Sin automatizaciones en este tablero.",
-      "TRIGGER": "Disparador",
+      "HINT": "Deja que el embudo trabaje solo: cuando algo pasa en un negocio, las reglas actúan en el orden en que se crearon.",
+      "EMPTY_TITLE": "Aún no hay automatizaciones",
+      "EMPTY": "Empieza por una de estas plantillas y ajústala.",
+      "NEW": "Nueva automatización",
+      "WHEN": "Cuando",
+      "THEN": "Entonces",
+      "STEP": "Paso {n}",
       "TRIGGERS": {
-        "CONVERSATION_STATUS_CHANGED": "Cambio de estado",
-        "LABEL_ADDED": "Etiqueta añadida"
+        "CONVERSATION_STATUS_CHANGED": "Cambia el estado de la conversación",
+        "LABEL_ADDED": "Se añade una etiqueta",
+        "DEAL_CREATED": "Se crea un negocio",
+        "DEAL_STALLED": "Un negocio se estanca",
+        "NO_REPLY": "Nadie responde por un tiempo"
+      },
+      "TRIGGER_HINT": {
+        "DEAL_CREATED": "Vale para todo negocio nuevo, creado a mano o por una conversación.",
+        "DEAL_STALLED": "Se activa cuando el negocio supera el límite de días de la etapa. Define el límite en cada etapa."
       },
       "STATUS": "Estado",
-      "LABEL": "Etiqueta",
-      "LABEL_PLACEHOLDER": "Nombre de la etiqueta",
-      "MOVE_TO": "Mover a",
-      "STAGE": "Etapa",
-      "ADD": "Añadir",
-      "ACTIVE": "Regla activa",
-      "DELETE": "Eliminar automatización",
-      "RULE_STATUS": "Cuando la conversación pase a {status}, mover a {stage}",
-      "RULE_LABEL": "Cuando reciba la etiqueta “{label}”, mover a {stage}",
       "STATUSES": {
         "OPEN": "Abierta",
         "PENDING": "Pendiente",
         "RESOLVED": "Resuelta",
         "SNOOZED": "Pospuesta"
+      },
+      "LABEL": "Etiqueta",
+      "LABEL_PLACEHOLDER": "Elige una etiqueta",
+      "SIDE": "Quién no responde",
+      "SIDES": {
+        "CUSTOMER": "Cliente",
+        "AGENT": "Equipo"
+      },
+      "HOURS": "Horas sin respuesta",
+      "HOURS_HINT": "De 1 a 720 horas, desde el último mensaje.",
+      "ACTIONS": {
+        "MOVE_TO_STAGE": "Mover a una etapa",
+        "CREATE_TASK": "Crear una tarea",
+        "ASSIGN_AGENT": "Asignar a un agente",
+        "ADD_LABEL": "Etiquetar la conversación"
+      },
+      "STAGE": "Etapa",
+      "AGENT": "Agente",
+      "AGENT_PLACEHOLDER": "Elige un agente",
+      "TASK_TITLE": "Título de la tarea",
+      "TASK_TITLE_PLACEHOLDER": "Ej.: Llamar al cliente",
+      "TASK_TYPE": "Tipo",
+      "ASSIGNEE": "Responsable",
+      "DUE_IN_HOURS": "Vence en (horas)",
+      "DUE_HINT": "0 vence enseguida; 48 vence en 2 días.",
+      "ADD_STEP": "Añadir paso",
+      "MAX_STEPS": "Máximo {max} pasos.",
+      "MOVE_UP": "Subir paso",
+      "MOVE_DOWN": "Bajar paso",
+      "REMOVE_STEP": "Quitar paso",
+      "CANCEL": "Cancelar",
+      "SAVE": "Guardar automatización",
+      "PROBLEMS": {
+        "LABEL": "Elige una etiqueta.",
+        "HOURS": "Usa un número entero de {min} a {max}.",
+        "AGENT": "Elige un agente.",
+        "TITLE": "Ponle un título a la tarea.",
+        "DUE": "Usa un número entero de {min} a {max}."
+      },
+      "ACTIVE": "Regla activa",
+      "EDIT": "Editar automatización",
+      "DELETE": "Eliminar automatización",
+      "DELETE_CONFIRM": "Esta regla deja de actuar: {rule} Los negocios no cambian.",
+      "NEEDS_ATTENTION": {
+        "LABEL": "Requiere atención",
+        "STAGE_MISSING": "la etapa elegida fue eliminada",
+        "AGENT_MISSING": "el agente elegido ya no está en la cuenta",
+        "LABEL_MISSING": "la etiqueta elegida fue eliminada"
+      },
+      "RUNS": "Ejecuciones recientes",
+      "RUNS_EMPTY": "Cuando una regla actúe, verás aquí lo que hizo.",
+      "SENTENCE": "Cuando {trigger}: {actions}.",
+      "TRIGGER_TEXT": {
+        "CONVERSATION_STATUS_CHANGED": "la conversación quede {status}",
+        "LABEL_ADDED": "se añada la etiqueta “{label}”",
+        "DEAL_CREATED": "se cree un negocio",
+        "DEAL_STALLED": "un negocio supere el límite de la etapa",
+        "NO_REPLY_CUSTOMER": "el cliente pase {hours} h sin responder",
+        "NO_REPLY_AGENT": "el equipo deje {hours} h sin responder al cliente"
+      },
+      "ACTION_TEXT": {
+        "MOVE": "mover a {stage}",
+        "TASK": "crear la tarea “{title}”, que vence {due}, para {agent}",
+        "ASSIGN": "asignar a {agent}",
+        "LABEL": "etiquetar con “{label}”",
+        "DEAL_AGENT": "el responsable del negocio"
+      },
+      "DUE": {
+        "NOW": "ahora",
+        "DAYS": "en {n} día | en {n} días",
+        "HOURS": "en {n} hora | en {n} horas"
+      },
+      "RESULT": {
+        "FAILED": "un paso falló",
+        "SKIPPED": "omitido, {reason}",
+        "MOVE_TO_STAGE": "movido a {stage}",
+        "CREATE_TASK": "tarea “{title}” creada para {agent}",
+        "ASSIGN_AGENT": "asignado a {agent}",
+        "ADD_LABEL": "etiqueta “{label}” añadida"
+      },
+      "REASONS": {
+        "ALREADY_THERE": "ya estaba en esa etapa",
+        "NO_AGENT": "sin responsable",
+        "AGENT_CANNOT_SEE_BOARD": "el agente no ve este embudo",
+        "ALREADY_ASSIGNED": "ya era el responsable",
+        "ALREADY_LABELLED": "la conversación ya tenía la etiqueta",
+        "NO_CONVERSATION": "sin conversación vinculada"
+      },
+      "STARTERS": {
+        "WON_WHEN_RESOLVED": "Ganado cuando se resuelva la conversación",
+        "WON_WHEN_RESOLVED_HINT": "Mueve el negocio a la etapa de ganado.",
+        "CHASE_SILENT_CUSTOMER": "Reclamar a un cliente que desapareció",
+        "CHASE_SILENT_CUSTOMER_HINT": "Crea una tarea tras 24 h sin respuesta del cliente.",
+        "CHASE_SILENT_CUSTOMER_TASK": "Retomar el contacto con el cliente",
+        "FIRST_CONTACT": "Primer contacto rápido",
+        "FIRST_CONTACT_HINT": "Crea una tarea para el responsable en cada negocio nuevo.",
+        "FIRST_CONTACT_TASK": "Hacer el primer contacto"
+      },
+      "UNKNOWN": {
+        "STAGE": "una etapa que ya no existe",
+        "AGENT": "un agente que ya no está en la cuenta"
       }
     },
     "NOTIFICATIONS": {
@@ -461,7 +564,8 @@
       "CONVERSATION_LINKED": "Conversación #{conversation} vinculada",
       "QUOTE_PREPARED": "Presupuesto de {toValue} llevado a la conversación #{conversation}",
       "NOTE": "«{note}»",
-      "TASK_REOPENED": "Tarea reabierta: {task}"
+      "TASK_REOPENED": "Tarea reabierta: {task}",
+      "AUTOMATION_RAN": "Automatización ejecutada: {results}"
     },
     "QUOTE": {
       "BUTTON": "Enviar presupuesto",

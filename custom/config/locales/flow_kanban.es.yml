@@ -37,6 +37,20 @@ es:
           attributes:
             value_cents:
               follows_items: sigue la suma de los productos; quite los productos para escribir un valor
+        custom/kanban/stage_automation:
+          attributes:
+            trigger_config:
+              no_reply: necesita un número de horas de 1 a 720 y quién está en silencio, el cliente o el equipo
+            actions:
+              empty: necesita al menos una acción
+              too_many: puede tener como máximo %{count} acciones
+              step_stage: 'acción %{position}: elige una etapa de este tablero'
+              step_title: 'acción %{position}: ponle a la tarea un título de hasta 255 caracteres'
+              step_task_type: 'acción %{position}: elige el tipo de tarea'
+              step_due: 'acción %{position}: el plazo va de 0 a 720 horas'
+              step_agent: 'acción %{position}: elige un agente de esta cuenta'
+              step_label: 'acción %{position}: elige una etiqueta de esta cuenta'
+              step_type: 'acción %{position}: acción desconocida'
         custom/kanban/board:
           attributes:
             auto_create:

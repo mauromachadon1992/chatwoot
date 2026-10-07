@@ -1,32 +1,48 @@
-# A board rule: when a linked conversation reaches a status or receives a label, the card moves
-# to `stage`. The runner applies it (see StageAutomationRunner).
+# A board rule: one trigger, and an ordered list of actions run on the deal when it fires. The
+# name is the one of sprint 3, when a rule could only move a deal to a stage. AutomationRunner
+# applies the rules, once per trigger episode (AutomationRun).
 class Custom::Kanban::StageAutomation < ApplicationRecord
-  TRIGGER_TYPES = %w[conversation_status_changed label_added].freeze
-  LABEL_MAX_LENGTH = 100
+  TRIGGER_TYPES = %w[conversation_status_changed label_added deal_created deal_stalled no_reply].freeze
+  MAX_ACTIONS = 5
+  # A safety valve per rule per day: turning on "no reply for 24 h" on a board of old deals must
+  # not act on all of them in one go.
+  RUNS_PER_DAY = 200
+
+  include Custom::Kanban::AutomationTrigger
 
   belongs_to :account
   belongs_to :board, class_name: 'Custom::Kanban::Board', inverse_of: :stage_automations
-  belongs_to :stage, class_name: 'Custom::Kanban::Stage'
+  has_many :runs, class_name: 'Custom::Kanban::AutomationRun', foreign_key: :automation_id, dependent: :delete_all, inverse_of: :automation
 
   scope :active, -> { where(active: true) }
   scope :ordered, -> { order(:id) }
 
-  validates :trigger_type, inclusion: { in: TRIGGER_TYPES }
-  validate :trigger_config_matches_trigger
-  validate :stage_belongs_to_board
+  validate :actions_are_valid
 
   before_validation :inherit_account, on: :create
+  before_validation :normalise_actions
 
-  def matches_status?(status)
-    trigger_type == 'conversation_status_changed' && trigger_config['status'] == status.to_s
+  def steps
+    Custom::Kanban::AutomationAction.parse(actions)
   end
 
-  def matches_label?(label)
-    trigger_type == 'label_added' && trigger_config['label'] == label
+  # What the rule points at that no longer exists (a deleted stage, agent or label). Such a rule
+  # is shown with the reasons and never run: half a rule is worse than none.
+  def needs_attention
+    steps.flat_map { |step| step.missing(self) }.uniq
+  end
+
+  def runnable?
+    active && needs_attention.empty?
+  end
+
+  def runs_today
+    runs.where(created_at: Time.current.all_day).count
   end
 
   def push_event_data
-    { id: id, board_id: board_id, stage_id: stage_id, trigger_type: trigger_type, trigger_config: trigger_config, active: active }
+    { id: id, board_id: board_id, trigger_type: trigger_type, trigger_config: trigger_config, actions: actions, active: active,
+      needs_attention: needs_attention }
   end
 
   private
@@ -35,17 +51,16 @@ class Custom::Kanban::StageAutomation < ApplicationRecord
     self.account_id ||= board&.account_id
   end
 
-  def trigger_config_matches_trigger
-    case trigger_type
-    when 'conversation_status_changed'
-      errors.add(:trigger_config, :invalid) unless Conversation.statuses.key?(trigger_config['status'])
-    when 'label_added'
-      label = trigger_config['label']
-      errors.add(:trigger_config, :invalid) unless label.is_a?(String) && label.present? && label.length <= LABEL_MAX_LENGTH
-    end
+  def normalise_actions
+    self.actions = Custom::Kanban::AutomationAction.normalize(actions)
   end
 
-  def stage_belongs_to_board
-    errors.add(:stage, :invalid) if stage && stage.board_id != board_id
+  def actions_are_valid
+    return errors.add(:actions, :empty) if actions.blank?
+    return errors.add(:actions, :too_many, count: MAX_ACTIONS) if actions.size > MAX_ACTIONS
+
+    steps.each_with_index do |step, index|
+      step.errors(self).each { |problem| errors.add(:actions, :"step_#{problem}", position: index + 1) }
+    end
   end
 end

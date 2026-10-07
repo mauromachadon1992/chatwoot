@@ -1,3 +1,5 @@
+import { describeResults } from './automations';
+
 // Mirrors Custom::Kanban::CardEvent::KINDS. Each event becomes an icon and a sentence; the
 // sentence names who did it, or says a rule or the system did.
 const KINDS = {
@@ -10,6 +12,7 @@ const KINDS = {
   conversation_linked: { icon: 'i-lucide-link' },
   quote_prepared: { icon: 'i-lucide-file-text' },
   task_reopened: { icon: 'i-lucide-rotate-ccw' },
+  automation_ran: { icon: 'i-lucide-zap' },
 };
 
 // The i18n key (FLOW_KANBAN.HISTORY.*) for an event: the variant depends on what the data holds.
@@ -27,8 +30,8 @@ const keyFor = ({ kind, data }) => {
 };
 
 // What a History row needs: icon, the key and its parameters, and the line under it.
-// `money` formats cents in the account currency.
-export const describeEvent = (event, money) => {
+// `money` formats cents in the account currency; `t` writes what a rule did.
+export const describeEvent = (event, money, t) => {
   const data = event.data || {};
   return {
     icon: (KINDS[event.kind] || KINDS.created).icon,
@@ -42,10 +45,12 @@ export const describeEvent = (event, money) => {
       conversation: data.display_id,
       fromValue: money(data.from_cents ?? 0),
       toValue: money(data.to_cents ?? data.total_cents ?? 0),
+      results:
+        event.kind === 'automation_ran' ? describeResults(data.results, t) : '',
     },
     note: data.lost_note || null,
     actor: event.user?.name || null,
-    byRule: Boolean(data.by_rule),
+    byRule: Boolean(data.by_rule) || event.kind === 'automation_ran',
     stageDeleted: Boolean(data.stage_deleted),
   };
 };

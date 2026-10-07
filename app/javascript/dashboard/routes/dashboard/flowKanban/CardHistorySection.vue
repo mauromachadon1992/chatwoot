@@ -38,7 +38,7 @@ const groups = computed(() => groupByDay(shown.value, locale.value));
 const hiddenCount = computed(() =>
   Math.max(events.value.length - COLLAPSED, 0)
 );
-const rowOf = event => ({ event, view: describeEvent(event, money) });
+const rowOf = event => ({ event, view: describeEvent(event, money, t) });
 
 const load = async ({ quiet = false } = {}) => {
   if (!quiet) isLoading.value = true;

@@ -10,7 +10,9 @@ module FlowCustom::Routes
                   collection { patch :reorder }
                 end
                 resources :cards, only: [:index]
-                resources :automations, only: [:index, :create, :update, :destroy]
+                resources :automations, only: [:index, :create, :update, :destroy] do
+                  collection { get :runs }
+                end
                 resource :report, only: [:show]
               end
               resources :cards, only: [:show, :create, :update, :destroy] do

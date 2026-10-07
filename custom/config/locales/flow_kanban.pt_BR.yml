@@ -37,6 +37,20 @@ pt_BR:
           attributes:
             value_cents:
               follows_items: segue a soma dos produtos; remova os produtos para digitar um valor
+        custom/kanban/stage_automation:
+          attributes:
+            trigger_config:
+              no_reply: precisa de um número de horas de 1 a 720 e de quem está em silêncio, o cliente ou a equipe
+            actions:
+              empty: precisa de pelo menos uma ação
+              too_many: pode ter no máximo %{count} ações
+              step_stage: 'ação %{position}: escolha uma etapa deste funil'
+              step_title: 'ação %{position}: dê à tarefa um título de até 255 caracteres'
+              step_task_type: 'ação %{position}: escolha o tipo da tarefa'
+              step_due: 'ação %{position}: o prazo vai de 0 a 720 horas'
+              step_agent: 'ação %{position}: escolha um agente desta conta'
+              step_label: 'ação %{position}: escolha uma etiqueta desta conta'
+              step_type: 'ação %{position}: ação desconhecida'
         custom/kanban/board:
           attributes:
             auto_create:

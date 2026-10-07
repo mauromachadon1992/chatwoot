@@ -13,13 +13,13 @@ class Custom::Kanban::ConversationListener < BaseListener
     Custom::Kanban::Card.where(id: card_ids)
                         .includes(:board, :assignee, :tasks, :stage, card_conversations: :conversation, contact: { avatar_attachment: :blob })
                         .find_each { |card| Custom::Kanban::Broadcaster.card_updated(card) }
-    Custom::Kanban::StageAutomationRunner.status_changed(conversation)
+    Custom::Kanban::AutomationRunner.status_changed(conversation)
   end
 
   def conversation_updated(event)
     changes = event.data[:changed_attributes]
     return unless changes.present? && changes.with_indifferent_access.key?(:cached_label_list)
 
-    Custom::Kanban::StageAutomationRunner.labels_changed(event.data[:conversation], changes)
+    Custom::Kanban::AutomationRunner.labels_changed(event.data[:conversation], changes)
   end
 end

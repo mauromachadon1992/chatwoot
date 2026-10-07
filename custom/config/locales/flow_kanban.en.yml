@@ -37,6 +37,20 @@ en:
           attributes:
             value_cents:
               follows_items: follows the sum of the products; remove the products to type a value
+        custom/kanban/stage_automation:
+          attributes:
+            trigger_config:
+              no_reply: needs a number of hours from 1 to 720 and who is silent, the customer or the team
+            actions:
+              empty: needs at least one action
+              too_many: can have at most %{count} actions
+              step_stage: 'action %{position}: pick a stage of this board'
+              step_title: 'action %{position}: give the task a title of up to 255 characters'
+              step_task_type: 'action %{position}: pick a task type'
+              step_due: 'action %{position}: the due time is 0 to 720 hours'
+              step_agent: 'action %{position}: pick an agent of this account'
+              step_label: 'action %{position}: pick a label of this account'
+              step_type: 'action %{position}: unknown action'
         custom/kanban/board:
           attributes:
             auto_create:

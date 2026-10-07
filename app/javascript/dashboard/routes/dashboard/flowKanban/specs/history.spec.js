@@ -98,3 +98,23 @@ describe('groupByDay', () => {
     ]);
   });
 });
+
+describe('describeEvent for a rule that ran', () => {
+  it('writes what the rule did and credits the automation, not the system', () => {
+    const t = key => key.split('.').pop();
+    const view = describeEvent(
+      event('automation_ran', {
+        results: [
+          { type: 'move_to_stage', status: 'done', stage_name: 'Ganho' },
+        ],
+      }),
+      money,
+      t
+    );
+
+    expect(view.key).toBe('FLOW_KANBAN.HISTORY.AUTOMATION_RAN');
+    expect(view.icon).toBe('i-lucide-zap');
+    expect(view.params.results).toBe('MOVE_TO_STAGE');
+    expect(view.byRule).toBe(true);
+  });
+});

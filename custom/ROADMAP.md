@@ -1,7 +1,7 @@
 # Kanban roadmap: sprints and phases
 
-Status: **S0 to S4 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). S5 onwards proposed; see "Decisions to confirm".
+Status: **S0 to S5 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
+Coolify token). S6 onwards proposed; see "Decisions to confirm".
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,
@@ -228,8 +228,8 @@ won deal; open deals with a close date.
   agent or a fixed agent), assign an agent, add a label to the conversation, besides move.
 - **Model:** a rule has one trigger and an ordered list of actions; a deal runs each rule at most once
   per trigger episode (no loops: card moves never trigger rules, as today).
-- **Design:** the Automations section becomes a rule list with a side-panel editor (a rule is more
-  than a form row now): sentence summary in the list, edit in the `SidePanel`, `Switch`, delete with
+- **Design:** the Automations section becomes a rule list with an inline editor (the board settings
+  are already a side panel, so no second one opens): sentence summary in the list, `Switch`, delete with
   a confirm. A **run log** ("Recent runs": what ran, on which deal, when, with a link) from the
   ledger answers "why did it move?".
 - **States:** no rules (offers three starter templates), a rule whose stage or agent was deleted
@@ -237,6 +237,9 @@ won deal; open deals with a close date.
 - **Tests:** per-trigger episode idempotence, deleted targets, visibility of created tasks and
   notifications, the daily cap.
 - **Accept:** "Moved to Proposal → task 'Follow up' in 2 days" creates one task per deal.
+
+**Built:** see README, "Sprint 5". Rules flagged "Needs attention" are skipped, not disabled,
+so fixing the target brings them back.
 
 **Metric:** tasks created by rules; follow-ups completed on time.
 

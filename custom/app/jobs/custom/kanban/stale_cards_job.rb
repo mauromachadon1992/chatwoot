@@ -11,6 +11,14 @@ class Custom::Kanban::StaleCardsJob < ApplicationJob
 
   def perform
     now = Time.current
+    notify(now)
+    run_stalled_rules(now)
+  end
+
+  private
+
+  # The alert: one notification per stall, when the account has stalled-deal alerts on.
+  def notify(now)
     candidates(now).find_each do |card|
       next unless Custom::Kanban::Features.enabled?(card.account, :stale_alerts)
 
@@ -23,7 +31,15 @@ class Custom::Kanban::StaleCardsJob < ApplicationJob
     end
   end
 
-  private
+  # The rules of boards that have a "stalled" rule, once per stay in the stage (the runner claims it).
+  def run_stalled_rules(now)
+    board_ids = Custom::Kanban::StageAutomation.active.where(trigger_type: 'deal_stalled').distinct.pluck(:board_id)
+    return if board_ids.empty?
+
+    Custom::Kanban::Card.stale(now).where(board_id: board_ids).includes(*PRELOADS).find_each do |card|
+      Custom::Kanban::AutomationRunner.deal_stalled(card)
+    end
+  end
 
   def candidates(now)
     Custom::Kanban::Card.stale(now).where(stale_notified_at: nil).includes(*PRELOADS)

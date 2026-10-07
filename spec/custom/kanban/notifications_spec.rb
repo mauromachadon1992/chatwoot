@@ -57,17 +57,20 @@ RSpec.describe 'Kanban notifications', type: :request do
     end
 
     it 'tells the agent of a deal that a board rule moved it, and nobody when it has no agent' do
-      Custom::Kanban::StageAutomation.create!(board: board, stage: won, trigger_type: 'conversation_status_changed',
-                                              trigger_config: { 'status' => 'open' })
+      Custom::Kanban::StageAutomation.create!(board: board, trigger_type: 'conversation_status_changed',
+                                              trigger_config: { 'status' => 'open' },
+                                              actions: [{ 'type' => 'move_to_stage', 'stage_id' => won.id }])
       conversation = create(:conversation, account: account, inbox: create(:inbox, account: account), contact: card.contact, status: :open)
       Custom::Kanban::CardConversation.create!(card: card, conversation: conversation)
 
-      Custom::Kanban::StageAutomationRunner.status_changed(conversation)
+      Custom::Kanban::AutomationRunner.status_changed(conversation)
       expect(Custom::Kanban::Notification.count).to eq(0)
 
       card.reload.update!(assignee: agent, stage: lead)
       Custom::Kanban::Notification.delete_all
-      Custom::Kanban::StageAutomationRunner.status_changed(conversation)
+      # The status is reached again: a new episode, which the rule acts on again.
+      conversation.update_columns(status_changed_at: 1.minute.from_now) # rubocop:disable Rails/SkipsModelValidations
+      Custom::Kanban::AutomationRunner.status_changed(conversation)
 
       expect(Custom::Kanban::Notification.pluck(:user_id, :kind)).to eq([[agent.id, 'card_moved']])
       expect(Custom::Kanban::Notification.first.data).to include('stage_name' => 'Ganho', 'stage_type' => 'won')

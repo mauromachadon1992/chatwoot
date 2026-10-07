@@ -202,14 +202,7 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   answers 404 for its tasks too. The client sends `completed: true|false` and the server
   stamps the time. The board gets `tasks: { open, overdue, next_due_at }` per card and the
   card shows the overdue count (or the open one) as a badge.
-- **Automations** (`flow_kanban_stage_automations`, `kanban/boards/:id/automations`, administrators
-  only): when a linked conversation reaches a status, or receives a label, the card moves to
-  the rule's stage. The target stage must belong to the board. `Custom::Kanban::StageAutomationRunner`
-  runs from the conversation listener, so a card move never triggers a rule: the oldest
-  matching active rule wins, a card already in that stage is left alone, and the move goes
-  through `Card#move_to!`, so the stage history the funnel report reads stays right. A label
-  rule fires only when the label is new on the conversation (`cached_label_list` in the
-  event's `changed_attributes`).
+- **Automations:** see "Sprint 5" below; the first version only moved a card.
 - **Task reminders** (`Custom::Kanban::TaskReminderJob`): every minute, an open task due within
   15 minutes (or overdue by less than an hour) is announced once to its assignee, as a
   `kanban.task.reminder` cable event the dashboard shows as a toast linking to the board. The
@@ -297,3 +290,34 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   shown for review, and put in the reply box of the linked conversation as a draft by its
   `display_id` (`draft-<display_id>-REPLY`, see AGENTS.md, "Conversation ids"). Nothing is sent
   from the dialog; `POST kanban/cards/:id/quote` only writes the history. PDF is not built.
+
+### Sprint 5: rules that do more (ROADMAP.md)
+
+- **A rule** (`flow_kanban_stage_automations`, `kanban/boards/:id/automations`, administrators
+  only) has one trigger, up to 5 ordered steps (`actions` jsonb) and an on/off switch. Triggers:
+  conversation status changed, label added, deal created, deal stalled, no reply for N hours (1 to
+  720; the customer or the team is the silent side). Steps: move to a stage, create a task (title,
+  type, due in 0 to 720 hours, assigned to the deal's agent or a fixed one), assign an agent, add a
+  label to the linked conversations. A migration turned each old rule's `stage_id` into a
+  `move_to_stage` step and is reversible.
+- **Running** (`Custom::Kanban::AutomationRunner`, `AutomationAction`): a deal runs a rule once
+  per trigger *episode* (`flow_kanban_automation_runs`, unique on rule, deal and episode key; the
+  key is the status change time, the stall, the silent message, and so on), so a retried event or an
+  hourly job never repeats it. Rules run oldest first and a later move wins. A card move never
+  triggers a rule. A step that cannot apply is "skipped" with its reason (already there, no agent,
+  agent cannot see the board, already assigned, already labelled, no conversation); a step that
+  raises is "failed" and the next ones still run. Each rule is capped at 200 runs a day. A rule
+  whose stage, agent or label was deleted is flagged *Needs attention* and does not run.
+- **Time-based triggers** run from cron: `flow_kanban_no_reply` every 15 minutes
+  (`NoReplyAutomationsJob`, open deals in open stages with open conversations, last 30 days) and
+  the stalled rules from `StaleCardsJob`, whether or not the account's stall alerts are on. Run
+  rows older than 90 days go with `NotificationCleanupJob`.
+- **Run log:** every run writes an `automation_ran` card event with each step's result, shown in the
+  deal's History and in *Recent runs* under the rules (`GET boards/:id/automations/runs`, the last
+  50, administrators only).
+- **UI** (`BoardAutomationsSection`, `AutomationEditor`, `automations.js`): the list reads as
+  sentences ("When the customer is silent for 24 h: create the task ..."), with a switch, edit,
+  delete (confirm dialog) and the *Needs attention* pill with its reason; the editor opens inline
+  (the board settings are already a side panel) as *When* + ordered *Then* steps with up/down/remove,
+  inline errors after the first save attempt and the server's message. An empty board offers three
+  starters (won when resolved, chase a silent customer, fast first contact).

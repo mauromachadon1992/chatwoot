@@ -15,7 +15,8 @@ class FlowCustom::Engine < Rails::Engine
   CRON_JOBS = {
     'flow_kanban_task_reminders' => ['* * * * *', 'Custom::Kanban::TaskReminderJob'],
     'flow_kanban_notification_cleanup' => ['30 3 * * *', 'Custom::Kanban::NotificationCleanupJob'],
-    'flow_kanban_stale_cards' => ['15 * * * *', 'Custom::Kanban::StaleCardsJob']
+    'flow_kanban_stale_cards' => ['15 * * * *', 'Custom::Kanban::StaleCardsJob'],
+    'flow_kanban_no_reply' => ['*/15 * * * *', 'Custom::Kanban::NoReplyAutomationsJob']
   }.freeze
 
   initializer 'flow_custom.migrations' do |app|

@@ -1,6 +1,7 @@
 class Custom::Kanban::Card < ApplicationRecord
   include Custom::Kanban::CardHistory
   include Custom::Kanban::CardOutcome
+  include Custom::Kanban::CardStaleness
 
   # Cards are ordered by a float `position`, so a move rewrites one row: the card lands
   # halfway between its new neighbours. Only when two neighbours get closer than MIN_GAP is
@@ -45,26 +46,15 @@ class Custom::Kanban::Card < ApplicationRecord
   before_update :mark_reviewed, if: :reviewed_by_agent?
   after_update :record_stage_entry, if: :saved_change_to_stage_id?
   after_save :notify_assignee, if: :saved_change_to_assignee_id?
+  # After the commit, so the rules see the deal as everyone else does (AutoDealCreator creates it
+  # inside a transaction, with its conversation linked a moment later).
+  after_create_commit :run_deal_created_rules
 
   scope :ordered, -> { order(:position, :id) }
-
-  # Deals past their stage's limit (stages.stale_after_days): open stages only, counted from
-  # when the deal entered the stage. The stalled-deal job and the board filter both read it.
-  scope :stale, lambda { |now = Time.current|
-    joins(:stage)
-      .where(flow_kanban_stages: { stage_type: Custom::Kanban::Stage.stage_types[:open] })
-      .where.not(flow_kanban_stages: { stale_after_days: nil })
-      .where('COALESCE(flow_kanban_cards.stage_changed_at, flow_kanban_cards.created_at) <= ' \
-             'CAST(:now AS timestamp) - make_interval(days => flow_kanban_stages.stale_after_days)', now: now)
+  # Everything push_event_data reads, loaded together.
+  scope :preloaded, lambda {
+    includes(:assignee, :tasks, :stage, :board, card_conversations: :conversation, contact: { avatar_attachment: :blob })
   }
-
-  # Whole days past the stage's limit started counting, or nil when the deal is not stalled.
-  def stale_days(now = Time.current)
-    return unless stage&.stage_type_open? && stage.stale_after_days
-
-    days = ((now - (stage_changed_at || created_at)) / 1.day).floor
-    days if days >= stage.stale_after_days
-  end
 
   # Moves the card to `stage`, between the cards the dashboard showed around the drop point.
   # Either neighbour may be nil (top or bottom of the column, or an empty column). `attributes`
@@ -202,6 +192,10 @@ class Custom::Kanban::Card < ApplicationRecord
 
   def mark_reviewed
     self.needs_review = false
+  end
+
+  def run_deal_created_rules
+    Custom::Kanban::AutomationRunner.deal_created(self)
   end
 
   # Whoever is handed the deal is told, unless they handed it to themselves.

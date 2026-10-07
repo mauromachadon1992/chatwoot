@@ -183,6 +183,10 @@ class FlowKanbanAPI extends ApiClient {
     return axios.get(`${this.url}/boards/${boardId}/automations`);
   }
 
+  getAutomationRuns(boardId) {
+    return axios.get(`${this.url}/boards/${boardId}/automations/runs`);
+  }
+
   createAutomation(boardId, data) {
     return axios.post(`${this.url}/boards/${boardId}/automations`, data);
   }
