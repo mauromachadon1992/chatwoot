@@ -20,6 +20,7 @@ import KanbanColumn from './KanbanColumn.vue';
 import CardPanel from './CardPanel.vue';
 import CardCreateDialog from './CardCreateDialog.vue';
 import BoardSettingsPanel from './BoardSettingsPanel.vue';
+import KanbanNotifications from './KanbanNotifications.vue';
 import KanbanReport from './report/KanbanReport.vue';
 import { DEFAULT_PERIOD, PERIODS } from './report/useFlowKanbanReport';
 
@@ -244,6 +245,7 @@ const SKELETON_CARDS = [3, 2, 4, 1];
           placeholder-icon="i-lucide-chevron-down"
           placeholder-trailing-icon
         />
+        <KanbanNotifications @open-card="openCard" />
         <Button
           v-if="isAdmin"
           v-tooltip.bottom="t('FLOW_KANBAN.BOARD_SETTINGS')"
@@ -297,6 +299,7 @@ const SKELETON_CARDS = [3, 2, 4, 1];
             :label="t('FLOW_KANBAN.FILTERS.CLEAR')"
             @click="clearFilters"
           />
+          <KanbanNotifications @open-card="openCard" />
           <Button
             v-if="isAdmin"
             v-tooltip.bottom="t('FLOW_KANBAN.BOARD_SETTINGS')"

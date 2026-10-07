@@ -25,4 +25,5 @@ export const flowKanbanCableEvents = {
   'kanban.card.updated': handle('onCardUpdated'),
   'kanban.card.deleted': handle('onCardDeleted'),
   'kanban.task.reminder': showTaskReminder,
+  'kanban.notification.created': handle('onNotificationCreated'),
 };

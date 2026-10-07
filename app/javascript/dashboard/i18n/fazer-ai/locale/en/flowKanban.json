@@ -322,6 +322,25 @@
         "RESOLVED": "Resolved",
         "SNOOZED": "Snoozed"
       }
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "BELL": "Notifications",
+      "BELL_UNREAD": "Notifications ({count} unread)",
+      "MARK_ALL": "Mark all as read",
+      "UNREAD": "Unread",
+      "EMPTY_TITLE": "All caught up",
+      "EMPTY_TEXT": "You will be told here when a task falls due, a deal or a task is handed to you, or an automation moves a deal of yours.",
+      "TASK_ON_CARD": "{task} · {card}",
+      "KINDS": {
+        "TASK_DUE": "Task due soon",
+        "TASK_OVERDUE": "Task overdue",
+        "TASK_ASSIGNED": "A task was assigned to you",
+        "TASK_ASSIGNED_BY": "{actor} assigned you a task",
+        "CARD_ASSIGNED": "A deal was assigned to you",
+        "CARD_ASSIGNED_BY": "{actor} assigned you a deal",
+        "CARD_MOVED": "An automation moved the deal to {stage}"
+      }
     }
   }
 }

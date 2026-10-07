@@ -35,6 +35,11 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
     filters: emptyFilters(),
     // Bumped on every card event, so panels outside the board can refresh.
     lastCardEvent: null,
+    // The bell: the agent's own notifications, newest first, and how many are unread (the
+    // server counts them, so the badge is right even when the list holds only the first page).
+    notifications: [],
+    unreadCount: 0,
+    notificationsLoaded: false,
   }),
 
   getters: {
@@ -359,6 +364,38 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
 
     onCardDeleted({ card }) {
       this.removeCard(card);
+    },
+
+    async fetchNotifications() {
+      const { data } = await FlowKanbanAPI.getNotifications();
+      this.notifications = data.payload;
+      this.unreadCount = data.meta.unread_count;
+      this.notificationsLoaded = true;
+    },
+
+    async markNotificationRead(notification) {
+      if (notification.read_at) return;
+      const { data } = await FlowKanbanAPI.readNotification(notification.id);
+      this.notifications = this.notifications.map(item =>
+        item.id === notification.id ? data.payload : item
+      );
+      this.unreadCount = data.meta.unread_count;
+    },
+
+    async markAllNotificationsRead() {
+      const { data } = await FlowKanbanAPI.readAllNotifications();
+      const now = Math.floor(Date.now() / 1000);
+      this.notifications = this.notifications.map(item => ({
+        ...item,
+        read_at: item.read_at || now,
+      }));
+      this.unreadCount = data.meta.unread_count;
+    },
+
+    onNotificationCreated({ notification, unread_count: unreadCount }) {
+      if (!this.notifications.some(item => item.id === notification.id))
+        this.notifications = [notification, ...this.notifications];
+      this.unreadCount = unreadCount;
     },
   },
 });

@@ -102,6 +102,18 @@ class FlowKanbanAPI extends ApiClient {
     return axios.delete(`${this.url}/cards/${cardId}/items/${itemId}`);
   }
 
+  getNotifications({ page } = {}) {
+    return axios.get(`${this.url}/notifications`, { params: { page } });
+  }
+
+  readNotification(notificationId) {
+    return axios.patch(`${this.url}/notifications/${notificationId}`);
+  }
+
+  readAllNotifications() {
+    return axios.post(`${this.url}/notifications/read_all`);
+  }
+
   getCardTasks(cardId) {
     return axios.get(`${this.url}/cards/${cardId}/tasks`);
   }

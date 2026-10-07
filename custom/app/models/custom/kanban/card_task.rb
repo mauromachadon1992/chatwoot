@@ -24,6 +24,7 @@ class Custom::Kanban::CardTask < ApplicationRecord
   before_validation :inherit_account, on: :create
   # A new date, or a task taken up again, is announced again.
   before_update :rearm_reminder, if: -> { will_save_change_to_due_at? || (will_save_change_to_completed_at? && completed_at.nil?) }
+  after_save :notify_assignee, if: :saved_change_to_user_id?
 
   def completed?
     completed_at.present?
@@ -57,6 +58,11 @@ class Custom::Kanban::CardTask < ApplicationRecord
 
   def inherit_account
     self.account_id ||= card&.account_id
+  end
+
+  # Whoever is handed the task is told, unless they gave it to themselves.
+  def notify_assignee
+    Custom::Kanban::Notifier.task_assigned(self, actor: Current.user)
   end
 
   def rearm_reminder

@@ -10,7 +10,11 @@ class Custom::Kanban::TaskReminderJob < ApplicationJob
     Custom::Kanban::CardTask.due_for_reminder(now).includes(:user, card: :board).find_each do |task|
       # The update is the claim: with several workers only the one that flips it announces.
       claimed = Custom::Kanban::CardTask.where(id: task.id, reminded_at: nil).update_all(reminded_at: now) # rubocop:disable Rails/SkipsModelValidations
-      Custom::Kanban::Broadcaster.task_reminder(task, now: now) if claimed == 1
+      next unless claimed == 1
+
+      # The toast reaches an open dashboard; the notification is what an agent who was away finds.
+      Custom::Kanban::Broadcaster.task_reminder(task, now: now)
+      Custom::Kanban::Notifier.task_reminder(task, now: now)
     end
   end
 end

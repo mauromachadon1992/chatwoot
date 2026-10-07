@@ -322,6 +322,25 @@
         "RESOLVED": "Resolvida",
         "SNOOZED": "Adiada"
       }
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notificações",
+      "BELL": "Notificações",
+      "BELL_UNREAD": "Notificações ({count} não lidas)",
+      "MARK_ALL": "Marcar todas como lidas",
+      "UNREAD": "Não lida",
+      "EMPTY_TITLE": "Tudo em dia",
+      "EMPTY_TEXT": "Você será avisado aqui quando uma tarefa vencer, um negócio ou uma tarefa for passado para você, ou uma automação mover um negócio seu.",
+      "TASK_ON_CARD": "{task} · {card}",
+      "KINDS": {
+        "TASK_DUE": "Tarefa vence em breve",
+        "TASK_OVERDUE": "Tarefa atrasada",
+        "TASK_ASSIGNED": "Uma tarefa foi passada para você",
+        "TASK_ASSIGNED_BY": "{actor} passou uma tarefa para você",
+        "CARD_ASSIGNED": "Um negócio foi passado para você",
+        "CARD_ASSIGNED_BY": "{actor} passou um negócio para você",
+        "CARD_MOVED": "Uma automação moveu o negócio para {stage}"
+      }
     }
   }
 }

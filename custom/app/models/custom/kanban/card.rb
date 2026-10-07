@@ -35,6 +35,7 @@ class Custom::Kanban::Card < ApplicationRecord
   before_create :place_on_top
   after_create :record_stage_entry
   after_update :record_stage_entry, if: :saved_change_to_stage_id?
+  after_save :notify_assignee, if: :saved_change_to_assignee_id?
 
   scope :ordered, -> { order(:position, :id) }
 
@@ -152,6 +153,11 @@ class Custom::Kanban::Card < ApplicationRecord
 
   def touch_stage_changed_at
     self.stage_changed_at = Time.current
+  end
+
+  # Whoever is handed the deal is told, unless they handed it to themselves.
+  def notify_assignee
+    Custom::Kanban::Notifier.card_assigned(self, actor: Current.user)
   end
 
   def record_stage_entry

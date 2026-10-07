@@ -30,6 +30,8 @@ class Custom::Kanban::StageAutomationRunner
 
       card.move_to!(stage: rule.stage)
       Custom::Kanban::Broadcaster.card_updated(card)
+      # Nobody dragged it: the agent of the deal would not otherwise know it moved.
+      Custom::Kanban::Notifier.card_moved(card, rule.stage)
     rescue StandardError => e
       # One broken card must not stop the others, nor the rest of the conversation's listeners.
       ChatwootExceptionTracker.new(e, account: @conversation.account).capture_exception

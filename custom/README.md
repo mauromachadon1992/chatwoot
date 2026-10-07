@@ -218,5 +218,18 @@ label (`/super_admin/accounts/:id/white_label`). Values live in `accounts.settin
   agent with the dashboard open: one who was away finds the overdue badge on the card. The
   engine registers the cron entry (`flow_kanban_task_reminders`) when a Sidekiq server starts,
   so `config/schedule.yml` stays upstream's.
-- **Not built yet:** reminders by e-mail or in Chatwoot's notification centre, a task filter on
-  the board, and rules for other triggers.
+- **Notifications** (`flow_kanban_notifications`, `kanban/notifications`, the bell in the
+  Kanban toolbar): what an agent should know about their own deals when they were elsewhere,
+  kept until read. `Custom::Kanban::Notifier` decides, and writes only reasons the agent can
+  act on: a task of theirs due soon or overdue (the reminder job), a task or a deal someone
+  else assigned to them, a deal of theirs moved by a board rule. Never their own doing, and
+  never a deal on a board they cannot see; `Notification.listed_for` filters again when
+  reading, so losing a board hides its notifications and getting it back shows them. The text
+  is a snapshot (`data`), written when it happened, so a renamed or deleted card or task does
+  not rewrite the past. A new one reaches an open dashboard as `kanban.notification.created`
+  with the server's unread count, which is the badge. A row opens the deal and marks itself
+  read; read ones go after two weeks, any after two months (`NotificationCleanupJob`, cron
+  `flow_kanban_notification_cleanup`). Kept out on purpose: every comment, move or message
+  (noise), and anything about other agents' deals.
+- **Not built yet:** notifications by e-mail or push, a task filter on the board, per-agent
+  choice of what the bell collects, and rules for other triggers.

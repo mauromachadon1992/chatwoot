@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_07_120000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_07_140000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1245,6 +1245,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_120000) do
     t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
   end
 
+  create_table "flow_kanban_notifications", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "user_id", null: false
+    t.bigint "card_id", null: false
+    t.bigint "task_id"
+    t.string "kind", null: false
+    t.jsonb "data", default: {}, null: false
+    t.datetime "read_at"
+    t.datetime "created_at", null: false
+    t.index ["card_id"], name: "index_flow_kanban_notifications_on_card"
+    t.index ["created_at"], name: "index_flow_kanban_notifications_on_created"
+    t.index ["user_id", "read_at", "created_at"], name: "index_flow_kanban_notifications_on_user_read_created"
+  end
+
   create_table "flow_kanban_products", force: :cascade do |t|
     t.bigint "account_id", null: false
     t.string "name", null: false
@@ -2080,6 +2094,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_120000) do
   add_foreign_key "flow_kanban_cards", "flow_kanban_stages", column: "stage_id"
   add_foreign_key "flow_kanban_cards", "users", column: "assignee_id", on_delete: :nullify
   add_foreign_key "flow_kanban_cards", "users", column: "created_by_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_notifications", "accounts", on_delete: :cascade
+  add_foreign_key "flow_kanban_notifications", "flow_kanban_card_tasks", column: "task_id", on_delete: :nullify
+  add_foreign_key "flow_kanban_notifications", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_notifications", "users", on_delete: :cascade
   add_foreign_key "flow_kanban_products", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_stage_automations", "accounts", on_delete: :cascade
   add_foreign_key "flow_kanban_stage_automations", "flow_kanban_boards", column: "board_id", on_delete: :cascade

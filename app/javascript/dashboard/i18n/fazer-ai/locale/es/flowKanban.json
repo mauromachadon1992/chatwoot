@@ -322,6 +322,25 @@
         "RESOLVED": "Resuelta",
         "SNOOZED": "Pospuesta"
       }
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notificaciones",
+      "BELL": "Notificaciones",
+      "BELL_UNREAD": "Notificaciones ({count} sin leer)",
+      "MARK_ALL": "Marcar todas como leídas",
+      "UNREAD": "Sin leer",
+      "EMPTY_TITLE": "Todo al día",
+      "EMPTY_TEXT": "Aquí te avisaremos cuando venza una tarea, te asignen una negociación o una tarea, o una automatización mueva una negociación tuya.",
+      "TASK_ON_CARD": "{task} · {card}",
+      "KINDS": {
+        "TASK_DUE": "Tarea por vencer",
+        "TASK_OVERDUE": "Tarea vencida",
+        "TASK_ASSIGNED": "Te asignaron una tarea",
+        "TASK_ASSIGNED_BY": "{actor} te asignó una tarea",
+        "CARD_ASSIGNED": "Te asignaron una negociación",
+        "CARD_ASSIGNED_BY": "{actor} te asignó una negociación",
+        "CARD_MOVED": "Una automatización movió la negociación a {stage}"
+      }
     }
   }
 }

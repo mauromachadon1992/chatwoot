@@ -19,6 +19,9 @@ module FlowCustom::Routes
                 resources :items, only: [:create, :update, :destroy], controller: 'card_items'
                 resources :tasks, only: [:index, :create, :update, :destroy], controller: 'card_tasks'
               end
+              resources :notifications, only: [:index, :update] do
+                collection { post :read_all }
+              end
               resources :products, only: [:index, :create, :update, :destroy]
               resource :settings, only: [:show, :update]
               get 'conversations/:conversation_id/cards', to: 'conversation_cards#index', as: :conversation_cards
