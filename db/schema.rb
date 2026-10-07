@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_12_100000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_13_100000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1144,6 +1144,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_12_100000) do
     t.index ["name", "template_type", "locale"], name: "index_email_templates_on_installation_scope", unique: true, where: "((account_id IS NULL) AND (inbox_id IS NULL))"
   end
 
+  create_table "flow_kanban_ai_drafts", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "card_id", null: false
+    t.bigint "user_id", null: false
+    t.string "status", default: "pending", null: false
+    t.jsonb "used", default: {}, null: false
+    t.string "model"
+    t.datetime "decided_at"
+    t.datetime "created_at", null: false
+    t.index ["account_id", "status"], name: "index_flow_kanban_ai_drafts_on_account_and_status"
+    t.index ["card_id"], name: "index_flow_kanban_ai_drafts_on_card_id"
+    t.index ["user_id", "created_at"], name: "index_flow_kanban_ai_drafts_on_user_and_time"
+  end
+
   create_table "flow_kanban_automation_runs", force: :cascade do |t|
     t.bigint "automation_id", null: false
     t.bigint "card_id", null: false
@@ -2164,6 +2178,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_12_100000) do
   add_foreign_key "campaign_recipients", "campaigns", on_delete: :cascade
   add_foreign_key "campaign_recipients", "contacts", on_delete: :cascade
   add_foreign_key "campaign_recipients", "inboxes", on_delete: :cascade
+  add_foreign_key "flow_kanban_ai_drafts", "accounts"
+  add_foreign_key "flow_kanban_ai_drafts", "flow_kanban_cards", column: "card_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_ai_drafts", "users"
   add_foreign_key "flow_kanban_automation_runs", "flow_kanban_cards", column: "card_id", on_delete: :cascade
   add_foreign_key "flow_kanban_automation_runs", "flow_kanban_stage_automations", column: "automation_id", on_delete: :cascade
   add_foreign_key "flow_kanban_board_inboxes", "flow_kanban_boards", column: "board_id", on_delete: :cascade

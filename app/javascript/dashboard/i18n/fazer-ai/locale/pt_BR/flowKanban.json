@@ -775,6 +775,34 @@
         "DOWNLOAD_ERRORS": "Baixar as {count} linhas com erro"
       }
     },
-    "EXPORT_DEALS": "Exportar negócios (CSV)"
+    "EXPORT_DEALS": "Exportar negócios (CSV)",
+    "AI": {
+      "SECTION": "Resumo com IA",
+      "GENERATED_BY_AI": "Gerado por IA",
+      "HINT": "Peça um rascunho do que está acontecendo neste negócio e uma sugestão de próxima tarefa. Só vai ao assistente o que você mesmo pode ver nas conversas vinculadas.",
+      "NO_CONVERSATIONS": "Vincule uma conversa ao negócio para poder resumi-lo.",
+      "SUMMARIZE": "Resumir negócio",
+      "GENERATING": "O assistente está lendo o negócio…",
+      "RETRY": "Tentar de novo",
+      "BACK": "Voltar",
+      "USED": "Conversas: {conversations} · Mensagens: {messages}.",
+      "USED_PARTIAL": "Conversas: {conversations} · Mensagens: {messages}. Só as mais recentes: o resto não coube.",
+      "REVIEW": "É um rascunho: confira antes de usar.",
+      "SUMMARY": "Resumo",
+      "ADD_TO_DESCRIPTION": "Adicionar à descrição",
+      "DISCARD": "Descartar",
+      "SAVE_HINT": "O texto entra na descrição do card; salve o card para guardá-lo.",
+      "TOO_LONG": "Não cabe na descrição (até 5.000 caracteres). Encurte o resumo.",
+      "ADDED": "Resumo adicionado à descrição. Salve o card para guardá-lo.",
+      "SUGGESTED_TASK": "Próxima tarefa sugerida",
+      "SCHEDULE_TASK": "Agendar tarefa",
+      "DISCARD_TASK": "Descartar sugestão",
+      "TASK_SCHEDULED": "Tarefa agendada.",
+      "DONE": "Concluir",
+      "ERRORS": {
+        "FAILED": "O assistente não conseguiu responder agora. Nada foi alterado; tente de novo em instantes.",
+        "NETWORK": "Não foi possível falar com o servidor. Confira a conexão e tente de novo."
+      }
+    }
   }
 }

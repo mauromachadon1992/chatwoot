@@ -26,9 +26,19 @@ es:
       webhooks:
         label: Webhooks
         hint: Un administrador puede enviar eventos de los negocios (creado, movido, ganado, perdido, valor cambiado, tarea creada) a una dirección.
+      ai_summary:
+        label: 'Resumen de negocio con IA'
+        hint: 'Los agentes pueden pedir un borrador de resumen del negocio y una próxima tarea sugerida. El texto del negocio y de las conversaciones que pueden abrir se envía al proveedor de IA de Captain.'
     settings:
       unsupported_currency: Moneda no admitida.
       quote_template_too_long: El mensaje de presupuesto puede tener hasta 2000 caracteres.
+    ai:
+      nothing_to_summarize: 'Aún no hay mensajes en las conversaciones vinculadas para resumir.'
+      rate_limited: 'Pediste muchos resúmenes. Inténtalo de nuevo en %{minutes} min.'
+      disabled: 'El resumen con IA no está activado en esta cuenta.'
+      not_configured: 'El asistente de IA no está configurado. Pide a un administrador que añada la clave de API de Captain.'
+      quota: 'La cuenta usó las respuestas de IA de este período.'
+      failed: 'El asistente no pudo responder ahora. No se cambió nada; inténtalo de nuevo en un momento.'
     imports:
       file:
         too_big: 'El archivo pesa más de 2 MB.'

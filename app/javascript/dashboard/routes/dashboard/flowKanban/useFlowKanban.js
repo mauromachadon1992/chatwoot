@@ -33,8 +33,13 @@ export const CARD_FIELDS = [
 
 // Mirrors Custom::Kanban::Features: what a super admin lets this account use. An account that
 // never chose gets the defaults.
-export const FEATURES = ['auto_create', 'stale_alerts'];
-export const DEFAULT_FEATURES = ['stale_alerts'];
+export const FEATURES = [
+  'auto_create',
+  'stale_alerts',
+  'webhooks',
+  'ai_summary',
+];
+export const DEFAULT_FEATURES = ['stale_alerts', 'webhooks'];
 
 export function useFlowKanban() {
   const { locale } = useI18n();

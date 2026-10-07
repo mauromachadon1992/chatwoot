@@ -26,9 +26,19 @@ en:
       webhooks:
         label: Webhooks
         hint: An administrator can send deal events (created, moved, won, lost, value changed, task created) to an address.
+      ai_summary:
+        label: 'AI deal summary'
+        hint: 'Agents can ask for a draft summary of a deal and a suggested next task. The text of the deal and of the conversations they can open is sent to the AI provider Captain uses.'
     settings:
       unsupported_currency: Currency not supported.
       quote_template_too_long: The quote message can have up to 2000 characters.
+    ai:
+      nothing_to_summarize: 'There are no messages in the linked conversations to summarize yet.'
+      rate_limited: 'You have asked for many summaries. Try again in %{minutes} min.'
+      disabled: 'The AI summary is not turned on for this account.'
+      not_configured: 'The AI assistant is not set up. Ask an administrator to add the Captain API key.'
+      quota: 'The account has used its AI responses for this period.'
+      failed: 'The assistant could not answer now. Nothing was changed; try again in a moment.'
     imports:
       file:
         too_big: 'The file is over 2 MB.'

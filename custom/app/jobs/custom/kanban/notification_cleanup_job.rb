@@ -13,6 +13,7 @@ class Custom::Kanban::NotificationCleanupJob < ApplicationJob
     Custom::Kanban::Notification.where.not(read_at: nil).where(read_at: ...(now - READ_KEPT_FOR)).delete_all
     Custom::Kanban::Notification.where(created_at: ...(now - ANY_KEPT_FOR)).delete_all
     Custom::Kanban::AutomationRun.where(created_at: ...(now - Custom::Kanban::AutomationRun::RETENTION)).delete_all
+    Custom::Kanban::AiDraft.where(created_at: ...(now - Custom::Kanban::AiDraft::KEPT_FOR)).delete_all
     Custom::Kanban::Import.where(created_at: ...(now - Custom::Kanban::Import::KEPT_FOR)).delete_all
     Custom::Kanban::WebhookDelivery.where(created_at: ...(now - Custom::Kanban::WebhookDelivery::RETENTION)).delete_all
   end

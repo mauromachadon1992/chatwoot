@@ -1,7 +1,7 @@
 # Kanban roadmap: sprints and phases
 
-Status: **S0 to S6 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). S7 onwards proposed; see "Decisions to confirm".
+Status: **S0 to S7 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
+Coolify token). S8 proposed; see "Decisions to confirm".
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,
@@ -286,6 +286,16 @@ delivery log and a "Send test" button.
 - **Tests:** only conversations the agent can access are sent; the toggle; the draft is not saved
   until accepted; failures leave the card unchanged.
 - **Accept:** a deal with two conversations produces a draft in the agent's language.
+
+**Spike result (go).** Assistant: **Captain**, through `Captain::BaseTaskService` (the same base
+as its own conversation summary); nothing from fazer.ai Agents is called from inside the app. Plan:
+this installation is Enterprise (`INSTALLATION_PRICING_PLAN=enterprise`, `captain_tasks` on, 100,000
+responses available), not the community plan the ee-local once reported. Credentials: no
+`CAPTAIN_OPEN_AI_API_KEY` is set in dev, so the live call could not be tried: tests replace the AI
+call, and a super admin must add the key (Settings → Captain) before the first real summary.
+Cost: one call is at most about 30,000 characters in (about 8,000 tokens) and 300 tokens out with
+the default `gpt-4.1-mini`, a fraction of a cent, and 10 an hour per agent caps it. Data: see README,
+"Sprint 7". **Built:** see README, "Sprint 7".
 
 **Metric:** drafts accepted ÷ generated.
 

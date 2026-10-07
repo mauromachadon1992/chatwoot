@@ -103,6 +103,14 @@ class FlowKanbanAPI extends ApiClient {
     return axios.delete(`${this.url}/lost_reasons/${reasonId}`);
   }
 
+  createAiSummary(cardId) {
+    return axios.post(`${this.url}/cards/${cardId}/ai_summary`);
+  }
+
+  decideAiDraft(draftId, decision) {
+    return axios.post(`${this.url}/ai_drafts/${draftId}/decide`, { decision });
+  }
+
   exportProducts() {
     return axios.get(`${this.url}/products/export`, { responseType: 'blob' });
   }

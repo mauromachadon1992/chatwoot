@@ -775,6 +775,34 @@
         "DOWNLOAD_ERRORS": "Descargar las {count} filas con error"
       }
     },
-    "EXPORT_DEALS": "Exportar negocios (CSV)"
+    "EXPORT_DEALS": "Exportar negocios (CSV)",
+    "AI": {
+      "SECTION": "Resumen con IA",
+      "GENERATED_BY_AI": "Generado por IA",
+      "HINT": "Pide un borrador de lo que pasa en este negocio y una sugerencia de próxima tarea. Al asistente solo va lo que tú mismo puedes ver en las conversaciones vinculadas.",
+      "NO_CONVERSATIONS": "Vincula una conversación al negocio para poder resumirlo.",
+      "SUMMARIZE": "Resumir negocio",
+      "GENERATING": "El asistente está leyendo el negocio…",
+      "RETRY": "Intentar de nuevo",
+      "BACK": "Volver",
+      "USED": "Conversaciones: {conversations} · Mensajes: {messages}.",
+      "USED_PARTIAL": "Conversaciones: {conversations} · Mensajes: {messages}. Solo los más recientes: el resto no cupo.",
+      "REVIEW": "Es un borrador: revísalo antes de usarlo.",
+      "SUMMARY": "Resumen",
+      "ADD_TO_DESCRIPTION": "Añadir a la descripción",
+      "DISCARD": "Descartar",
+      "SAVE_HINT": "El texto entra en la descripción de la tarjeta; guarda la tarjeta para conservarlo.",
+      "TOO_LONG": "No cabe en la descripción (hasta 5.000 caracteres). Acorta el resumen.",
+      "ADDED": "Resumen añadido a la descripción. Guarda la tarjeta para conservarlo.",
+      "SUGGESTED_TASK": "Próxima tarea sugerida",
+      "SCHEDULE_TASK": "Programar tarea",
+      "DISCARD_TASK": "Descartar sugerencia",
+      "TASK_SCHEDULED": "Tarea programada.",
+      "DONE": "Listo",
+      "ERRORS": {
+        "FAILED": "El asistente no pudo responder ahora. No se cambió nada; inténtalo de nuevo en un momento.",
+        "NETWORK": "No se pudo hablar con el servidor. Revisa la conexión e inténtalo de nuevo."
+      }
+    }
   }
 }

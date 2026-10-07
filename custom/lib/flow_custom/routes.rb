@@ -26,8 +26,12 @@ module FlowCustom::Routes
                 resources :items, only: [:create, :update, :destroy], controller: 'card_items'
                 resources :tasks, only: [:index, :create, :update, :destroy], controller: 'card_tasks'
                 resources :events, only: [:index], controller: 'card_events'
+                resource :ai_summary, only: [:create], controller: 'ai_summaries'
               end
               resources :tasks, only: [:index]
+              resources :ai_drafts, only: [], controller: 'ai_summaries' do
+                member { post :decide }
+              end
               resources :notifications, only: [:index, :update] do
                 collection { post :read_all }
               end
