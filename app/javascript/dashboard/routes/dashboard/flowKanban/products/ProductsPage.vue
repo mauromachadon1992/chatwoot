@@ -21,6 +21,7 @@ import {
 } from 'dashboard/components-next/table';
 import ProductDialog from './ProductDialog.vue';
 import { useFlowKanban } from '../useFlowKanban';
+import EmptyState from '../EmptyState.vue';
 
 const { t, locale } = useI18n();
 const store = useStore();
@@ -188,23 +189,13 @@ onMounted(async () => {
     </template>
 
     <template #body>
-      <div
+      <EmptyState
         v-if="isCatalogEmpty"
-        class="flex flex-col items-center gap-4 px-6 py-16 text-center"
+        title-tag="h2"
+        icon="i-lucide-package"
+        :title="t('FLOW_KANBAN.PRODUCTS.EMPTY_TITLE')"
+        :description="t('FLOW_KANBAN.PRODUCTS.EMPTY_BODY')"
       >
-        <span
-          class="flex items-center justify-center rounded-xl size-12 bg-n-alpha-2 text-n-slate-11"
-        >
-          <Icon icon="i-lucide-package" class="size-6" />
-        </span>
-        <div class="flex flex-col gap-1 max-w-md">
-          <h2 class="text-heading-2 text-n-slate-12">
-            {{ t('FLOW_KANBAN.PRODUCTS.EMPTY_TITLE') }}
-          </h2>
-          <p class="text-body-main text-n-slate-11">
-            {{ t('FLOW_KANBAN.PRODUCTS.EMPTY_BODY') }}
-          </p>
-        </div>
         <Button
           solid
           blue
@@ -213,7 +204,7 @@ onMounted(async () => {
           :label="t('FLOW_KANBAN.PRODUCTS.NEW')"
           @click="productDialogRef?.open()"
         />
-      </div>
+      </EmptyState>
 
       <div
         v-else

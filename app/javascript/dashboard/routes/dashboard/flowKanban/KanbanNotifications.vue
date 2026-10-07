@@ -9,10 +9,18 @@ import Icon from 'dashboard/components-next/icon/Icon.vue';
 import Popover from 'dashboard/components-next/popover/Popover.vue';
 import { badgeLabel, describeNotification } from './notifications';
 import { useFlowKanban } from './useFlowKanban';
+import SkeletonRows from './SkeletonRows.vue';
+import EmptyState from './EmptyState.vue';
 
 // The bell of the Kanban: what happened on the agent's own deals while they were elsewhere.
-// Opening a row marks it read and opens the deal; the badge counts what is still unread.
-const emit = defineEmits(['openCard']);
+// Opening a row marks it read and opens what it is about: the task in My tasks, or the deal;
+// the badge counts what is still unread.
+defineProps({
+  // `md` in the mobile toolbar, where targets are larger.
+  size: { type: String, default: 'sm' },
+});
+
+const emit = defineEmits(['openCard', 'openTask']);
 
 const { t } = useI18n();
 const kanban = useFlowKanbanStore();
@@ -47,7 +55,9 @@ const load = async () => {
 
 const openRow = async (row, hide) => {
   hide();
-  emit('openCard', { id: row.notification.card_id });
+  const { task_id: taskId, card_id: cardId } = row.notification;
+  if (taskId) emit('openTask', { taskId, cardId });
+  else emit('openCard', { id: cardId });
   try {
     await kanban.markNotificationRead(row.notification);
   } catch {
@@ -73,7 +83,7 @@ onMounted(load);
         v-tooltip.bottom="t('FLOW_KANBAN.NOTIFICATIONS.TITLE')"
         ghost
         slate
-        sm
+        :size="size"
         icon="i-lucide-bell"
         :aria-label="bellLabel"
       />
@@ -105,32 +115,15 @@ onMounted(load);
           />
         </div>
 
-        <div
-          v-if="isLoading"
-          class="flex flex-col gap-2 p-3"
-          aria-hidden="true"
-        >
-          <div class="h-12 rounded-lg bg-n-alpha-2 animate-pulse" />
-          <div class="h-12 rounded-lg bg-n-alpha-2 animate-pulse" />
-          <div class="h-12 rounded-lg bg-n-alpha-2 animate-pulse" />
-        </div>
+        <SkeletonRows v-if="isLoading" :rows="3" height="h-12" class="p-3" />
 
-        <div
+        <EmptyState
           v-else-if="!rows.length"
-          class="flex flex-col items-center gap-2 px-6 py-10 text-center"
-        >
-          <span
-            class="flex items-center justify-center rounded-xl size-10 bg-n-alpha-2 text-n-slate-11"
-          >
-            <Icon icon="i-lucide-bell" class="size-5" />
-          </span>
-          <h3 class="text-heading-2 text-n-slate-12">
-            {{ t('FLOW_KANBAN.NOTIFICATIONS.EMPTY_TITLE') }}
-          </h3>
-          <p class="text-body-main text-n-slate-11">
-            {{ t('FLOW_KANBAN.NOTIFICATIONS.EMPTY_TEXT') }}
-          </p>
-        </div>
+          size="compact"
+          icon="i-lucide-bell"
+          :title="t('FLOW_KANBAN.NOTIFICATIONS.EMPTY_TITLE')"
+          :description="t('FLOW_KANBAN.NOTIFICATIONS.EMPTY_TEXT')"
+        />
 
         <ul
           v-else

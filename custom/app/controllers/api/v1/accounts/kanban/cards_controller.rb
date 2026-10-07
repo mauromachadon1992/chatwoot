@@ -33,8 +33,11 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     render json: { payload: card.push_event_data }
   end
 
+  # `reviewed: true` lets an agent accept an automatic deal as it is, without changing anything.
   def update
-    @card.update!(card_params)
+    @card.assign_attributes(card_params)
+    @card.needs_review = false if ActiveModel::Type::Boolean.new.cast(params[:reviewed])
+    @card.save!
     broadcast_updated
   end
 
@@ -86,12 +89,26 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     conversation
   end
 
-  def filtered(cards)
-    cards = cards.where(assignee_id: params[:assignee_id] == 'none' ? nil : params[:assignee_id]) if params[:assignee_id].present?
-    if params[:inbox_id].present?
-      linked = Custom::Kanban::CardConversation.joins(:conversation).where(conversations: { inbox_id: params[:inbox_id] })
-      cards = cards.where(id: linked.select(:card_id))
+  # The "Situation" filter: deals past their stage's limit, or with an overdue follow-up.
+  def filtered_by_status(cards)
+    case params[:status]
+    when 'stale' then cards.stale
+    when 'overdue_tasks' then cards.where(id: Custom::Kanban::CardTask.overdue.select(:card_id))
+    else cards
     end
+  end
+
+  # Deals with a conversation in the inbox.
+  def filtered_by_inbox(cards)
+    return cards if params[:inbox_id].blank?
+
+    linked = Custom::Kanban::CardConversation.joins(:conversation).where(conversations: { inbox_id: params[:inbox_id] })
+    cards.where(id: linked.select(:card_id))
+  end
+
+  def filtered(cards)
+    cards = filtered_by_inbox(filtered_by_status(cards))
+    cards = cards.where(assignee_id: params[:assignee_id] == 'none' ? nil : params[:assignee_id]) if params[:assignee_id].present?
     return cards if params[:q].blank?
 
     term = "%#{ActiveRecord::Base.sanitize_sql_like(params[:q])}%"

@@ -14,6 +14,15 @@ pt_BR:
       assignee: Responsável
       time_in_stage: Tempo na etapa
       last_activity: Última atividade
+    features:
+      label: Recursos do Kanban
+      hint: O que esta conta pode usar. Um administrador ainda configura cada um por funil.
+      auto_create:
+        label: Negócios automáticos
+        hint: Uma conversa nova pode abrir um negócio sozinha, nos funis e caixas de entrada escolhidos por um administrador.
+      stale_alerts:
+        label: Alerta de negócio parado
+        hint: Um negócio que fica tempo demais numa etapa é sinalizado e o agente é avisado, nas etapas com limite definido.
     settings:
       unsupported_currency: Moeda não suportada.
     task_reminder:
@@ -27,3 +36,13 @@ pt_BR:
           attributes:
             value_cents:
               follows_items: segue a soma dos produtos; remova os produtos para digitar um valor
+        custom/kanban/board:
+          attributes:
+            auto_create:
+              daily_cap: o limite diário deve ficar entre 1 e 500
+              inboxes: inclui uma caixa de entrada de fora desta conta
+              no_inbox: precisa de pelo menos uma caixa de entrada
+        custom/kanban/stage:
+          attributes:
+            stale_after_days:
+              open_only: vale só para etapas abertas

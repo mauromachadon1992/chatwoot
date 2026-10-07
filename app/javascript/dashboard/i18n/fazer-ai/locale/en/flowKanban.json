@@ -13,7 +13,12 @@
       "SEARCH_AGENT": "Search agent",
       "SEARCH_INBOX": "Search inbox",
       "ALL_INBOXES": "All inboxes",
-      "CLEAR": "Clear filters"
+      "CLEAR": "Clear filters",
+      "BUTTON": "Filters",
+      "BUTTON_COUNT": "Filters ({count} active)",
+      "ALL_STATUSES": "Any situation",
+      "STATUS_STALE": "Stalled",
+      "STATUS_OVERDUE_TASKS": "With an overdue task"
     },
     "EMPTY": {
       "NO_BOARDS_TITLE": "No boards yet",
@@ -34,7 +39,10 @@
       "RESTRICTED_CONVERSATION": "Conversation from an inbox you cannot access",
       "VALUE": "Deal value",
       "TASKS_OPEN": "Open tasks: {count}",
-      "TASKS_OVERDUE": "Overdue tasks: {count}"
+      "TASKS_OVERDUE": "Overdue tasks: {count}",
+      "STALE": "Stalled {days} d",
+      "AUTOMATIC": "Automatic",
+      "AUTOMATIC_HINT": "Opened by a new conversation. Goes away once someone reviews the deal."
     },
     "CARD_FORM": {
       "CREATE_TITLE": "New card",
@@ -60,7 +68,10 @@
       "DELETE_CONFIRM": "Delete this card? Conversations are not affected.",
       "CREATED": "Card created",
       "SAVED": "Card saved",
-      "DELETED": "Card deleted"
+      "DELETED": "Card deleted",
+      "AUTOMATIC_NOTICE": "Opened automatically by a new conversation. Check the title, the assignee and the value.",
+      "MARK_REVIEWED": "Mark as reviewed",
+      "STALE": "Stalled for {days} days in this stage"
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "New board",
@@ -99,7 +110,11 @@
       "DELETE_CONFIRM": "Delete the board \"{name}\" and all its cards? Conversations are not affected.",
       "CREATED": "Board created",
       "SAVED": "Board saved",
-      "DELETED": "Board deleted"
+      "DELETED": "Board deleted",
+      "STALE_LABEL": "Alert when stalled for",
+      "STALE_DAYS": "days",
+      "STALE_NONE": "—",
+      "STALE_INVALID": "Use a whole number from 1 to 365, or leave it empty for no alert."
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -120,7 +135,9 @@
     "VIEW": {
       "LABEL": "View",
       "BOARD": "Board",
-      "REPORT": "Report"
+      "REPORT": "Report",
+      "TASKS": "Tasks",
+      "TASKS_BADGE": "{overdue} overdue and {today} due today"
     },
     "VALUE": {
       "SECTION": "Value and products",
@@ -339,8 +356,44 @@
         "TASK_ASSIGNED_BY": "{actor} assigned you a task",
         "CARD_ASSIGNED": "A deal was assigned to you",
         "CARD_ASSIGNED_BY": "{actor} assigned you a deal",
-        "CARD_MOVED": "An automation moved the deal to {stage}"
+        "CARD_MOVED": "An automation moved the deal to {stage}",
+        "CARD_STALE": "Deal stalled for {days} days in {stage}"
       }
+    },
+    "MY_TASKS": {
+      "TITLE_MINE": "My tasks",
+      "TITLE_ALL": "Team tasks",
+      "SUMMARY": "{open} open · {overdue} overdue",
+      "SCOPE": "Whose",
+      "SCOPE_MINE": "Mine",
+      "SCOPE_ALL": "Team",
+      "EMPTY_TITLE": "Nothing due",
+      "EMPTY_TEXT": "Schedule the next step of a deal in its card panel, under Tasks.",
+      "ERROR_TITLE": "The tasks could not be loaded",
+      "ERROR_TEXT": "Check the connection and try again.",
+      "RETRY": "Try again",
+      "GROUPS": {
+        "OVERDUE": "Overdue",
+        "TODAY": "Today",
+        "UPCOMING": "Upcoming",
+        "DONE": "Done recently"
+      },
+      "DONE_AT": "Done {time}",
+      "LOAD_MORE": "Load more"
+    },
+    "AUTO_CREATE": {
+      "SECTION": "Automatic deals",
+      "HINT": "A new conversation from a contact with no open deal on this board opens one on its own.",
+      "INBOXES": "Inboxes to watch",
+      "INBOXES_PLACEHOLDER": "Pick the inboxes",
+      "NEEDS_INBOX": "Pick at least one inbox to turn it on.",
+      "CAP": "Daily limit",
+      "CAP_INVALID": "Use a number from 1 to 500.",
+      "TODAY": "Today: {count} of {cap}",
+      "RULE_STAGE": "The deal lands on the first open stage, with the conversation linked.",
+      "RULE_DEDUP": "A contact who already has an open deal on this board gets no second one.",
+      "RULE_GROUPS": "Group conversations are skipped.",
+      "RULE_ASSIGNEE": "The assignee is the conversation’s agent, when there is one; they are told in the bell."
     }
   }
 }

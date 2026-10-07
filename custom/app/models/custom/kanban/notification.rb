@@ -1,7 +1,7 @@
 # One thing an agent should know about a deal. Written by Custom::Kanban::Notifier, listed in
 # the bell of the Kanban, and kept until read (and for a while after).
 class Custom::Kanban::Notification < ApplicationRecord
-  KINDS = %w[task_due task_overdue task_assigned card_assigned card_moved].freeze
+  KINDS = %w[task_due task_overdue task_assigned card_assigned card_moved card_stale].freeze
   UNREAD_LIMIT = 99
 
   belongs_to :account

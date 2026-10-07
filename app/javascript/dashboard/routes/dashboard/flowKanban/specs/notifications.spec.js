@@ -62,3 +62,16 @@ describe('badgeLabel', () => {
     expect(badgeLabel(UNREAD_CAP + 1)).toBe('99+');
   });
 });
+
+describe('a stalled deal', () => {
+  it('is told in amber with the stage and the days', () => {
+    const view = describeNotification(
+      notification('card_stale', { stage_name: 'Proposta', days: 6 })
+    );
+
+    expect(view.titleKey).toBe('FLOW_KANBAN.NOTIFICATIONS.KINDS.CARD_STALE');
+    expect(view.titleParams).toMatchObject({ stage: 'Proposta', days: 6 });
+    expect(view.toneClass).toBe('text-n-amber-11');
+    expect(view.isTask).toBe(false);
+  });
+});

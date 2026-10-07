@@ -21,6 +21,17 @@ module Custom::Concerns::Account
     )
   end
 
+  def flow_kanban_features
+    stored = settings&.dig(Custom::Kanban::Features::SETTINGS_KEY)
+    stored.nil? ? Custom::Kanban::Features::DEFAULTS.dup : stored
+  end
+
+  def flow_kanban_features=(features)
+    self.settings = (settings || {}).merge(
+      Custom::Kanban::Features::SETTINGS_KEY => Custom::Kanban::Features::ALL & Array(features).compact_blank
+    )
+  end
+
   def flow_kanban_currency
     code = settings&.dig(Custom::Kanban::Currency::SETTINGS_KEY)
     Custom::Kanban::Currency.supported?(code) ? code : Custom::Kanban::Currency::DEFAULT

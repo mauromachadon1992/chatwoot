@@ -43,7 +43,7 @@ class Custom::Kanban::StageAutomationRunner
   def cards
     card_ids = Custom::Kanban::CardConversation.where(conversation_id: @conversation.id).select(:card_id)
     Custom::Kanban::Card.where(id: card_ids, account_id: @conversation.account_id)
-                        .includes(:board, :assignee, :tasks, card_conversations: :conversation, contact: { avatar_attachment: :blob })
+                        .includes(:board, :assignee, :tasks, :stage, card_conversations: :conversation, contact: { avatar_attachment: :blob })
   end
 
   def rules_for(card)

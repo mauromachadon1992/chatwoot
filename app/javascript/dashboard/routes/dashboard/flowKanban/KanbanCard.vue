@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ConversationChips from './ConversationChips.vue';
+import StatePill from './StatePill.vue';
 import { useFlowKanban } from './useFlowKanban';
 
 const props = defineProps({
@@ -13,7 +14,12 @@ const props = defineProps({
 defineEmits(['open']);
 
 const { t } = useI18n();
-const { cardFields, relativeTime, money } = useFlowKanban();
+const { cardFields, relativeTime, money, hasFeature } = useFlowKanban();
+
+// States, not fields: always shown when they hold, whatever fields the account picked.
+const staleDays = computed(() =>
+  hasFeature('stale_alerts') ? props.card.stale_days : null
+);
 
 const contactLabel = computed(
   () =>
@@ -69,6 +75,22 @@ const showTasks = computed(() => tasks.value.open > 0);
         :size="20"
         rounded-full
         class="flex-shrink-0"
+      />
+    </div>
+
+    <div v-if="staleDays || card.needs_review" class="flex flex-wrap gap-1">
+      <StatePill
+        v-if="staleDays"
+        tone="amber"
+        icon="i-lucide-hourglass"
+        :label="t('FLOW_KANBAN.CARD.STALE', { days: staleDays })"
+      />
+      <StatePill
+        v-if="card.needs_review"
+        v-tooltip.top="t('FLOW_KANBAN.CARD.AUTOMATIC_HINT')"
+        tone="slate"
+        icon="i-lucide-message-square-plus"
+        :label="t('FLOW_KANBAN.CARD.AUTOMATIC')"
       />
     </div>
 

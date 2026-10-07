@@ -21,7 +21,13 @@ const writeLastBoard = boardId => {
 
 const byPosition = (a, b) => a.position - b.position || a.id - b.id;
 
-const emptyFilters = () => ({ q: '', assignee_id: '', inbox_id: '' });
+// `status`: the Situation filter, 'stale' or 'overdue_tasks'.
+const emptyFilters = () => ({
+  q: '',
+  assignee_id: '',
+  inbox_id: '',
+  status: '',
+});
 
 export const useFlowKanbanStore = defineStore('flowKanban', {
   state: () => ({
@@ -40,6 +46,8 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
     notifications: [],
     unreadCount: 0,
     notificationsLoaded: false,
+    // The badge of My tasks: the agent's own tasks overdue and due today.
+    taskCounts: { overdue: 0, dueToday: 0 },
   }),
 
   getters: {
@@ -364,6 +372,17 @@ export const useFlowKanbanStore = defineStore('flowKanban', {
 
     onCardDeleted({ card }) {
       this.removeCard(card);
+    },
+
+    async fetchTaskCounts(todayEndsAt) {
+      const { data } = await FlowKanbanAPI.getTasks({
+        todayEndsAt,
+        countOnly: true,
+      });
+      this.taskCounts = {
+        overdue: data.meta.overdue_count,
+        dueToday: data.meta.due_today_count || 0,
+      };
     },
 
     async fetchNotifications() {

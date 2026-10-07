@@ -79,7 +79,9 @@ const metrics = computed(() => {
         :key="index"
         class="flex flex-col gap-2 ps-4 border-s border-n-weak"
       >
+        <!-- design-audit-allow: hand-built-skeleton (label and figure of a report metric) -->
         <span class="w-20 h-3 rounded bg-n-alpha-2 animate-pulse" />
+        <!-- design-audit-allow: hand-built-skeleton (label and figure of a report metric) -->
         <span class="h-6 rounded w-28 bg-n-alpha-2 animate-pulse" />
       </div>
     </template>

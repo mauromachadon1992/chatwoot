@@ -13,7 +13,12 @@
       "SEARCH_AGENT": "Buscar agente",
       "SEARCH_INBOX": "Buscar caixa de entrada",
       "ALL_INBOXES": "Todas as caixas de entrada",
-      "CLEAR": "Limpar filtros"
+      "CLEAR": "Limpar filtros",
+      "BUTTON": "Filtros",
+      "BUTTON_COUNT": "Filtros ({count} ativos)",
+      "ALL_STATUSES": "Todas as situações",
+      "STATUS_STALE": "Parados",
+      "STATUS_OVERDUE_TASKS": "Com tarefa atrasada"
     },
     "EMPTY": {
       "NO_BOARDS_TITLE": "Nenhum funil ainda",
@@ -34,7 +39,10 @@
       "RESTRICTED_CONVERSATION": "Conversa de uma caixa de entrada sem acesso",
       "VALUE": "Valor do negócio",
       "TASKS_OPEN": "Tarefas em aberto: {count}",
-      "TASKS_OVERDUE": "Tarefas atrasadas: {count}"
+      "TASKS_OVERDUE": "Tarefas atrasadas: {count}",
+      "STALE": "Parado há {days} d",
+      "AUTOMATIC": "Automático",
+      "AUTOMATIC_HINT": "Aberto por uma conversa nova. Some quando alguém revisar o negócio."
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Novo card",
@@ -60,7 +68,10 @@
       "DELETE_CONFIRM": "Excluir este card? As conversas não são afetadas.",
       "CREATED": "Card criado",
       "SAVED": "Card salvo",
-      "DELETED": "Card excluído"
+      "DELETED": "Card excluído",
+      "AUTOMATIC_NOTICE": "Aberto automaticamente por uma conversa nova. Confira o título, o responsável e o valor.",
+      "MARK_REVIEWED": "Marcar como revisado",
+      "STALE": "Parado há {days} dias nesta etapa"
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "Novo funil",
@@ -99,7 +110,11 @@
       "DELETE_CONFIRM": "Excluir o funil \"{name}\" e todos os seus cards? As conversas não são afetadas.",
       "CREATED": "Funil criado",
       "SAVED": "Funil salvo",
-      "DELETED": "Funil excluído"
+      "DELETED": "Funil excluído",
+      "STALE_LABEL": "Alertar se parado por",
+      "STALE_DAYS": "dias",
+      "STALE_NONE": "—",
+      "STALE_INVALID": "Use um número inteiro de 1 a 365, ou deixe vazio para não alertar."
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -120,7 +135,9 @@
     "VIEW": {
       "LABEL": "Visualização",
       "BOARD": "Quadro",
-      "REPORT": "Relatório"
+      "REPORT": "Relatório",
+      "TASKS": "Tarefas",
+      "TASKS_BADGE": "{overdue} atrasadas e {today} para hoje"
     },
     "VALUE": {
       "SECTION": "Valor e produtos",
@@ -339,8 +356,44 @@
         "TASK_ASSIGNED_BY": "{actor} passou uma tarefa para você",
         "CARD_ASSIGNED": "Um negócio foi passado para você",
         "CARD_ASSIGNED_BY": "{actor} passou um negócio para você",
-        "CARD_MOVED": "Uma automação moveu o negócio para {stage}"
+        "CARD_MOVED": "Uma automação moveu o negócio para {stage}",
+        "CARD_STALE": "Negócio parado há {days} dias em {stage}"
       }
+    },
+    "MY_TASKS": {
+      "TITLE_MINE": "Minhas tarefas",
+      "TITLE_ALL": "Tarefas da equipe",
+      "SUMMARY": "{open} em aberto · {overdue} atrasadas",
+      "SCOPE": "De quem",
+      "SCOPE_MINE": "Minhas",
+      "SCOPE_ALL": "Da equipe",
+      "EMPTY_TITLE": "Nada pendente",
+      "EMPTY_TEXT": "Agende o próximo passo de um negócio no painel do card, em Tarefas.",
+      "ERROR_TITLE": "Não foi possível carregar as tarefas",
+      "ERROR_TEXT": "Verifique a conexão e tente de novo.",
+      "RETRY": "Tentar de novo",
+      "GROUPS": {
+        "OVERDUE": "Atrasadas",
+        "TODAY": "Hoje",
+        "UPCOMING": "Próximas",
+        "DONE": "Concluídas recentemente"
+      },
+      "DONE_AT": "Concluída {time}",
+      "LOAD_MORE": "Carregar mais"
+    },
+    "AUTO_CREATE": {
+      "SECTION": "Negócios automáticos",
+      "HINT": "Uma conversa nova de um contato sem negócio aberto neste funil abre um sozinha.",
+      "INBOXES": "Caixas de entrada observadas",
+      "INBOXES_PLACEHOLDER": "Escolha as caixas de entrada",
+      "NEEDS_INBOX": "Escolha ao menos uma caixa de entrada para ligar.",
+      "CAP": "Limite por dia",
+      "CAP_INVALID": "Use um número de 1 a 500.",
+      "TODAY": "Hoje: {count} de {cap}",
+      "RULE_STAGE": "O negócio entra na primeira etapa aberta, com a conversa vinculada.",
+      "RULE_DEDUP": "Um contato que já tem negócio aberto neste funil não ganha outro.",
+      "RULE_GROUPS": "Conversas de grupo são ignoradas.",
+      "RULE_ASSIGNEE": "O responsável é o agente da conversa, quando houver; ele é avisado no sino."
     }
   }
 }

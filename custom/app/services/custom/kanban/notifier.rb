@@ -1,10 +1,11 @@
-# Decides who is told what about a deal, and tells them. Four reasons, each one a thing the agent
+# Decides who is told what about a deal, and tells them. Five reasons, each one a thing the agent
 # can act on, none of them a log of everything that happened:
 #
 # - a task of theirs is about to fall due, or is overdue (the reminder job);
 # - someone else assigned them a task;
-# - someone else assigned them a deal;
-# - a board rule moved a deal of theirs (nobody was there to tell them).
+# - someone else assigned them a deal (or a new conversation opened one for them);
+# - a board rule moved a deal of theirs (nobody was there to tell them);
+# - a deal of theirs stalled past its stage's limit (the stalled-deal job), once per stall.
 #
 # Never the agent's own doing, and never a deal on a board they cannot see.
 class Custom::Kanban::Notifier
@@ -26,6 +27,10 @@ class Custom::Kanban::Notifier
 
   def self.card_moved(card, stage)
     notify(kind: 'card_moved', user: card.assignee, card: card, data: { stage_name: stage.name, stage_type: stage.stage_type })
+  end
+
+  def self.card_stale(card, days)
+    notify(kind: 'card_stale', user: card.assignee, card: card, data: { stage_name: card.stage.name, days: days })
   end
 
   # `details`: the `task` the notification is about, and the `data` its text needs.

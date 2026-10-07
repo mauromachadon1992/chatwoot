@@ -14,6 +14,15 @@ es:
       assignee: Responsable
       time_in_stage: Tiempo en la etapa
       last_activity: Última actividad
+    features:
+      label: Funciones del Kanban
+      hint: Lo que esta cuenta puede usar. Un administrador aún configura cada una por tablero.
+      auto_create:
+        label: Negociaciones automáticas
+        hint: Una conversación nueva puede abrir una negociación sola, en los tableros y bandejas que elija un administrador.
+      stale_alerts:
+        label: Alerta de negociación detenida
+        hint: Una negociación que se queda demasiado en una etapa se marca y se avisa a su agente, en las etapas con límite.
     settings:
       unsupported_currency: Moneda no admitida.
     task_reminder:
@@ -27,3 +36,13 @@ es:
           attributes:
             value_cents:
               follows_items: sigue la suma de los productos; quite los productos para escribir un valor
+        custom/kanban/board:
+          attributes:
+            auto_create:
+              daily_cap: el límite diario debe estar entre 1 y 500
+              inboxes: incluye una bandeja de fuera de esta cuenta
+              no_inbox: necesita al menos una bandeja de entrada
+        custom/kanban/stage:
+          attributes:
+            stale_after_days:
+              open_only: solo vale para etapas abiertas

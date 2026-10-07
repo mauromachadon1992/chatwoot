@@ -19,6 +19,7 @@ module FlowCustom::Routes
                 resources :items, only: [:create, :update, :destroy], controller: 'card_items'
                 resources :tasks, only: [:index, :create, :update, :destroy], controller: 'card_tasks'
               end
+              resources :tasks, only: [:index]
               resources :notifications, only: [:index, :update] do
                 collection { post :read_all }
               end

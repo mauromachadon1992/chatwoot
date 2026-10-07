@@ -5,6 +5,8 @@ import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ReportSummary from './ReportSummary.vue';
 import ReportFunnel from './ReportFunnel.vue';
 import { useFlowKanbanReport } from './useFlowKanbanReport';
+import SkeletonRows from '../SkeletonRows.vue';
+import EmptyState from '../EmptyState.vue';
 
 // The board's report view. The period and assignee filters live in the Kanban header.
 const props = defineProps({
@@ -61,32 +63,17 @@ const SKELETON_ROWS = 4;
             </p>
           </div>
 
-          <div v-if="!report" class="flex flex-col gap-3" aria-busy="true">
-            <div
-              v-for="row in SKELETON_ROWS"
-              :key="row"
-              class="h-10 rounded-lg bg-n-alpha-2 animate-pulse"
-            />
+          <div v-if="!report" aria-busy="true">
+            <SkeletonRows :rows="SKELETON_ROWS" />
           </div>
 
-          <div
+          <EmptyState
             v-else-if="!report.summary.created"
-            class="flex flex-col items-center gap-4 px-6 py-12 text-center rounded-xl outline outline-1 outline-dashed outline-n-container"
-          >
-            <span
-              class="flex items-center justify-center rounded-xl size-12 bg-n-alpha-2 text-n-slate-11"
-            >
-              <Icon icon="i-lucide-filter" class="size-6" />
-            </span>
-            <div class="flex flex-col gap-1 max-w-md">
-              <h3 class="text-heading-2 text-n-slate-12">
-                {{ t('FLOW_KANBAN.REPORT.EMPTY_TITLE') }}
-              </h3>
-              <p class="text-body-main text-n-slate-11">
-                {{ t('FLOW_KANBAN.REPORT.EMPTY_BODY') }}
-              </p>
-            </div>
-          </div>
+            framed
+            icon="i-lucide-filter"
+            :title="t('FLOW_KANBAN.REPORT.EMPTY_TITLE')"
+            :description="t('FLOW_KANBAN.REPORT.EMPTY_BODY')"
+          />
 
           <ReportFunnel
             v-else

@@ -26,10 +26,46 @@ export const defaultDueInput = (now = new Date()) => {
 export const dueInputToISO = value =>
   value ? new Date(value).toISOString() : null;
 
+// A due state worth naming, as a StatePill: tone, icon and the word (FLOW_KANBAN.TASKS.*).
+// Later and done dates are plain text.
+export const DUE_PILLS = {
+  overdue: { tone: 'ruby', icon: 'i-lucide-alarm-clock', key: 'OVERDUE' },
+  today: { tone: 'amber', icon: 'i-lucide-clock', key: 'TODAY' },
+};
+
+// "Wed, 8 Oct, 09:00" in the dashboard's language (pt_BR → pt-BR for Intl).
+export const formatDue = (seconds, locale) =>
+  new Intl.DateTimeFormat(String(locale || 'en').replace('_', '-'), {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(seconds * 1000));
+
 // 'done' | 'overdue' | 'today' | 'later', for the colour and the wording of a due date.
 export const dueState = (task, now = new Date()) => {
   if (task.completed_at) return 'done';
   const due = new Date(task.due_at * 1000);
   if (due < now) return 'overdue';
   return due.toDateString() === now.toDateString() ? 'today' : 'later';
+};
+
+// The last instant of the viewer's day, which the server needs to count "today".
+export const endOfLocalDay = (now = new Date()) => {
+  const end = new Date(now);
+  end.setHours(23, 59, 59, 999);
+  return end;
+};
+
+// My tasks: open tasks split by the viewer's own day, each group keeping the server's order.
+export const groupOpenTasks = (tasks, now = new Date()) => {
+  const groups = { overdue: [], today: [], upcoming: [] };
+  tasks.forEach(task => {
+    const state = dueState(task, now);
+    if (state === 'overdue') groups.overdue.push(task);
+    else if (state === 'today') groups.today.push(task);
+    else if (state === 'later') groups.upcoming.push(task);
+  });
+  return groups;
 };

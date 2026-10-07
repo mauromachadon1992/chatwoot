@@ -10,6 +10,7 @@ import FlowKanbanAPI from 'dashboard/api/flowKanban';
 import Button from 'dashboard/components-next/button/Button.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
 import { useFlowKanban } from './useFlowKanban';
+import SkeletonRows from './SkeletonRows.vue';
 
 // The Kanban side of a conversation, for any channel: the cards it is on, the contact's
 // other cards it can join, and a shortcut to open a new card from it.
@@ -145,10 +146,7 @@ const stageOptionsFor = card =>
 
 <template>
   <div class="flex flex-col gap-4 px-2 pb-2">
-    <div v-if="isLoading" class="flex flex-col gap-2" aria-hidden="true">
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-    </div>
+    <SkeletonRows v-if="isLoading" />
 
     <template v-else>
       <section class="flex flex-col gap-2">

@@ -50,7 +50,7 @@ class Api::V1::Accounts::Kanban::StagesController < Api::V1::Accounts::Kanban::B
   end
 
   def stage_params
-    params.permit(:name, :color, :stage_type)
+    params.permit(:name, :color, :stage_type, :stale_after_days)
   end
 
   def move_cards_out
@@ -59,7 +59,7 @@ class Api::V1::Accounts::Kanban::StagesController < Api::V1::Accounts::Kanban::B
     # The column's history first: the update below skips the card callbacks that record it.
     Custom::Kanban::StageTransition.record_bulk!(cards: @stage.cards, from_stage: @stage, to_stage: target, user: Current.user, at: now)
     # One statement for the whole column; the cards stay valid since the target is on the same board.
-    @stage.cards.update_all(stage_id: target.id, stage_changed_at: now, updated_at: now) # rubocop:disable Rails/SkipsModelValidations
+    @stage.cards.update_all(stage_id: target.id, stage_changed_at: now, stale_notified_at: nil, updated_at: now) # rubocop:disable Rails/SkipsModelValidations
     Custom::Kanban::Card.renumber!(target)
   end
 

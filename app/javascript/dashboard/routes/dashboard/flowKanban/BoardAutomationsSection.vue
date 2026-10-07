@@ -11,6 +11,7 @@ import Input from 'dashboard/components-next/input/Input.vue';
 import Switch from 'dashboard/components-next/switch/Switch.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
 import SegmentedControl from './SegmentedControl.vue';
+import SkeletonRows from './SkeletonRows.vue';
 
 // Rules that move a card when its conversation changes. Each change saves at once, as the
 // stages above do. The server applies them; here an administrator only writes them.
@@ -157,9 +158,7 @@ watch(
       </p>
     </div>
 
-    <div v-if="isLoading" class="flex flex-col gap-2" aria-hidden="true">
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-    </div>
+    <SkeletonRows v-if="isLoading" :rows="1" />
 
     <p v-else-if="!rules.length" class="text-body-main text-n-slate-11">
       {{ t('FLOW_KANBAN.AUTOMATIONS.EMPTY') }}

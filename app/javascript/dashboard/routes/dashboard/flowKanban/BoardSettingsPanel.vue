@@ -15,13 +15,16 @@ import Input from 'dashboard/components-next/input/Input.vue';
 import ButtonGroup from 'dashboard/components-next/buttonGroup/ButtonGroup.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
 import BoardAutomationsSection from './BoardAutomationsSection.vue';
+import BoardAutoCreateSection from './BoardAutoCreateSection.vue';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
 import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue';
 import ColorPicker from 'dashboard/components-next/colorpicker/ColorPicker.vue';
-import { STAGE_COLORS } from './useFlowKanban';
+import { STAGE_COLORS, useFlowKanban } from './useFlowKanban';
 
 const { t } = useI18n();
 const kanban = useFlowKanbanStore();
+const { hasFeature } = useFlowKanban();
 const inboxes = useMapGetter('inboxes/getInboxes');
 const teams = useMapGetter('teams/getTeams');
 
@@ -68,7 +71,11 @@ const moveTargetOptions = computed(() =>
 
 const loadStages = () => {
   const board = kanban.boards.find(item => item.id === boardId.value);
-  stages.value = (board?.stages || []).map(stage => ({ ...stage }));
+  stages.value = (board?.stages || []).map(stage => ({
+    ...stage,
+    staleDraft: stage.stale_after_days ? String(stage.stale_after_days) : '',
+    staleInvalid: false,
+  }));
 };
 
 const open = board => {
@@ -124,6 +131,19 @@ const saveStage = async (stage, changes) => {
     await kanban.updateStage(stage.id, changes);
   });
   loadStages();
+};
+
+// Days a deal may stay in an open stage before it counts as stalled; empty means no alert.
+const STALE_MIN = 1;
+const STALE_MAX = 365;
+const commitStaleLimit = stage => {
+  const text = String(stage.staleDraft ?? '').trim();
+  const value = text === '' ? null : Number(text);
+  stage.staleInvalid =
+    value !== null &&
+    (!Number.isInteger(value) || value < STALE_MIN || value > STALE_MAX);
+  if (stage.staleInvalid || value === (stage.stale_after_days ?? null)) return;
+  saveStage(stage, { stale_after_days: value });
 };
 
 // InlineInput edits stage.name in place; an empty or unchanged name puts the saved one back.
@@ -358,6 +378,44 @@ defineExpose({ open });
                   @update:model-value="pickColor(stage, $event)"
                 />
               </div>
+              <div
+                v-if="hasFeature('stale_alerts') && stage.stage_type === 'open'"
+                class="flex flex-wrap items-center gap-2 ps-9"
+              >
+                <Icon
+                  icon="i-lucide-hourglass"
+                  class="flex-shrink-0 size-3.5 text-n-slate-10"
+                />
+                <label
+                  :for="`flow-stale-${stage.id}`"
+                  class="text-label-small text-n-slate-11"
+                >
+                  {{ t('FLOW_KANBAN.BOARD_FORM.STALE_LABEL') }}
+                </label>
+                <Input
+                  :id="`flow-stale-${stage.id}`"
+                  v-model="stage.staleDraft"
+                  type="number"
+                  :min="String(STALE_MIN)"
+                  :max="String(STALE_MAX)"
+                  size="sm"
+                  class="w-20"
+                  :placeholder="t('FLOW_KANBAN.BOARD_FORM.STALE_NONE')"
+                  :message-type="stage.staleInvalid ? 'error' : 'info'"
+                  @blur="commitStaleLimit(stage)"
+                  @keydown.enter.prevent="commitStaleLimit(stage)"
+                />
+                <span class="text-label-small text-n-slate-11">
+                  {{ t('FLOW_KANBAN.BOARD_FORM.STALE_DAYS') }}
+                </span>
+                <span
+                  v-if="stage.staleInvalid"
+                  role="alert"
+                  class="w-full text-label-small text-n-ruby-11"
+                >
+                  {{ t('FLOW_KANBAN.BOARD_FORM.STALE_INVALID') }}
+                </span>
+              </div>
             </div>
           </template>
         </Draggable>
@@ -375,6 +433,11 @@ defineExpose({ open });
           {{ t('FLOW_KANBAN.BOARD_FORM.STAGES_AUTOSAVE') }}
         </p>
       </section>
+
+      <BoardAutoCreateSection
+        v-if="!isCreating && hasFeature('auto_create')"
+        :board-id="boardId"
+      />
 
       <BoardAutomationsSection
         v-if="!isCreating"

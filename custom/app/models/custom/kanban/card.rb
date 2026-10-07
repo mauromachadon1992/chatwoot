@@ -23,7 +23,12 @@ class Custom::Kanban::Card < ApplicationRecord
   has_many :stage_transitions, class_name: 'Custom::Kanban::StageTransition', dependent: :delete_all
   has_many :tasks, class_name: 'Custom::Kanban::CardTask', dependent: :delete_all, inverse_of: :card
 
+  # Where a deal came from: an agent, or a new conversation (AutoDealCreator). An automatic one
+  # `needs_review` until an agent changes it.
+  SOURCES = %w[manual automatic].freeze
+
   validates :title, presence: true, length: { maximum: 255 }
+  validates :source, inclusion: { in: SOURCES }
   validates :value_cents, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: MAX_VALUE_CENTS }
   validate :stage_belongs_to_board
   validate :contact_belongs_to_account
@@ -34,10 +39,29 @@ class Custom::Kanban::Card < ApplicationRecord
   before_save :touch_stage_changed_at, if: :stage_id_changed?
   before_create :place_on_top
   after_create :record_stage_entry
+  before_update :mark_reviewed, if: :reviewed_by_agent?
   after_update :record_stage_entry, if: :saved_change_to_stage_id?
   after_save :notify_assignee, if: :saved_change_to_assignee_id?
 
   scope :ordered, -> { order(:position, :id) }
+
+  # Deals past their stage's limit (stages.stale_after_days): open stages only, counted from
+  # when the deal entered the stage. The stalled-deal job and the board filter both read it.
+  scope :stale, lambda { |now = Time.current|
+    joins(:stage)
+      .where(flow_kanban_stages: { stage_type: Custom::Kanban::Stage.stage_types[:open] })
+      .where.not(flow_kanban_stages: { stale_after_days: nil })
+      .where('COALESCE(flow_kanban_cards.stage_changed_at, flow_kanban_cards.created_at) <= ' \
+             'CAST(:now AS timestamp) - make_interval(days => flow_kanban_stages.stale_after_days)', now: now)
+  }
+
+  # Whole days past the stage's limit started counting, or nil when the deal is not stalled.
+  def stale_days(now = Time.current)
+    return unless stage&.stage_type_open? && stage.stale_after_days
+
+    days = ((now - (stage_changed_at || created_at)) / 1.day).floor
+    days if days >= stage.stale_after_days
+  end
 
   # Moves the card to `stage`, between the cards the dashboard showed around the drop point.
   # Either neighbour may be nil (top or bottom of the column, or an empty column).
@@ -92,6 +116,7 @@ class Custom::Kanban::Card < ApplicationRecord
       value_cents: value_cents,
       items_count: items_count,
       tasks: task_summary,
+      **state_data,
       created_by_id: created_by_id,
       **timestamps_data,
       contact: contact_data,
@@ -109,6 +134,10 @@ class Custom::Kanban::Card < ApplicationRecord
     return next_card.position - POSITION_STEP if next_card
 
     (siblings.minimum(:position) || POSITION_STEP) - POSITION_STEP
+  end
+
+  def state_data
+    { source: source, needs_review: needs_review, stale_days: stale_days }
   end
 
   def timestamps_data
@@ -151,8 +180,22 @@ class Custom::Kanban::Card < ApplicationRecord
     self.position = (stage.cards.minimum(:position) || POSITION_STEP) - POSITION_STEP
   end
 
+  # A move starts a new stay: the stall clock and its one notification start over.
   def touch_stage_changed_at
     self.stage_changed_at = Time.current
+    self.stale_notified_at = nil
+  end
+
+  # Positions and the alert stamp are the system's; anything else an agent changes on an
+  # automatic deal means they have looked at it.
+  SYSTEM_COLUMNS = %w[position updated_at stale_notified_at needs_review].freeze
+
+  def reviewed_by_agent?
+    needs_review? && Current.user.present? && (changed - SYSTEM_COLUMNS).any?
+  end
+
+  def mark_reviewed
+    self.needs_review = false
   end
 
   # Whoever is handed the deal is told, unless they handed it to themselves.

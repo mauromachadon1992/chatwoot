@@ -323,8 +323,13 @@ action or a state lives.
 ### Feedback
 
 - **Loading:** skeleton columns and cards (`bg-n-alpha-2 animate-pulse`), never a spinner in the middle of content.
+  Rows of a list or a section use `flowKanban/SkeletonRows.vue`.
 - **Empty state:** an icon tile, a `text-heading-2` title, one sentence that explains what to
-  do, and the action when the user is allowed to take it.
+  do, and the action when the user is allowed to take it: `flowKanban/EmptyState.vue`
+  (`page` or `compact`, `framed` for an area that would hold content).
+- **State pill** (`flowKanban/StatePill.vue`): a state said with tone, icon and words ("Overdue",
+  "Stalled 6 d"). Information that asks for no action ("Automatic") takes the neutral tone: with a
+  white label the blue ramp is the brand colour and would read as an alert.
 - **Toasts** (`useAlert`): name what happened, or what failed and what to do next.
 
 ## Do's and Don'ts

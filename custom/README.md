@@ -56,7 +56,7 @@ stack: `custom/docker/README.md`.
 | --- | --- |
 | `config/application.rb` | requires the engine |
 | `lib/chatwoot_app.rb` | `extensions` keeps `enterprise` out when it is disabled or removed |
-| `app/dashboards/account_dashboard.rb` | super admin fields: Kanban card fields, white label status |
+| `app/dashboards/account_dashboard.rb` | super admin fields: Kanban card fields, Kanban features, white label status |
 | `lib/brand.rb` | `prepend_mod_with('Brand')`: white label wins in email and the CSAT page |
 | `app/controllers/dashboard_controller.rb` | `prepend_mod_with`: brand on the account's own domain |
 | `tailwind.config.js` | scans `custom/app/views` |
@@ -233,5 +233,41 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   read; read ones go after two weeks, any after two months (`NotificationCleanupJob`, cron
   `flow_kanban_notification_cleanup`). Kept out on purpose: every comment, move or message
   (noise), and anything about other agents' deals.
-- **Not built yet:** notifications by e-mail or push, a task filter on the board, per-agent
-  choice of what the bell collects, and rules for other triggers.
+- **Not built yet:** notifications by e-mail or push, per-agent choice of what the bell
+  collects, and rules for other triggers (see ROADMAP.md).
+
+### Sprints 0 to 2 (ROADMAP.md)
+
+- **Account features** (`Custom::Kanban::Features`, `accounts.settings.flow_kanban_features`):
+  a super admin switches behaviours per account in Super Admin → Accounts → Edit. `auto_create`
+  starts off, `stale_alerts` on; an administrator still sets each one up per board.
+- **Design audit** (`custom/script/design-audit.mjs`, `flow-tools/run.sh audit`): the DESIGN.md
+  rules a script can see; exit 1 on a finding. A deliberate exception is written on the line
+  before it in the template, with the reason (`<!-- design-audit-allow: rule (why) -->`).
+- **Shared pieces:** `EmptyState`, `SkeletonRows`, `StatePill` and `SegmentedControl` in
+  `flowKanban/`; no screen builds its own empty or loading block any more.
+- **Usage numbers** (`Custom::Kanban::Metrics`, `rake "flow:kanban:metrics[ACCOUNT_ID,DAYS]"`):
+  deals by source, automatic ones awaiting review, stalled now, tasks done late, notifications
+  opened. Counts and rates only.
+- **My tasks** (`GET kanban/tasks`, the *Tasks* view next to Board and Report): every open
+  follow-up of the deals the agent can see, grouped Overdue / Today / Upcoming in the viewer's own
+  day, plus done in the last week, where ticking again reopens. Administrators may switch to the
+  whole team (`scope=all`; an agent asking for it gets 401). `count_only` with `today_ends_at`
+  feeds the badge on the view switch. A task notification in the bell opens the task here.
+- **Compact mobile toolbar:** below `md` the toolbar folds into two rows (board and alerts; view,
+  search, a Filters popover with the active count, new card). Its controls are `md` (40 px):
+  the WCAG 2.2 AA target minimum is 24 px; 44 px is a book guideline we chose not to force on
+  Chatwoot's control sizes.
+- **Automatic deals** (`Custom::Kanban::AutoDealCreator`, from `conversation_created`): per board
+  (`boards.settings.auto_create`: on/off, inboxes, daily cap 1–500), a new conversation from a
+  contact with no open deal on that board opens one on the first open stage, linked, assigned to
+  the conversation's agent when there is one (who is told in the bell). Group conversations are
+  skipped; the contact row is locked while deciding, so a retried or doubled event opens one deal.
+  The card is `source: automatic` and shows "Automatic" until an agent changes it or marks it
+  reviewed (`reviewed: true`). Settings show today's count against the cap.
+- **Stalled deals** (`stages.stale_after_days`, 1–365, open stages only;
+  `Custom::Kanban::StaleCardsJob`, hourly cron `flow_kanban_stale_cards`): a deal past its stage's
+  limit shows "Stalled N d" and its agent gets one `card_stale` notification per stall
+  (`cards.stale_notified_at`, cleared by any move). With the feature off, deals are left unclaimed,
+  so turning it back on catches up. The board's *Situation* filter shows stalled deals or deals
+  with an overdue task (`status=stale|overdue_tasks`).

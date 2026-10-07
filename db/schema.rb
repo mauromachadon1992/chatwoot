@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_07_140000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_08_100000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1168,6 +1168,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_140000) do
     t.bigint "created_by_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "settings", default: {}, null: false
     t.index ["account_id"], name: "index_flow_kanban_boards_on_account_id"
     t.index ["created_by_id"], name: "index_flow_kanban_boards_on_created_by_id"
   end
@@ -1235,13 +1236,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_140000) do
     t.datetime "updated_at", null: false
     t.bigint "value_cents", default: 0, null: false
     t.integer "items_count", default: 0, null: false
+    t.string "source", default: "manual", null: false
+    t.boolean "needs_review", default: false, null: false
+    t.datetime "stale_notified_at"
     t.index ["account_id"], name: "index_flow_kanban_cards_on_account_id"
     t.index ["assignee_id"], name: "index_flow_kanban_cards_on_assignee_id"
     t.index ["board_id", "assignee_id"], name: "index_flow_kanban_cards_on_board_id_and_assignee_id"
+    t.index ["board_id", "source", "created_at"], name: "index_flow_kanban_cards_on_board_source_created"
     t.index ["board_id"], name: "index_flow_kanban_cards_on_board_id"
     t.index ["contact_id"], name: "index_flow_kanban_cards_on_contact_id"
     t.index ["created_by_id"], name: "index_flow_kanban_cards_on_created_by_id"
     t.index ["stage_id", "position"], name: "index_flow_kanban_cards_on_stage_id_and_position"
+    t.index ["stage_id", "stage_changed_at"], name: "index_flow_kanban_cards_on_stage_and_changed"
     t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
   end
 
@@ -1313,6 +1319,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_07_140000) do
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "stale_after_days"
     t.index ["account_id"], name: "index_flow_kanban_stages_on_account_id"
     t.index ["board_id", "position"], name: "index_flow_kanban_stages_on_board_id_and_position"
     t.index ["board_id"], name: "index_flow_kanban_stages_on_board_id"

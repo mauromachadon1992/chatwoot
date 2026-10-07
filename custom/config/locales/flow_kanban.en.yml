@@ -14,6 +14,15 @@ en:
       assignee: Assignee
       time_in_stage: Time in stage
       last_activity: Last activity
+    features:
+      label: Kanban features
+      hint: Behaviours this account may use. An administrator still sets each one up per board.
+      auto_create:
+        label: Automatic deals
+        hint: A new conversation can open a deal on its own, on the boards and inboxes an administrator picks.
+      stale_alerts:
+        label: Stalled-deal alerts
+        hint: A deal that stays too long in a stage is flagged and its agent is told, on the stages given a limit.
     settings:
       unsupported_currency: Currency not supported.
     task_reminder:
@@ -27,3 +36,13 @@ en:
           attributes:
             value_cents:
               follows_items: follows the sum of the products; remove the products to type a value
+        custom/kanban/board:
+          attributes:
+            auto_create:
+              daily_cap: daily limit must be between 1 and 500
+              inboxes: includes an inbox outside this account
+              no_inbox: needs at least one inbox to watch
+        custom/kanban/stage:
+          attributes:
+            stale_after_days:
+              open_only: only applies to open stages

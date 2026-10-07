@@ -18,7 +18,11 @@ import {
   defaultDueInput,
   dueInputToISO,
   dueState,
+  formatDue,
+  DUE_PILLS,
 } from './tasks';
+import SkeletonRows from './SkeletonRows.vue';
+import StatePill from './StatePill.vue';
 
 // The deal's follow-ups. Each change saves at once; the board is told by the server, so the
 // card on the board and the badge here always agree.
@@ -57,25 +61,8 @@ const openCount = computed(
   () => tasks.value.filter(task => !task.completed_at).length
 );
 
-const dateFormat = computed(
-  () =>
-    new Intl.DateTimeFormat(locale.value.replace('_', '-'), {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-);
-const dueLabel = task => dateFormat.value.format(new Date(task.due_at * 1000));
-
-const STATE_STYLES = {
-  overdue: 'text-n-ruby-11',
-  today: 'text-n-amber-11',
-  later: 'text-n-slate-11',
-  done: 'text-n-slate-10',
-};
-const stateOf = task => dueState(task);
+const dueLabel = task => formatDue(task.due_at, locale.value);
+const pillOf = task => DUE_PILLS[dueState(task)];
 
 const fail = error =>
   useAlert(parseAPIErrorResponse(error) || t('FLOW_KANBAN.TASKS.FAILED'));
@@ -177,10 +164,7 @@ onMounted(() => {
       </span>
     </div>
 
-    <div v-if="isLoading" class="flex flex-col gap-2" aria-hidden="true">
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-    </div>
+    <SkeletonRows v-if="isLoading" />
 
     <p v-else-if="!tasks.length" class="text-body-main text-n-slate-11">
       {{ t('FLOW_KANBAN.TASKS.EMPTY') }}
@@ -219,17 +203,19 @@ onMounted(() => {
           >
             {{ task.title }}
           </span>
-          <span
-            class="text-label-small tabular-nums"
-            :class="STATE_STYLES[stateOf(task)]"
-          >
-            <template v-if="stateOf(task) === 'overdue'">
-              {{ t('FLOW_KANBAN.TASKS.OVERDUE') }} ·
-            </template>
-            <template v-else-if="stateOf(task) === 'today'">
-              {{ t('FLOW_KANBAN.TASKS.TODAY') }} ·
-            </template>
-            {{ dueLabel(task) }}
+          <span class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <StatePill
+              v-if="pillOf(task)"
+              :tone="pillOf(task).tone"
+              :icon="pillOf(task).icon"
+              :label="t(`FLOW_KANBAN.TASKS.${pillOf(task).key}`)"
+            />
+            <span
+              class="text-label-small tabular-nums"
+              :class="task.completed_at ? 'text-n-slate-10' : 'text-n-slate-11'"
+            >
+              {{ dueLabel(task) }}
+            </span>
           </span>
         </div>
         <Avatar

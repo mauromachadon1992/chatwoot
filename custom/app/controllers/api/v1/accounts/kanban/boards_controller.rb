@@ -56,7 +56,7 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
   end
 
   def board_params
-    params.permit(:name, :description, :position)
+    params.permit(:name, :description, :position, auto_create: [:enabled, :daily_cap, { inbox_ids: [] }])
   end
 
   def assign_restrictions(board)

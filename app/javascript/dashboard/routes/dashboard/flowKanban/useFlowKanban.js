@@ -31,6 +31,11 @@ export const CARD_FIELDS = [
   'last_activity',
 ];
 
+// Mirrors Custom::Kanban::Features: what a super admin lets this account use. An account that
+// never chose gets the defaults.
+export const FEATURES = ['auto_create', 'stale_alerts'];
+export const DEFAULT_FEATURES = ['stale_alerts'];
+
 export function useFlowKanban() {
   const { locale } = useI18n();
   const { currentAccount } = useAccount();
@@ -41,6 +46,12 @@ export function useFlowKanban() {
     const chosen = currentAccount.value?.settings?.flow_kanban_card_fields;
     return new Set(Array.isArray(chosen) ? chosen : CARD_FIELDS);
   });
+
+  const features = computed(() => {
+    const chosen = currentAccount.value?.settings?.flow_kanban_features;
+    return new Set(Array.isArray(chosen) ? chosen : DEFAULT_FEATURES);
+  });
+  const hasFeature = name => features.value.has(name);
 
   // Mirrors Custom::Kanban::Currency: one currency per account, BRL until an admin picks one.
   const currency = computed(
@@ -82,6 +93,7 @@ export function useFlowKanban() {
 
   return {
     cardFields,
+    hasFeature,
     currency,
     money,
     relativeTime,

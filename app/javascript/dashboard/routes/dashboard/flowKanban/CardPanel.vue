@@ -18,15 +18,23 @@ import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import CardValueSection from './CardValueSection.vue';
 import CardTasksSection from './CardTasksSection.vue';
+import StatePill from './StatePill.vue';
 import { useFlowKanban } from './useFlowKanban';
+import SkeletonRows from './SkeletonRows.vue';
 
 const { t } = useI18n();
 const kanban = useFlowKanbanStore();
 const { isAdmin } = useAdmin();
 const currentUser = useMapGetter('getCurrentUser');
 const agents = useMapGetter('agents/getAgents');
-const { inboxFor, inboxIcon, conversationPath, contactPath, relativeTime } =
-  useFlowKanban();
+const {
+  inboxFor,
+  inboxIcon,
+  conversationPath,
+  contactPath,
+  relativeTime,
+  hasFeature,
+} = useFlowKanban();
 
 const panelRef = ref(null);
 const deleteDialogRef = ref(null);
@@ -34,6 +42,23 @@ const card = ref(null);
 const form = ref({ title: '', description: '', assignee_id: '', stage_id: '' });
 const isSaving = ref(false);
 const isDeleting = ref(false);
+const isReviewing = ref(false);
+
+const staleDays = computed(() =>
+  hasFeature('stale_alerts') ? card.value?.stale_days : null
+);
+
+// An automatic deal is reviewed by any change; this accepts it as it is.
+const markReviewed = async () => {
+  isReviewing.value = true;
+  try {
+    card.value = await kanban.updateCard(card.value.id, { reviewed: true });
+  } catch {
+    useAlert(t('FLOW_KANBAN.ERRORS.GENERIC'));
+  } finally {
+    isReviewing.value = false;
+  }
+};
 
 const board = computed(() =>
   kanban.boards.find(item => item.id === card.value?.board_id)
@@ -176,13 +201,40 @@ defineExpose({ open });
     :title="card?.title || t('FLOW_KANBAN.CARD_FORM.EDIT_TITLE')"
     width="lg"
   >
-    <div v-if="!card" class="flex flex-col gap-6" aria-hidden="true">
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-      <div class="h-10 rounded-lg bg-n-alpha-2 animate-pulse" />
-      <div class="h-24 rounded-lg bg-n-alpha-2 animate-pulse" />
-    </div>
+    <SkeletonRows v-if="!card" :height="['h-10', 'h-10', 'h-24']" />
 
     <form v-else class="flex flex-col gap-8" @submit.prevent="save">
+      <div v-if="card.needs_review || staleDays" class="flex flex-col gap-3">
+        <div
+          v-if="card.needs_review"
+          class="flex flex-wrap items-start gap-3 p-3 rounded-lg bg-n-alpha-1 outline outline-1 -outline-offset-1 outline-n-container"
+        >
+          <Icon
+            icon="i-lucide-message-square-plus"
+            class="flex-shrink-0 mt-0.5 size-4 text-n-slate-11"
+          />
+          <p class="flex-1 min-w-[12rem] text-body-main text-n-slate-12">
+            {{ t('FLOW_KANBAN.CARD_FORM.AUTOMATIC_NOTICE') }}
+          </p>
+          <Button
+            faded
+            blue
+            sm
+            type="button"
+            icon="i-lucide-check"
+            :label="t('FLOW_KANBAN.CARD_FORM.MARK_REVIEWED')"
+            :is-loading="isReviewing"
+            @click="markReviewed"
+          />
+        </div>
+        <StatePill
+          v-if="staleDays"
+          tone="amber"
+          icon="i-lucide-hourglass"
+          :label="t('FLOW_KANBAN.CARD_FORM.STALE', { days: staleDays })"
+        />
+      </div>
+
       <div class="flex flex-col gap-4">
         <Input
           v-model="form.title"

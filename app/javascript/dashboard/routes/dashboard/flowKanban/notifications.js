@@ -6,6 +6,7 @@ const KINDS = {
   task_assigned: { icon: 'i-lucide-list-plus', tone: 'slate', task: true },
   card_assigned: { icon: 'i-lucide-user-plus', tone: 'slate', task: false },
   card_moved: { icon: 'i-lucide-zap', tone: 'slate', task: false },
+  card_stale: { icon: 'i-lucide-hourglass', tone: 'amber', task: false },
 };
 
 const TONE_CLASSES = {
@@ -41,7 +42,11 @@ export const describeNotification = notification => {
     icon: known.icon,
     toneClass: TONE_CLASSES[toneOf({ kind: notification.kind, data })],
     titleKey,
-    titleParams: { actor: data.actor_name, stage: data.stage_name },
+    titleParams: {
+      actor: data.actor_name,
+      stage: data.stage_name,
+      days: data.days,
+    },
     isTask: known.task,
     taskTitle: data.task_title,
     cardTitle: data.card_title,

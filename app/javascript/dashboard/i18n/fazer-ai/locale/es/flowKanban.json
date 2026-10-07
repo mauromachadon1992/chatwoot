@@ -13,7 +13,12 @@
       "SEARCH_AGENT": "Buscar agente",
       "SEARCH_INBOX": "Buscar bandeja de entrada",
       "ALL_INBOXES": "Todas las bandejas de entrada",
-      "CLEAR": "Limpiar filtros"
+      "CLEAR": "Limpiar filtros",
+      "BUTTON": "Filtros",
+      "BUTTON_COUNT": "Filtros ({count} activos)",
+      "ALL_STATUSES": "Cualquier situación",
+      "STATUS_STALE": "Detenidas",
+      "STATUS_OVERDUE_TASKS": "Con tarea vencida"
     },
     "EMPTY": {
       "NO_BOARDS_TITLE": "Aún no hay embudos",
@@ -34,7 +39,10 @@
       "RESTRICTED_CONVERSATION": "Conversación de una bandeja de entrada sin acceso",
       "VALUE": "Valor del negocio",
       "TASKS_OPEN": "Tareas abiertas: {count}",
-      "TASKS_OVERDUE": "Tareas vencidas: {count}"
+      "TASKS_OVERDUE": "Tareas vencidas: {count}",
+      "STALE": "Detenida {days} d",
+      "AUTOMATIC": "Automática",
+      "AUTOMATIC_HINT": "Abierta por una conversación nueva. Desaparece cuando alguien revise la negociación."
     },
     "CARD_FORM": {
       "CREATE_TITLE": "Nueva tarjeta",
@@ -60,7 +68,10 @@
       "DELETE_CONFIRM": "¿Eliminar esta tarjeta? Las conversaciones no se ven afectadas.",
       "CREATED": "Tarjeta creada",
       "SAVED": "Tarjeta guardada",
-      "DELETED": "Tarjeta eliminada"
+      "DELETED": "Tarjeta eliminada",
+      "AUTOMATIC_NOTICE": "Abierta automáticamente por una conversación nueva. Revisa el título, el responsable y el valor.",
+      "MARK_REVIEWED": "Marcar como revisada",
+      "STALE": "Detenida hace {days} días en esta etapa"
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "Nuevo embudo",
@@ -99,7 +110,11 @@
       "DELETE_CONFIRM": "¿Eliminar el embudo \"{name}\" y todas sus tarjetas? Las conversaciones no se ven afectadas.",
       "CREATED": "Embudo creado",
       "SAVED": "Embudo guardado",
-      "DELETED": "Embudo eliminado"
+      "DELETED": "Embudo eliminado",
+      "STALE_LABEL": "Avisar si está detenida por",
+      "STALE_DAYS": "días",
+      "STALE_NONE": "—",
+      "STALE_INVALID": "Usa un número entero de 1 a 365, o déjalo vacío para no avisar."
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -120,7 +135,9 @@
     "VIEW": {
       "LABEL": "Vista",
       "BOARD": "Tablero",
-      "REPORT": "Informe"
+      "REPORT": "Informe",
+      "TASKS": "Tareas",
+      "TASKS_BADGE": "{overdue} vencidas y {today} para hoy"
     },
     "VALUE": {
       "SECTION": "Valor y productos",
@@ -339,8 +356,44 @@
         "TASK_ASSIGNED_BY": "{actor} te asignó una tarea",
         "CARD_ASSIGNED": "Te asignaron una negociación",
         "CARD_ASSIGNED_BY": "{actor} te asignó una negociación",
-        "CARD_MOVED": "Una automatización movió la negociación a {stage}"
+        "CARD_MOVED": "Una automatización movió la negociación a {stage}",
+        "CARD_STALE": "Negociación detenida hace {days} días en {stage}"
       }
+    },
+    "MY_TASKS": {
+      "TITLE_MINE": "Mis tareas",
+      "TITLE_ALL": "Tareas del equipo",
+      "SUMMARY": "{open} abiertas · {overdue} vencidas",
+      "SCOPE": "De quién",
+      "SCOPE_MINE": "Mías",
+      "SCOPE_ALL": "Del equipo",
+      "EMPTY_TITLE": "Nada pendiente",
+      "EMPTY_TEXT": "Programa el siguiente paso de una negociación en el panel de la tarjeta, en Tareas.",
+      "ERROR_TITLE": "No se pudieron cargar las tareas",
+      "ERROR_TEXT": "Revisa la conexión e inténtalo de nuevo.",
+      "RETRY": "Intentar de nuevo",
+      "GROUPS": {
+        "OVERDUE": "Vencidas",
+        "TODAY": "Hoy",
+        "UPCOMING": "Próximas",
+        "DONE": "Completadas recientemente"
+      },
+      "DONE_AT": "Completada {time}",
+      "LOAD_MORE": "Cargar más"
+    },
+    "AUTO_CREATE": {
+      "SECTION": "Negociaciones automáticas",
+      "HINT": "Una conversación nueva de un contacto sin negociación abierta en este tablero abre una sola.",
+      "INBOXES": "Bandejas observadas",
+      "INBOXES_PLACEHOLDER": "Elige las bandejas",
+      "NEEDS_INBOX": "Elige al menos una bandeja para activarlo.",
+      "CAP": "Límite por día",
+      "CAP_INVALID": "Usa un número de 1 a 500.",
+      "TODAY": "Hoy: {count} de {cap}",
+      "RULE_STAGE": "La negociación entra en la primera etapa abierta, con la conversación vinculada.",
+      "RULE_DEDUP": "Un contacto que ya tiene una negociación abierta en este tablero no recibe otra.",
+      "RULE_GROUPS": "Las conversaciones de grupo se ignoran.",
+      "RULE_ASSIGNEE": "El responsable es el agente de la conversación, si lo hay; se le avisa en la campana."
     }
   }
 }

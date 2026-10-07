@@ -2,6 +2,8 @@ import {
   defaultDueInput,
   dueInputToISO,
   dueState,
+  endOfLocalDay,
+  groupOpenTasks,
   toDateTimeInput,
 } from '../tasks';
 
@@ -44,5 +46,30 @@ describe('due date inputs', () => {
       new Date(2026, 9, 8, 9).toISOString()
     );
     expect(dueInputToISO('')).toBeNull();
+  });
+});
+
+describe('my tasks grouping', () => {
+  it('ends the day at the viewer’s midnight', () => {
+    const end = endOfLocalDay(NOW);
+    expect([end.getDate(), end.getHours(), end.getMinutes()]).toEqual([
+      7, 23, 59,
+    ]);
+  });
+
+  it('splits open tasks into overdue, today and upcoming, keeping their order', () => {
+    const tasks = [
+      { id: 1, due_at: at(6, 9) },
+      { id: 2, due_at: at(7, 9) },
+      { id: 3, due_at: at(7, 18) },
+      { id: 4, due_at: at(9, 9) },
+      { id: 5, due_at: at(1, 9), completed_at: at(2, 9) },
+    ];
+
+    const groups = groupOpenTasks(tasks, NOW);
+
+    expect(groups.overdue.map(t => t.id)).toEqual([1, 2]);
+    expect(groups.today.map(t => t.id)).toEqual([3]);
+    expect(groups.upcoming.map(t => t.id)).toEqual([4]);
   });
 });

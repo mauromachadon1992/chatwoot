@@ -130,6 +130,7 @@ const onChange = event => {
             ref="sentinel"
             class="flex items-center justify-center h-10"
           >
+            <!-- design-audit-allow: spinner (the load-more footer below the cards, not content) -->
             <Spinner v-if="column.isLoading" :size="16" />
           </div>
         </template>
