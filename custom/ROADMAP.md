@@ -1,7 +1,8 @@
 # Kanban roadmap: sprints and phases
 
 Status: **S0 to S5 built** (2026-10-08; S0.1 publishing and staging wait for confirmation and a
-Coolify token). S6 onwards proposed; see "Decisions to confirm".
+Coolify token). **Phase P (C0 to C6), compatibility with fazer.ai agents, proposed**: C0 to C4 run
+before S6. S6 onwards proposed; see "Decisions to confirm".
 
 This plan turns the ten recommendations into sprints. It rests on `PRODUCT.md` (who the product is
 for), `DESIGN.md` (the design system), `custom/README.md` (what exists) and two design references,
@@ -67,13 +68,15 @@ of the previous phases; recalibrate after Sprint 1, and treat the order, not the
 | 2 Revenue | S3 | Know what happened to a deal | #7 timeline, card events ledger, #5 data capture |
 | 2 Revenue | S4 | Forecast and quote | #5 forecast and lost reasons, #6 send quote |
 | 3 Leverage | S5 | Rules that do more | #9 automations |
+| P Compatibility | C0 to C4 | The fazer.ai agents' Kanban client works against Flow unchanged | (enabler, see Phase P) |
 | 3 Leverage | S6 | Connect and import | #10 webhooks, CSV |
 | 3 Leverage | S7 | Assistance with AI | #8 AI summary (starts with a spike) |
+| P Compatibility | C5, C6 | Flow-only abilities for the agent; events to the agent | (enabler, see Phase P) |
 | 4 Release | S8 | Harden and roll out | (enabler) |
 
 Dependencies: S3's card events ledger feeds S5 (run log), S6 (webhooks) and S7 (summary input).
 S2's auto-create needs S0's toggle pattern. S4's forecast needs S3's fields. S7 needs the licence
-check below.
+check below. C0 to C4 need nothing new from S6 and ship before it; C6 needs S6.1.
 
 ---
 
@@ -218,6 +221,148 @@ won deal; open deals with a close date.
 
 ---
 
+## Phase P: Compatibility with fazer.ai agents (C0 to C6)
+
+**Why.** fazer.ai agents (the `flow-agents` fork, `custom/ROADMAP.md` there) drives the Kanban of
+the fazer.ai Chatwoot Pro: `/kanban/boards`, `/boards/:id/steps`, `/kanban/tasks`, and a
+`kanban_task` object embedded in the conversation. Flow's Kanban has the same prefix and different
+resources. Left alone, the agent's funnel tools break, and `GET /kanban/tasks` is worse than broken:
+it exists in both and answers with "My tasks" (S1.2), a different type, instead of failing.
+
+**Decision.** The agents' fork stays identical to upstream (zero diff in `src/` and `tests/`), so
+upstream merges are routine and the agent's own Kanban improvements arrive for free. **Flow speaks
+the Pro dialect** in a compatibility layer inside `custom/`; what Flow has beyond Pro (lost reasons,
+card tasks, items, history, forecast, quote) is reached by the agent as declarative HTTP tools and,
+later, an MCP server, never as code in the fork. "100% compatible" means the whole surface the
+agents' client uses (15 operations plus the embedded `kanban_task`), proven by the agents' own tests
+and a harness that runs the agents' real `ChatwootClient` against this app. It does not claim
+compatibility with the Pro UI or with clients not seen here.
+
+**The contract** lives in `custom/contracts/pro-kanban.md` and `pro-kanban.v1.schema.json`, the same
+copy as in `flow-agents`, with a hash test on each side so neither changes alone. The 15 operations
+and the card shape are in the agents' roadmap, Annexes A and B.
+
+### Principles for this phase (on top of section 1)
+
+1. **Superset, never subset.** The compatibility layer accepts and returns the union of Pro's and
+   Flow's fields. A field the agents require is never missing (it is `null` or `[]`).
+2. **Flow stays the model.** Controllers named `Compat::`, serializers in Pro's shape over
+   `Custom::Kanban::Card` and `Stage`; no second data model. Money stays in integer cents; the
+   numeric `value` exists only in the Pro serializer.
+3. **No leak.** `kanban_task` goes into the authenticated conversation API and the Agent Bot webhook,
+   never into the push payload clients and the widget receive (the presenter already records that
+   this leaked once). A spec proves it.
+4. **The agent is a named actor.** What it writes shows in the deal's history as the agent, not as
+   the administrator who owns the token.
+
+### C0: Contract and harness
+**Goal:** a failing, readable list of what is missing, before any code.
+- Write the contract and schema from the agents' client and fixtures; copy it to `flow-agents`.
+- Request specs generated from the fixtures (one per operation), all pending.
+- `custom/harness/` script that runs the agents' real `ChatwootClient` through the full cycle
+  (create board and steps, create a card, link a conversation, read the context, move, edit, label,
+  set attributes, reset, read without permission) against `ee-local` and prints field-level diffs.
+- **Accept:** the harness runs and lists 15 failures; a changed contract line fails the hash test.
+
+### C1: Pro routes and the `/kanban/tasks` conflict
+**Goal:** operations 1 to 11 answer in Pro's shape.
+- **Rename first, in the same commit:** the "My tasks" list moves to `GET /kanban/my_tasks`; the
+  store (`flowKanban.js`, `api/flowKanban.js`) and the S1.2 specs move with it. Nothing has shipped
+  to staging, so this is the cheap moment.
+- `GET /kanban/tasks[?board_id=]` returns cards in Pro's shape; `GET /kanban/tasks/:id` returns the
+  bare card (labels as an array of strings); `POST /kanban/tasks` creates, deriving the contact from
+  the conversation and the first open stage when no step is given.
+- `GET/POST /kanban/boards/:id/steps` as `{steps: […]}`; `cancelled` is `stage_type == lost`.
+  `POST /kanban/tasks/:id/move` takes `board_step_id` and `insert_before_task_id` and delegates to
+  `Card#move_to!`; a move onto a lost stage still accepts `lost_reason_id` and `lost_note`.
+  `PUT /kanban/boards/:id` and `POST /kanban/boards` accept the `{board: {…}}` root key.
+- **Tests:** visibility (an agent without the board gets 404, never a different type), the old
+  `/tasks` meaning gone, root keys, a card created from a conversation links it by `display_id`
+  (with an internal id different from the display id, as the Conversation ids rule demands).
+- **Accept:** operations 1 to 11 pass in the harness.
+
+### C2: Pro fields on the card (a UI story)
+**Goal:** operations 12 to 14, and the fields the agent reads and writes.
+- **Columns:** `priority` (`urgent|high|medium|low`), `start_at`, `due_at` (start before due),
+  `custom_attributes` (jsonb), card labels (the account's `Label` table, same mechanism as
+  conversations and contacts; `PATCH` replaces the whole set), and `description` on the stage
+  (at most 120 characters). Reversible migrations, indexed for the filters that use them.
+- **Serializer:** `status` derived from the stage type; `value = value_cents / 100.0` out, integer
+  cents in. The existing "card fields" are the definition of the attributes (confirm in C0).
+- **Design:** priority, dates, labels and attributes in the card panel with the existing patterns
+  (`components-next`, `StatePill` for priority, `ComboBox` for labels), with every state, light and
+  dark and 390 px, then the design gate. Strings in pt_BR, en and es.
+- **Tests:** `null` clears description and dates; labels replace, not append; attributes merge in
+  the caller as the agents do; priority and date validation return 422 in the account's language.
+- **Accept:** operations 12 to 14 pass; a human edits the same fields in the panel.
+
+### C3: The conversation carries its card
+**Goal:** operation 15 and the attribute mirror.
+- `GET /conversations/:display_id` includes `kanban_task`, the same shape as the card show.
+- **One card per conversation, by rule:** exactly one open linked card is that card; several open
+  ones, the most recently updated; only won or lost ones, `null`. The Flow UI keeps showing all.
+  The rule and its limit are written in `custom/README.md`.
+- Add `kanban_task` to the Agent Bot webhook payload only. **Verify first** where the conversation
+  presenter is shared with the widget and push, and keep the new key out of those paths.
+- **Tests:** a leak spec for the widget and push payloads; the single, several and none cases; an
+  internal id different from the display id.
+- **Accept:** the agents' context loader (`loadKanbanContext`) builds the funnel from one GET.
+
+### C4: Board agents, the actor and rule chaining
+**Goal:** operations 6 and 7, and an honest history.
+- `POST /boards/:id/update_inboxes` and `update_agents` (idempotent diffs). Agents become a board
+  restriction next to teams and inboxes, in a new `flow_kanban_board_agents` table, and
+  `Board.visible_to` honours it without narrowing today's team rule.
+- **Actor.** `card_events` gets `actor_kind` (`user`, `rule`, `agent_bot`) and `actor_name`, and the
+  history shows "Agent X moved it". The agent is a **service user** whose token the agents use,
+  flagged `agent_bot` in its record; nothing is sent from the agents' side. `by_rule`, today
+  inferred from `Current.user.nil?`, becomes `actor_kind == rule`.
+- **Chaining.** Rules (S5) fire on conversation labels and status; an agent that labels or resolves a
+  conversation now triggers them, which is wanted. The run-once-per-episode guard stops the same
+  rule acting twice on a deal, not rule A adding the label that fires rule B. Add a depth limit per
+  request and a spec with two rules that would loop.
+- **Tests:** an agent not in a restricted board gets nothing; the actor on every write the agents
+  make; the loop is cut and the run log says why.
+- **Accept:** operations 6 and 7 pass; the deal's history names the agent.
+
+### C5: Flow-only abilities exposed to the agent
+**Goal:** the agent uses what Pro does not have, with no code in its fork.
+- Keep stable, documented (OpenAPI) and versioned: `lost_reasons`, `PATCH cards/:id/move` with a
+  reason, `cards/:id/tasks`, `cards/:id/items` and the product catalogue, `PATCH cards/:id` with
+  `expected_close_on`, and `cards/:id/events`.
+- **`GET /kanban/cards/:id/quote_preview`** (new): the quote text and the totals computed on the
+  server, in the account's currency and locale. Today the text is built in the dashboard
+  (`quote.js`) and `POST cards/:id/quote` only records "quote prepared", so an agent could not reuse
+  it and would have to calculate. The dashboard moves to the same endpoint, so there is one place.
+- `GET /kanban/settings` also returns `api_version` and `capabilities`, so a client can tell which
+  of these exist. An MCP server over the same operations is optional.
+- **Tests:** only the account's own lost reasons and products; totals in cents match the dashboard;
+  an agent without access to the conversation cannot prepare a quote for it.
+- **Accept:** a test agent configured with HTTP tools marks a deal lost with a reason, schedules a
+  task, adds a product line and reads the quote, each as the `agent_bot` actor.
+
+### C6: Events to the agent (needs S6.1)
+**Goal:** Flow tells the agent about a deal without custom code in the agents' fork.
+- Sign S6.1's webhooks the way the agents' generic receptor expects: HMAC-SHA256 over the raw body in
+  `x-webhook-signature`, with an `event_id` as the idempotency key.
+- A rule action `nudge_agent` that posts `{event_id, conversation_ref, text}` to that receptor so
+  the agent speaks in the conversation. The `conversation_ref` exists only after the agent has used
+  an HTTP tool in that conversation, so a deal without a live conversation cannot be nudged this way;
+  that case would need a mapper inside the agents' fork (a pull request upstream).
+- **Tests:** retried event handled once; an invisible board never leaks; the agent never nudges
+  outside the WhatsApp 24 h window (the agents' own rule), and the log says it was skipped.
+- **Accept:** a stalled deal with a live conversation produces one agent message.
+
+**Metrics (phase P):** operations passing in the harness (0 to 15); field-level differences (zero);
+agent actions in the deal history with the correct actor (all).
+
+**Risks.** The fazer.ai Pro dialect changes upstream: the agents' fork runs a daily merge preview
+plus the harness, and a red run names the difference before any merge. The contract is inferred from
+the agents' open client, not from the Pro source, so creation bodies, list envelopes and the
+meaning of `status` are measured by the harness, not assumed.
+
+---
+
 ## Phase 3: Leverage and integration
 
 ### S5: Rules that do more (#9)
@@ -248,7 +393,9 @@ so fixing the target brings them back.
 
 **S6.1 Webhooks.** Deal created, moved, won, lost, value changed, task created, from the ledger.
 Signed payloads, retries with backoff, per-account endpoints managed by an administrator with a
-delivery log and a "Send test" button.
+delivery log and a "Send test" button. **Sign them as the fazer.ai agents' receptor expects**
+(HMAC-SHA256 of the raw body in `x-webhook-signature`, `event_id` as the idempotency key; see C6),
+so connecting the agent costs no code.
 - **Decision:** reuse Chatwoot's `Webhook` (needs a hook on `ALLOWED_WEBHOOK_EVENTS`, an upstream
   constant) or own table `flow_kanban_webhooks` (no upstream touch). **Recommendation:** own table.
 - **Design:** Settings page with the table pattern (URL, events, last delivery with word + icon
@@ -321,6 +468,11 @@ delivery log and a "Send test" button.
 | AI licence, cost or privacy | S7 | spike with a go/no-go, off by default, accessible conversations only |
 | Large boards slow the new lists | S1, S4, S8 | indexes designed with each query, 10,000-card test in S8 |
 | Data quality hurts the forecast | S3, S4 | "No date" and "No reason" shown, never hidden; completeness `StatePill` |
+| `GET /kanban/tasks` means two things (My tasks vs Pro cards) | C1 | rename to `/my_tasks` in the same commit, before anything is published |
+| History names the administrator, not the agent | C4 | `actor_kind` plus a service user flagged `agent_bot` |
+| The agent's labels and status changes chain rules | C4 | depth limit per request, spec with two looping rules |
+| `kanban_task` leaks into a public payload | C3 | only the authenticated conversation API and the bot webhook; leak spec |
+| Pro dialect drifts upstream | P | contract hash test, harness, daily merge preview on the agents' fork |
 
 ## 6. How we will know it worked
 
@@ -333,6 +485,7 @@ delivery log and a "Send test" button.
 | S5 | follow-ups completed on time | up |
 | S6 | deals/products imported; webhook success rate | up |
 | S7 | drafts accepted ÷ generated | up |
+| C0 to C4 | operations passing in the compatibility harness | 0 to 15 |
 
 ## 7. Decisions to confirm
 
@@ -343,3 +496,11 @@ delivery log and a "Send test" button.
 5. **Webhooks:** own table (recommended) or Chatwoot's `Webhook` with an upstream hook?
 6. **Quote:** text into the composer now and PDF later, as planned?
 7. **Roles:** lost reasons, probabilities, stale thresholds and rules are administrator-only; agree?
+8. **Compatibility:** may the card gain priority, dates, labels and custom attributes (C2) so the
+   fazer.ai agents work unchanged, next to card tasks, which already cover scheduling?
+9. **Agent identity:** a dedicated service user flagged `agent_bot` (recommended), or an
+   administrator's own token?
+10. **Cards per conversation:** is "the most recently updated open card" the right rule for the one
+    card the agent sees (C3)?
+11. **Board agents:** is a per-agent board restriction (C4) wanted, or should `update_agents` be
+    accepted and ignored?
