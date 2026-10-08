@@ -5,6 +5,11 @@
 # Baileys API, PostgreSQL and Redis stay on the stack's private network. Every secret is a
 # Coolify-generated SERVICE_* variable, so nothing here holds one.
 #
+# FRONTEND_URL is the real hostname, not ${SERVICE_URL_RAILS}: the domain is set by hand and
+# SERVICE_URL_RAILS stays the auto-generated rails-<uuid>. host with no DNS or certificate, which
+# broke links, e-mails and the cable origin. Coolify restores a compose-declared value on every
+# restart, so an env override does not stick; change it here and in the service's compose.
+#
 # Image: ghcr.io/mauromachadon1992/chatwoot, private (the Coolify server needs a
 # `docker login ghcr.io` with read:packages). FLOW_IMAGE_TAG is an immutable tag; promote a
 # build by changing it. Tags: custom/docker/README.md.
@@ -25,7 +30,7 @@ services:
       RAILS_ENV: production
       INSTALLATION_ENV: docker
       DEFAULT_LOCALE: pt_BR
-      FRONTEND_URL: ${SERVICE_URL_RAILS}
+      FRONTEND_URL: 'https://chat-hml.freitascasaeconstrucao.com.br'
       INTERNAL_HOST_URL: http://rails:3000
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
@@ -67,7 +72,7 @@ services:
       RAILS_ENV: production
       INSTALLATION_ENV: docker
       DEFAULT_LOCALE: pt_BR
-      FRONTEND_URL: ${SERVICE_URL_RAILS}
+      FRONTEND_URL: 'https://chat-hml.freitascasaeconstrucao.com.br'
       INTERNAL_HOST_URL: http://rails:3000
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
