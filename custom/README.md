@@ -447,6 +447,13 @@ routes. Flow answers them in a compatibility layer, so the agents need no edit; 
   `custom_attributes: {}`, nulls) next to Flow's own (`value_cents`, `stage_id`, `conversation_ids`);
   `value` is a number in the account's currency out and cents in, never through a float.
   `insert_before_task_id` puts the deal directly above that card of the target step.
+- **The deal of a conversation and its product lines** (Flow-only, capabilities `deal.items` and `products.read`; B-13b): the agent
+  knows the conversation, not the card, so `GET kanban/conversations/:display_id/deal` and
+  `POST|DELETE kanban/conversations/:display_id/deal/items[/:product_id]` resolve the card with the same rule as `kanban_task` (the
+  most recently updated open deal on a board the caller sees) and the agent never names one. The price is always the catalog's and the
+  discount stays at zero: the agent sends a product id and a quantity. One line per product (adding again sets the quantity), at
+  most 50 lines, quantity above zero. The products themselves are `GET kanban/products?q=&active=true`. The agents' native tools
+  `search_products`, `set_deal_product` and `remove_deal_product` (flow-agents-ee, issue #1) call exactly these.
 - **The conversation's deal** (`kanban_task` in `GET conversations/:display_id`, one line in the shared
   jbuilder): the most recently updated *open* deal linked to it on a board the caller sees, else `null`.
   Only on the single read (a list would ask the database per row), only for people signed in with a

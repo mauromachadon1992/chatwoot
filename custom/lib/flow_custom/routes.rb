@@ -34,6 +34,11 @@ module FlowCustom::Routes
                 resource :ai_summary, only: [:create], controller: 'ai_summaries'
               end
               # `kanban/tasks` is the Pro dialect's deals; the agent's own follow-ups are `kanban/my_tasks`.
+              # The deal of a conversation and its product lines, for the fazer.ai agents (capability deal.items):
+              # the agent knows the conversation, not the card, so it never names a card id.
+              get 'conversations/:display_id/deal', to: 'conversation_deals#show'
+              post 'conversations/:display_id/deal/items', to: 'conversation_deals#add_item'
+              delete 'conversations/:display_id/deal/items/:product_id', to: 'conversation_deals#remove_item'
               resources :my_tasks, only: [:index], controller: 'my_tasks'
               resources :tasks, only: [:index, :show, :create, :update], controller: 'compat/tasks' do
                 member { post :move }

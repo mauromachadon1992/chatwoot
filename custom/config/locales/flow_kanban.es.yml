@@ -36,6 +36,9 @@ es:
       invalid_date: 'una fecha debe estar en ISO 8601, como 2026-10-30T18:00:00-03:00'
       invalid_attributes: 'custom_attributes debe ser un objeto'
       invalid_labels: 'labels debe ser una lista de textos'
+      no_deal: 'esta conversación no tiene un negocio abierto'
+      invalid_quantity: 'quantity debe ser un número mayor que cero'
+      too_many_lines: 'un negocio admite como máximo %{max} líneas de producto'
       contact_needed: 'un negocio necesita un contacto: envía conversation_id (el display id de la conversación) o contact_id'
     ai:
       nothing_to_summarize: 'Aún no hay mensajes en las conversaciones vinculadas para resumir.'

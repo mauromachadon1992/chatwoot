@@ -140,26 +140,15 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
   replaces the whole set and `enabledTools: []` means **no** native tool (it silently removed move/priority until fixed by listing the
   natives by name). **Known risk, still open (B-13b):** the agent supplies the `card_id`, and the service token reads/writes any card
   it can see (verified: GET of another conversation's card returns 200). Build the conversation-scoped routes below to close it.
-- **B-13 [decision, then me] Products for the agents (remaining: B-13b).** Finding (2026-10-08): the agents have **no native tool for products or card
-  items**. Natives (15): handoff_to_human, private_note, set_custom_attribute, set_labels, resolve_conversation, kanban_move_card,
-  update_kanban_task (title, description, priority, dates), set_voice_preference, update_contact, react_to_message, send_image,
-  open_case_in_inbox, skip_reply, calculator, get_current_time. The Pro dialect has no items either. Flow already has the data:
-  `GET kanban/products?q=&active=true` (25 per page; id, name, sku, unit, price_cents, active; verified 200 with the service token),
-  `POST kanban/cards/:card_id/items {product_id, quantity, unit_price_cents?, discount_percent?}` (the deal then equals the sum of its
-  lines; `deal_value` is ignored for such a deal), `POST kanban/cards/:id/quote` (message text with the lines).
-  Recommended: **HTTP tools on the agent** (`POST /v1/tools`: method, urlTemplate, allowedHosts, headers with `{{secret}}`, `credentialRef`
-  vault, inputSchema, responseTemplate), so agents-ee stays identical to upstream (a native tool would conflict at every sync).
-  Tools: `search_products(q)`, `add_product_to_deal(product_id, quantity)`, `get_deal_quote()`. **Gap to build in Flow first:** the agent knows
-  the conversation (`{{conversation_id}}` fixed field) but not the card id, so add conversation-scoped routes with the same "most recently
-  updated open deal" rule as `kanban_task`: `GET kanban/conversations/:display_id/deal` (with lines, total) and
-  `POST kanban/conversations/:display_id/deal/items`. Guards: the price always comes from the catalog (the agent cannot send
-  `unit_price_cents`), discount capped by a board setting (default 0), quantity cap, one line per product (adding again updates the
-  quantity), history event with `actor_kind: agent_bot`, service user only needs `update?` on the card. Later option: one MCP server
-  in Flow for products, deals and quote (typed tools, one registration), after the HTTP tools prove the flow. RAG (a knowledge base
-  synced from `products/export`) only helps with descriptions, never with price or write. Open question for the user: is the catalog
-  source of truth Flow Products or the store ERP through `wsac-gateway` (production bridge for catalog, availability and quote)?
-  Accept: e2e on staging: the customer asks for N units of a product, the agent searches, adds the line, the deal value is the catalog
-  price times N, and the quote text matches `POST cards/:id/quote`.
+- **B-13b DONE in code (2026-10-08), not yet on staging:** `Api::V1::Accounts::Kanban::ConversationDealsController` +
+  `spec/custom/kanban/conversation_deal_spec.rb` (16 examples): `GET|POST|DELETE kanban/conversations/:display_id/deal[/items]`, capabilities
+  `deal.items` and `products.read`. The agent never names a card; price from the catalog, discount zero, quantity above zero, one line per
+  product, 50 lines at most, `agent_bot` in the history. **Left to do:** build, publish and promote an image; switch the staging HTTP tools
+  (`custom/script/agents-http-tools.mjs`) to these routes or replace them with the native tools of flow-agents-ee issue #1 (PR open).
+- **B-13 (decision still open):** is the catalog's source of truth Flow Products or the store ERP through `wsac-gateway` (production
+  bridge for catalog, availability and quote)? Native tools: `search_products`, `set_deal_product`, `remove_deal_product` in flow-agents-ee
+  (issue #1), built only when the Chatwoot announces `deal.items` and the agent is granted one by name. A later option: one MCP server in
+  Flow. RAG over `products/export` only helps with descriptions.
 - **B-11 [me] Docs:** record the staging topology and the e2e recipe in `custom/README.md` (this file holds the working notes).
 
 ## 2. HOW TO START A SESSION (cheapest path)

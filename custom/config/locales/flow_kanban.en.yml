@@ -36,6 +36,9 @@ en:
       invalid_date: 'a date must be ISO 8601, like 2026-10-30T18:00:00-03:00'
       invalid_attributes: 'custom_attributes must be an object'
       invalid_labels: 'labels must be a list of texts'
+      no_deal: 'this conversation has no open deal'
+      invalid_quantity: 'quantity must be a number greater than zero'
+      too_many_lines: 'a deal holds at most %{max} product lines'
       contact_needed: 'a deal needs a contact: send conversation_id (the conversation display id) or contact_id'
     ai:
       nothing_to_summarize: 'There are no messages in the linked conversations to summarize yet.'
