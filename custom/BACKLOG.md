@@ -71,12 +71,12 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - Dev: docker compose in `~/chatwoot`. ee-local: `custom/docker/ee-local up` (built image, throwaway data).
 - Staging (Coolify `https://vps.freitascasaeconstrucao.com.br`, project `atendimento`, env `staging`):
   - `chatwoot-staging` service uuid `5brvjno3ifszb3dm4xweecsy`, host `chat-hml.freitascasaeconstrucao.com.br`, image
-    `ghcr.io/mauromachadon1992/chatwoot:4.18.0-966a636a5-ee` via env `FLOW_IMAGE_TAG`. Compose: `custom/docker/coolify.staging.compose.yaml`.
+    `ghcr.io/mauromachadon1992/chatwoot:4.18.0-a84b8562d-ee` via env `FLOW_IMAGE_TAG` (B-02 and the card tabs). Compose: `custom/docker/coolify.staging.compose.yaml`.
     **`FRONTEND_URL` is a literal in the compose (Coolify restores compose values on restart); env overrides do not stick.**
   - `agents-staging` uuid `oig9l2odn1nkhf7fuvf4sxls`, host `agentes-hml.freitascasaeconstrucao.com.br`, image
     `ghcr.io/mauromachadon1992/agents-ee:6b441a4` (agents-ee main, = upstream v1.39.0 + Flow files). Own Postgres (pgvector) and volume.
   - Staging data left from tests: Chatwoot account 1; boards 1 "Teste" (user's), 2-3 "harness …", 4 "Vendas e2e"; inboxes 2
-    `harness-inbox`, 3 `e2e-vendas`; conversations 13-17; agents-ee tenant 1, agent 1 and 2, vault entry 1 (DeepSeek key).
+    `harness-inbox`, 3 `e2e-vendas`; conversations 13-19; agents-ee tenant 1, agent 1 and 2, vault entry 1 (DeepSeek key).
     Agent 2 "Vendedor Concreto (e2e)" is bound to inbox 3, mode `production`, model `deepseek-flash` (the id DeepSeek lists).
 - Production (**do not touch without explicit go-ahead**): `chatwoot-baileys` (Chatwoot + Baileys) and `agents` (official
   `ghcr.io/fazer-ai/agents:v1.36.0`, three versions behind). Shared infra in project `infra-compartilhada`.
@@ -109,11 +109,10 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
   `agente-flow-hml@…`, flagged `agent_bot`). Verified: e2e conversation 18 shows `actor_kind: agent_bot` on `stage_moved`,
   `priority_changed`, `attributes_changed`; the token reads boards (200) and gets "not authorized" (401) on webhooks, imports
   and automations. **Left to do:** rotate that token (it was printed in a session log) and repeat the setup for production (B-05).
-- **B-02 DONE in code (2026-10-08), not yet on staging:** the agents' client has no tool for the amount (`update_kanban_task` = title,
-  description, priority, dates), so the reserved attribute `deal_value` carries it: `PATCH kanban/tasks/:id` with
-  `custom_attributes.deal_value` ("3.420,00", "R$ 10", 1200) sets the deal value (ignored for a deal with products, for text that is not an
-  amount, and when unchanged). Capability `tasks.value_attribute`. **Left to do:** build and publish an image, promote staging, and tell the
-  agent in its prompt to call `set_custom_attribute` scope `task`, key `deal_value`; accept: e2e deal shows the quoted total.
+- **B-02 DONE on staging (2026-10-08):** the agent records the quoted total through the attribute `deal_value`
+  (`PATCH kanban/tasks/:id`, Flow-only, capability `tasks.value_attribute`). Verified e2e on conversation 19: 20 m3 fck 30 + pump =
+  R$ 12.200,00 stored as the deal value, `value_changed` by `agent_bot`, then "aprovado" moved the card to Ganho. The agent only does it
+  because its prompt says: `set_custom_attribute` scope `task`, key `deal_value`, number only. Copy that line into any new agent.
 - **B-03 [human] Revoke exposed credentials** (pasted in chat on 2026-10-07/08): Coolify API token, agents fleet key, staging
   Chatwoot SuperAdmin token, DeepSeek key, and the service user's token (rotate: new token, then PATCH the agents deployment). Then remove the vault entry/agents on staging if the key is not renewed.
 - **B-04 [human, needs permission] Staging cleanup:** delete boards 2 and 3 (classifier blocked it), `harness-inbox`, conversation 13.
