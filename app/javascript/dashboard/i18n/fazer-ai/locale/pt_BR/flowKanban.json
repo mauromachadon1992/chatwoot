@@ -75,7 +75,15 @@
       "MARK_REVIEWED": "Marcar como revisado",
       "STALE": "Parado há {days} dias nesta etapa",
       "EXPECTED_CLOSE": "Previsão de fechamento",
-      "EXPECTED_CLOSE_HINT": "Usada na previsão de receita do relatório."
+      "EXPECTED_CLOSE_HINT": "Usada na previsão de receita do relatório.",
+      "TABS": {
+        "LABEL": "Seções do card",
+        "DETAILS": "Detalhes",
+        "VALUE": "Valor",
+        "TASKS": "Tarefas",
+        "CONVERSATIONS": "Conversas",
+        "HISTORY": "Histórico"
+      }
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "Novo funil",

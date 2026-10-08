@@ -317,6 +317,16 @@ action or a state lives.
 
 - **Side panel** (`SidePanel`): for detail and settings that keep the board in view (card
   details, board settings).
+- **Tabs in a side panel** (`flowKanban/PanelTabs.vue`): when a panel passes about four
+  sections, cut it. What identifies the thing (the card's title, stage and assignee) stays
+  above the tabs; the rest goes one section per tab, in the order a person works: details,
+  value, tasks, conversations, history. A real tablist (`role="tab"`, `aria-selected`,
+  `aria-controls`, one tab in the tab order, arrow keys, Home and End), a 2px brand underline on
+  the current tab, a count pill (`tabular-nums`) only where a number says what is behind it, and
+  a row that scrolls sideways on a phone instead of squeezing the labels. A tab is built when
+  first opened and then hidden, not destroyed, so what was typed or fetched stays. The Save
+  button is the panel's, not the tab's, so a change on one tab is never lost by switching. Do not
+  use the upstream `TabBar`: native buttons, `text-n-slate-10` and a fixed width.
 - **Dialog** (`Dialog`): for short, focused tasks (create a card) and for every destructive
   confirmation.
 - **Dropdown menu** (`DropdownMenu`): for switching context, such as picking a board.

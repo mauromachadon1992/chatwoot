@@ -75,7 +75,15 @@
       "MARK_REVIEWED": "Marcar como revisada",
       "STALE": "Detenida hace {days} días en esta etapa",
       "EXPECTED_CLOSE": "Fecha prevista de cierre",
-      "EXPECTED_CLOSE_HINT": "La usa la previsión de ingresos del informe."
+      "EXPECTED_CLOSE_HINT": "La usa la previsión de ingresos del informe.",
+      "TABS": {
+        "LABEL": "Secciones de la tarjeta",
+        "DETAILS": "Detalles",
+        "VALUE": "Valor",
+        "TASKS": "Tareas",
+        "CONVERSATIONS": "Conversaciones",
+        "HISTORY": "Historial"
+      }
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "Nuevo embudo",

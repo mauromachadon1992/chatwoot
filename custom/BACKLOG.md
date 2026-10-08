@@ -49,7 +49,7 @@ Never write a secret here (tokens, keys, passwords). Credentials seen in a chat 
   "tente de novo"; **do not work around a denial, stop and explain**.
 
 ### 0.4 Gates (Definition of Done)
-`~/flow-tools/run.sh check` = rspec (347 ex, 0 failures) + vitest (116) + eslint (0 errors) + design-audit (0 findings),
+`~/flow-tools/run.sh check` = rspec (353 ex, 0 failures) + vitest (123) + eslint (0 errors) + design-audit (0 findings),
 plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `impeccable` and `designing-user-interfaces`.
 
 ### 0.5 Code facts that bite
@@ -109,10 +109,11 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
   `agente-flow-hml@…`, flagged `agent_bot`). Verified: e2e conversation 18 shows `actor_kind: agent_bot` on `stage_moved`,
   `priority_changed`, `attributes_changed`; the token reads boards (200) and gets "not authorized" (401) on webhooks, imports
   and automations. **Left to do:** rotate that token (it was printed in a session log) and repeat the setup for production (B-05).
-- **B-02 [me] Deal value from the agent.** Why: `value` is not in `UPDATABLE`, so agents cannot record the amount.
-  Check whether the Pro contract/`update_kanban_task` exposes a value field (read `src/graph/tools/native.ts`, contract md);
-  if it does, add `value` to `UPDATABLE` + contract + spec + harness; if not, document it as a Flow-only ability (C5) and use
-  `custom_attributes` or a prompt rule. Accept: e2e deal shows the quoted total; spec in `pro_fields_spec.rb`.
+- **B-02 DONE in code (2026-10-08), not yet on staging:** the agents' client has no tool for the amount (`update_kanban_task` = title,
+  description, priority, dates), so the reserved attribute `deal_value` carries it: `PATCH kanban/tasks/:id` with
+  `custom_attributes.deal_value` ("3.420,00", "R$ 10", 1200) sets the deal value (ignored for a deal with products, for text that is not an
+  amount, and when unchanged). Capability `tasks.value_attribute`. **Left to do:** build and publish an image, promote staging, and tell the
+  agent in its prompt to call `set_custom_attribute` scope `task`, key `deal_value`; accept: e2e deal shows the quoted total.
 - **B-03 [human] Revoke exposed credentials** (pasted in chat on 2026-10-07/08): Coolify API token, agents fleet key, staging
   Chatwoot SuperAdmin token, DeepSeek key, and the service user's token (rotate: new token, then PATCH the agents deployment). Then remove the vault entry/agents on staging if the key is not renewed.
 - **B-04 [human, needs permission] Staging cleanup:** delete boards 2 and 3 (classifier blocked it), `harness-inbox`, conversation 13.
@@ -127,6 +128,9 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - **B-09 [decision] `{board:}` root key:** should a board created with the Pro root key get default stages? Compare with a real Pro board.
 - **B-10 [me] UX of bot-handled conversations:** decide whether Flow should surface "pending, handled by agent" (a badge or a
   Kanban filter), since agents' work is invisible under the default "Abertas" filter. Use the UI skills and DESIGN.md.
+- **B-12 DONE (2026-10-08) card panel in tabs:** `flowKanban/PanelTabs.vue` + `panelTabs.js` (details, value, tasks, conversations, history;
+  identity stays above). Verified in light, dark and 390px with `~/flow-tools/shoot.sh` (Playwright image, dev user `visual@flowagents.test`
+  created by `visual-seed.rb`, dev DB only). Same pattern fits `BoardSettingsPanel.vue` if it grows (not done).
 - **B-11 [me] Docs:** record the staging topology and the e2e recipe in `custom/README.md` (this file holds the working notes).
 
 ## 2. HOW TO START A SESSION (cheapest path)

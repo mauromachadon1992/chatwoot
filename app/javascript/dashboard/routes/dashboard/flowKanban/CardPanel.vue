@@ -21,6 +21,8 @@ import CardTasksSection from './CardTasksSection.vue';
 import CardHistorySection from './CardHistorySection.vue';
 import CardAiSection from './CardAiSection.vue';
 import CardDetailsSection from './CardDetailsSection.vue';
+import PanelTabs from './PanelTabs.vue';
+import { cardTabs, panelId, tabId } from './panelTabs';
 import {
   canSaveDetails,
   detailsChanged,
@@ -63,6 +65,19 @@ const isSaving = ref(false);
 const isDeleting = ref(false);
 const isReviewing = ref(false);
 const tasksKey = ref(0);
+
+// The card is long, so it is cut into tabs. A tab is built the first time it is opened and then kept
+// (hidden, not destroyed), so a panel that fetches does so once and keeps what the person typed.
+const TABS_ID = 'card';
+const PANEL_CLASS =
+  'flex flex-col gap-8 outline-none focus-visible:outline-2 focus-visible:outline-n-brand';
+const activeTab = ref('details');
+const visitedTabs = ref(new Set(['details']));
+const tabs = computed(() => cardTabs(card.value, t));
+const selectTab = id => {
+  activeTab.value = id;
+  visitedTabs.value = new Set([...visitedTabs.value, id]);
+};
 
 // The accepted AI summary goes under the description in the form; the card's own Save keeps it.
 const addSummary = summary => {
@@ -160,6 +175,8 @@ const onValueChange = payload => {
 
 const open = async cardId => {
   card.value = null;
+  activeTab.value = 'details';
+  visitedTabs.value = new Set(['details']);
   panelRef.value?.open();
   const { data } = await FlowKanbanAPI.getCard(cardId);
   card.value = data.payload;
@@ -299,145 +316,199 @@ defineExpose({ open });
             <ComboBox v-model="form.assignee_id" :options="assigneeOptions" />
           </label>
         </div>
-        <TextArea
-          v-model="form.description"
-          :label="t('FLOW_KANBAN.CARD_FORM.DESCRIPTION')"
-          :placeholder="t('FLOW_KANBAN.CARD_FORM.DESCRIPTION_PLACEHOLDER')"
-          :max-length="5000"
-          auto-height
-          min-height="6rem"
-        />
       </div>
 
-      <CardDetailsSection v-model:details="form.details" />
-
-      <div class="flex flex-col gap-4">
-        <Input
-          v-model="form.expected_close_on"
-          type="date"
-          :label="t('FLOW_KANBAN.CARD_FORM.EXPECTED_CLOSE')"
-          :message="t('FLOW_KANBAN.CARD_FORM.EXPECTED_CLOSE_HINT')"
+      <div class="flex flex-col gap-6">
+        <PanelTabs
+          :model-value="activeTab"
+          :tabs="tabs"
+          :id-prefix="TABS_ID"
+          :aria-label="t('FLOW_KANBAN.CARD_FORM.TABS.LABEL')"
+          @update:model-value="selectTab"
         />
-      </div>
 
-      <CardValueSection :card="card" @update:card="onValueChange" />
-
-      <CardTasksSection :key="tasksKey" :card="card" />
-
-      <CardAiSection
-        v-if="hasFeature('ai_summary')"
-        :card="card"
-        :description="form.description"
-        @accept-summary="addSummary"
-        @task-created="tasksKey += 1"
-      />
-
-      <section class="flex flex-col gap-3">
-        <h4 class="text-heading-3 text-n-slate-12">
-          {{ t('FLOW_KANBAN.CARD_FORM.CONTACT') }}
-        </h4>
-        <div class="flex items-center gap-3">
-          <Avatar
-            :src="card.contact.thumbnail"
-            :name="card.contact.name || ''"
-            :size="36"
-            rounded-full
-            aria-hidden="true"
-          />
-          <div class="flex flex-col flex-1 min-w-0">
-            <span class="text-heading-3 truncate text-n-slate-12">
-              {{ card.contact.name || card.contact.phone_number }}
-            </span>
-            <span class="text-label-small truncate text-n-slate-11">
-              {{
-                [card.contact.phone_number, card.contact.email]
-                  .filter(Boolean)
-                  .join(' · ')
-              }}
-            </span>
-          </div>
-          <router-link :to="contactPath(card.contact.id)">
-            <Button
-              link
-              blue
-              sm
-              type="button"
-              :label="t('FLOW_KANBAN.CARD_FORM.OPEN_CONTACT')"
-            />
-          </router-link>
-        </div>
-      </section>
-
-      <section class="flex flex-col gap-3">
-        <h4 class="text-heading-3 text-n-slate-12">
-          {{ t('FLOW_KANBAN.CARD_FORM.CONVERSATIONS') }}
-        </h4>
-        <p
-          v-if="!card.conversations.length"
-          class="text-body-main text-n-slate-11"
+        <div
+          v-if="visitedTabs.has('details')"
+          v-show="activeTab === 'details'"
+          :id="panelId(TABS_ID, 'details')"
+          role="tabpanel"
+          :aria-labelledby="tabId(TABS_ID, 'details')"
+          :class="PANEL_CLASS"
         >
-          {{ t('FLOW_KANBAN.CARD.NO_CONVERSATIONS') }}
-        </p>
-        <ul v-else class="flex flex-col divide-y divide-n-weak">
-          <li
-            v-for="conversation in card.conversations"
-            :key="conversation.display_id"
-            class="flex items-center gap-3 py-2"
-          >
-            <span
-              class="flex items-center justify-center flex-shrink-0 rounded-lg size-8 bg-n-alpha-2 text-n-slate-11"
-            >
-              <Icon
-                :icon="inboxIcon(inboxFor(conversation.inbox_id))"
-                class="size-4"
-              />
-            </span>
-            <div class="flex flex-col flex-1 min-w-0">
-              <span class="text-body-main truncate text-n-slate-12">
-                {{
-                  inboxFor(conversation.inbox_id)?.name ||
-                  t('FLOW_KANBAN.CARD.RESTRICTED_CONVERSATION')
-                }}
-              </span>
-              <span class="text-label-small text-n-slate-11">
-                #{{ conversation.display_id }} ·
-                {{
-                  t(
-                    `CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${conversation.status}.TEXT`
-                  )
-                }}
-                · {{ relativeTime(conversation.last_activity_at) }}
-              </span>
-            </div>
-            <router-link
-              v-if="inboxFor(conversation.inbox_id)"
-              v-tooltip.top="t('FLOW_KANBAN.CARD_FORM.OPEN_CONVERSATION')"
-              :to="conversationPath(conversation.display_id)"
-            >
-              <Button
-                ghost
-                slate
-                xs
-                type="button"
-                icon="i-lucide-external-link"
-                :aria-label="t('FLOW_KANBAN.CARD_FORM.OPEN_CONVERSATION')"
-              />
-            </router-link>
-            <Button
-              v-tooltip.top="t('FLOW_KANBAN.CARD_FORM.UNLINK')"
-              ghost
-              slate
-              xs
-              type="button"
-              icon="i-lucide-unlink"
-              :aria-label="t('FLOW_KANBAN.CARD_FORM.UNLINK')"
-              @click="unlink(conversation)"
-            />
-          </li>
-        </ul>
-      </section>
+          <TextArea
+            v-model="form.description"
+            :label="t('FLOW_KANBAN.CARD_FORM.DESCRIPTION')"
+            :placeholder="t('FLOW_KANBAN.CARD_FORM.DESCRIPTION_PLACEHOLDER')"
+            :max-length="5000"
+            auto-height
+            min-height="6rem"
+          />
 
-      <CardHistorySection :card="card" />
+          <CardAiSection
+            v-if="hasFeature('ai_summary')"
+            :card="card"
+            :description="form.description"
+            @accept-summary="addSummary"
+            @task-created="tasksKey += 1"
+          />
+
+          <CardDetailsSection v-model:details="form.details" />
+
+          <Input
+            v-model="form.expected_close_on"
+            type="date"
+            :label="t('FLOW_KANBAN.CARD_FORM.EXPECTED_CLOSE')"
+            :message="t('FLOW_KANBAN.CARD_FORM.EXPECTED_CLOSE_HINT')"
+          />
+        </div>
+
+        <div
+          v-if="visitedTabs.has('value')"
+          v-show="activeTab === 'value'"
+          :id="panelId(TABS_ID, 'value')"
+          role="tabpanel"
+          :aria-labelledby="tabId(TABS_ID, 'value')"
+          :class="PANEL_CLASS"
+        >
+          <CardValueSection :card="card" @update:card="onValueChange" />
+        </div>
+
+        <div
+          v-if="visitedTabs.has('tasks')"
+          v-show="activeTab === 'tasks'"
+          :id="panelId(TABS_ID, 'tasks')"
+          role="tabpanel"
+          :aria-labelledby="tabId(TABS_ID, 'tasks')"
+          :class="PANEL_CLASS"
+        >
+          <CardTasksSection :key="tasksKey" :card="card" />
+        </div>
+
+        <div
+          v-if="visitedTabs.has('conversations')"
+          v-show="activeTab === 'conversations'"
+          :id="panelId(TABS_ID, 'conversations')"
+          role="tabpanel"
+          :aria-labelledby="tabId(TABS_ID, 'conversations')"
+          :class="PANEL_CLASS"
+        >
+          <section class="flex flex-col gap-3">
+            <h4 class="text-heading-3 text-n-slate-12">
+              {{ t('FLOW_KANBAN.CARD_FORM.CONTACT') }}
+            </h4>
+            <div class="flex items-center gap-3">
+              <Avatar
+                :src="card.contact.thumbnail"
+                :name="card.contact.name || ''"
+                :size="36"
+                rounded-full
+                aria-hidden="true"
+              />
+              <div class="flex flex-col flex-1 min-w-0">
+                <span class="text-heading-3 truncate text-n-slate-12">
+                  {{ card.contact.name || card.contact.phone_number }}
+                </span>
+                <span class="text-label-small truncate text-n-slate-11">
+                  {{
+                    [card.contact.phone_number, card.contact.email]
+                      .filter(Boolean)
+                      .join(' · ')
+                  }}
+                </span>
+              </div>
+              <router-link :to="contactPath(card.contact.id)">
+                <Button
+                  link
+                  blue
+                  sm
+                  type="button"
+                  :label="t('FLOW_KANBAN.CARD_FORM.OPEN_CONTACT')"
+                />
+              </router-link>
+            </div>
+          </section>
+
+          <section class="flex flex-col gap-3">
+            <h4 class="text-heading-3 text-n-slate-12">
+              {{ t('FLOW_KANBAN.CARD_FORM.CONVERSATIONS') }}
+            </h4>
+            <p
+              v-if="!card.conversations.length"
+              class="text-body-main text-n-slate-11"
+            >
+              {{ t('FLOW_KANBAN.CARD.NO_CONVERSATIONS') }}
+            </p>
+            <ul v-else class="flex flex-col divide-y divide-n-weak">
+              <li
+                v-for="conversation in card.conversations"
+                :key="conversation.display_id"
+                class="flex items-center gap-3 py-2"
+              >
+                <span
+                  class="flex items-center justify-center flex-shrink-0 rounded-lg size-8 bg-n-alpha-2 text-n-slate-11"
+                >
+                  <Icon
+                    :icon="inboxIcon(inboxFor(conversation.inbox_id))"
+                    class="size-4"
+                  />
+                </span>
+                <div class="flex flex-col flex-1 min-w-0">
+                  <span class="text-body-main truncate text-n-slate-12">
+                    {{
+                      inboxFor(conversation.inbox_id)?.name ||
+                      t('FLOW_KANBAN.CARD.RESTRICTED_CONVERSATION')
+                    }}
+                  </span>
+                  <span class="text-label-small text-n-slate-11">
+                    #{{ conversation.display_id }} ·
+                    {{
+                      t(
+                        `CHAT_LIST.CHAT_STATUS_FILTER_ITEMS.${conversation.status}.TEXT`
+                      )
+                    }}
+                    · {{ relativeTime(conversation.last_activity_at) }}
+                  </span>
+                </div>
+                <router-link
+                  v-if="inboxFor(conversation.inbox_id)"
+                  v-tooltip.top="t('FLOW_KANBAN.CARD_FORM.OPEN_CONVERSATION')"
+                  :to="conversationPath(conversation.display_id)"
+                >
+                  <Button
+                    ghost
+                    slate
+                    xs
+                    type="button"
+                    icon="i-lucide-external-link"
+                    :aria-label="t('FLOW_KANBAN.CARD_FORM.OPEN_CONVERSATION')"
+                  />
+                </router-link>
+                <Button
+                  v-tooltip.top="t('FLOW_KANBAN.CARD_FORM.UNLINK')"
+                  ghost
+                  slate
+                  xs
+                  type="button"
+                  icon="i-lucide-unlink"
+                  :aria-label="t('FLOW_KANBAN.CARD_FORM.UNLINK')"
+                  @click="unlink(conversation)"
+                />
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <div
+          v-if="visitedTabs.has('history')"
+          v-show="activeTab === 'history'"
+          :id="panelId(TABS_ID, 'history')"
+          role="tabpanel"
+          :aria-labelledby="tabId(TABS_ID, 'history')"
+          :class="PANEL_CLASS"
+        >
+          <CardHistorySection :card="card" />
+        </div>
+      </div>
     </form>
 
     <template v-if="card" #footer>

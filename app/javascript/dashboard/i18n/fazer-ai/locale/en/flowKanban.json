@@ -75,7 +75,15 @@
       "MARK_REVIEWED": "Mark as reviewed",
       "STALE": "Stalled for {days} days in this stage",
       "EXPECTED_CLOSE": "Expected close date",
-      "EXPECTED_CLOSE_HINT": "Used by the report’s revenue forecast."
+      "EXPECTED_CLOSE_HINT": "Used by the report’s revenue forecast.",
+      "TABS": {
+        "LABEL": "Card sections",
+        "DETAILS": "Details",
+        "VALUE": "Value",
+        "TASKS": "Tasks",
+        "CONVERSATIONS": "Conversations",
+        "HISTORY": "History"
+      }
     },
     "BOARD_FORM": {
       "CREATE_TITLE": "New board",
