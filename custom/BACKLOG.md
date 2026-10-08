@@ -146,9 +146,9 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
   `4.18.0-6ebd0dc7d-ee`. Verified on conversation 21 with the service token: read the deal of the conversation, add fck 25 x3 while sending
   `unit_price_cents: 1` and `discount_percent: 90` (both ignored: 3 x 480,00), the same product x5 (replaces), a second product, a
   quantity of 0 (422), an unknown product (404), remove by product id, `value_changed` by `agent_bot`. A conversation whose deals are all won or
-  lost answers 404 "no open deal" (conversation 20). Decision (a) taken 2026-10-08: the native-tool PR (AG#2) is closed, not merged. **Left to do:** merge AG PRs #8 and #9, then
-  `apply-toolpack.ts --apply` on the staging agent (it retires the earlier staging tools `get_current_deal` and `add_product_to_deal`, which
-  took a card id) and repeat the end to end conversation with the toolpack's four tools.
+  lost answers 404 "no open deal" (conversation 20). Decision (a) taken 2026-10-08: the native-tool PR (AG#2) is closed, not merged. The toolpack was merged in AG (PR #9) and applied to the
+  staging agent (the earlier tools `get_current_deal` and `add_product_to_deal`, which took a card id, are disabled); conversation 22 proved it.
+  Nothing left for B-13b except the catalog decision below.
 - **B-13 (decision still open):** is the catalog's source of truth Flow Products or the store ERP through `wsac-gateway` (production
   bridge for catalog, availability and quote)? Native tools were built and not taken (AG PR #2 closed, branch `feat/flow-product-tools` kept: every upstream merge would conflict). A later option: one MCP server in
   Flow. RAG over `products/export` only helps with descriptions.
@@ -163,6 +163,7 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 
 ## 3. FROM THE AGENTS REPO (one line per change that touches this repo, newest first; written here, never mirrored)
 Rule R8 of the AG backlog and section 3 of `custom/contracts/protocol.md`: any AG change that CW depends on, and every CW change the agents depend on, gets one line here and one in the AG backlog, with ids and SHAs.
+- 2026-10-08 AG: AG PRs #8 (contract + protocol, `ae47f46`), #9 (toolpack, `a58c933`) and #10 (PR template + labels, `e9f662c`) are **merged** in `flow-agents-ee` `main` (`265bc91` with the backlog); issues #5, #6, #7 closed; none open. The five contract files there are byte-identical to this repo's, hash `8fd789ba65d5` on both sides. The agents code is still the image on staging (`6b441a4`). The branch `claude/jolly-johnson-bq9kim` of this repo is redundant and waits for the owner's OK to be deleted (tips `ed80879c5`, `20522ff53`).
 - 2026-10-08 AG: native-tool PR (AG#2) closed, not merged (decision (a)); toolpack `custom/toolpacks/flow-products.json` + `toolpack-check.ts` + `apply-toolpack.ts` in AG#6 (PR #9, stacked on #8); contract grew to four files, hash `8fd789ba65d5` (AG#5, PR #8; CW proof: `flow_extensions_contract_spec.rb`); PR template + labels (AG#7, PR #10). Staging still runs the earlier HTTP tools until PR #9 merges and the pack is applied.
 - 2026-10-08 CW: `kanban/conversations/:display_id/deal[/items]` live on staging (image `4.18.0-6ebd0dc7d-ee`), capabilities `deal.items` and `products.read` announced.
 - 2026-10-08 AG+CW: the toolpack of AG#6 was applied to the staging agent 2 (`apply-toolpack.ts --apply`, idempotent on the second run); end to end conversation 22: 8 m3 fck 30 + pumping = R$ 4.880,00 from the catalog, the agent never named a card, `actor_kind: agent_bot`. The agent's earlier tools that took a card id are disabled.
