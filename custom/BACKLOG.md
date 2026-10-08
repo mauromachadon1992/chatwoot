@@ -71,12 +71,12 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - Dev: docker compose in `~/chatwoot`. ee-local: `custom/docker/ee-local up` (built image, throwaway data).
 - Staging (Coolify `https://vps.freitascasaeconstrucao.com.br`, project `atendimento`, env `staging`):
   - `chatwoot-staging` service uuid `5brvjno3ifszb3dm4xweecsy`, host `chat-hml.freitascasaeconstrucao.com.br`, image
-    `ghcr.io/mauromachadon1992/chatwoot:4.18.0-a84b8562d-ee` via env `FLOW_IMAGE_TAG` (B-02 and the card tabs). Compose: `custom/docker/coolify.staging.compose.yaml`.
+    `ghcr.io/mauromachadon1992/chatwoot:4.18.0-6ebd0dc7d-ee` via env `FLOW_IMAGE_TAG` (B-02, the card tabs and B-13b). Compose: `custom/docker/coolify.staging.compose.yaml`.
     **`FRONTEND_URL` is a literal in the compose (Coolify restores compose values on restart); env overrides do not stick.**
   - `agents-staging` uuid `oig9l2odn1nkhf7fuvf4sxls`, host `agentes-hml.freitascasaeconstrucao.com.br`, image
     `ghcr.io/mauromachadon1992/agents-ee:6b441a4` (agents-ee main, = upstream v1.39.0 + Flow files). Own Postgres (pgvector) and volume.
   - Staging data left from tests: Chatwoot account 1; boards 1 "Teste" (user's), 2-3 "harness …", 4 "Vendas e2e"; inboxes 2
-    `harness-inbox`, 3 `e2e-vendas`; conversations 13-19; agents-ee tenant 1, agent 1 and 2, vault entry 1 (DeepSeek key).
+    `harness-inbox`, 3 `e2e-vendas`; conversations 13-21; catalog products 1-3 (Concreto fck 25, fck 30, Bombeamento); agents-ee tenant 1, agent 1 and 2, vault entry 1 (DeepSeek key).
     Agent 2 "Vendedor Concreto (e2e)" is bound to inbox 3, mode `production`, model `deepseek-flash` (the id DeepSeek lists).
 - Production (**do not touch without explicit go-ahead**): `chatwoot-baileys` (Chatwoot + Baileys) and `agents` (official
   `ghcr.io/fazer-ai/agents:v1.36.0`, three versions behind). Shared infra in project `infra-compartilhada`.
@@ -140,11 +140,13 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
   replaces the whole set and `enabledTools: []` means **no** native tool (it silently removed move/priority until fixed by listing the
   natives by name). **Known risk, still open (B-13b):** the agent supplies the `card_id`, and the service token reads/writes any card
   it can see (verified: GET of another conversation's card returns 200). Build the conversation-scoped routes below to close it.
-- **B-13b DONE in code (2026-10-08), not yet on staging:** `Api::V1::Accounts::Kanban::ConversationDealsController` +
-  `spec/custom/kanban/conversation_deal_spec.rb` (16 examples): `GET|POST|DELETE kanban/conversations/:display_id/deal[/items]`, capabilities
-  `deal.items` and `products.read`. The agent never names a card; price from the catalog, discount zero, quantity above zero, one line per
-  product, 50 lines at most, `agent_bot` in the history. **Left to do:** build, publish and promote an image; switch the staging HTTP tools
-  (`custom/script/agents-http-tools.mjs`) to these routes or replace them with the native tools of flow-agents-ee issue #1 (PR open).
+- **B-13b DONE on staging (2026-10-08):** `Api::V1::Accounts::Kanban::ConversationDealsController` (16 specs), image
+  `4.18.0-6ebd0dc7d-ee`. Verified on conversation 21 with the service token: read the deal of the conversation, add fck 25 x3 while sending
+  `unit_price_cents: 1` and `discount_percent: 90` (both ignored: 3 x 480,00), the same product x5 (replaces), a second product, a
+  quantity of 0 (422), an unknown product (404), remove by product id, `value_changed` by `agent_bot`. A conversation whose deals are all won or
+  lost answers 404 "no open deal" (conversation 20). **Left to do:** the end to end run with the NATIVE tools of flow-agents-ee PR #2 (needs
+  that PR merged and an agents-ee image; the CI of #2 is green except gitleaks, fixed by PR #4), then retire the three staging HTTP tools
+  (`custom/script/agents-http-tools.mjs`) or point them at these routes.
 - **B-13 (decision still open):** is the catalog's source of truth Flow Products or the store ERP through `wsac-gateway` (production
   bridge for catalog, availability and quote)? Native tools: `search_products`, `set_deal_product`, `remove_deal_product` in flow-agents-ee
   (issue #1), built only when the Chatwoot announces `deal.items` and the agent is granted one by name. A later option: one MCP server in
