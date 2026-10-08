@@ -130,6 +130,26 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - **B-12 DONE (2026-10-08) card panel in tabs:** `flowKanban/PanelTabs.vue` + `panelTabs.js` (details, value, tasks, conversations, history;
   identity stays above). Verified in light, dark and 390px with `~/flow-tools/shoot.sh` (Playwright image, dev user `visual@flowagents.test`
   created by `visual-seed.rb`, dev DB only). Same pattern fits `BoardSettingsPanel.vue` if it grows (not done).
+- **B-13 [decision, then me] Products for the agents.** Finding (2026-10-08): the agents have **no native tool for products or card
+  items**. Natives (15): handoff_to_human, private_note, set_custom_attribute, set_labels, resolve_conversation, kanban_move_card,
+  update_kanban_task (title, description, priority, dates), set_voice_preference, update_contact, react_to_message, send_image,
+  open_case_in_inbox, skip_reply, calculator, get_current_time. The Pro dialect has no items either. Flow already has the data:
+  `GET kanban/products?q=&active=true` (25 per page; id, name, sku, unit, price_cents, active; verified 200 with the service token),
+  `POST kanban/cards/:card_id/items {product_id, quantity, unit_price_cents?, discount_percent?}` (the deal then equals the sum of its
+  lines; `deal_value` is ignored for such a deal), `POST kanban/cards/:id/quote` (message text with the lines).
+  Recommended: **HTTP tools on the agent** (`POST /v1/tools`: method, urlTemplate, allowedHosts, headers with `{{secret}}`, `credentialRef`
+  vault, inputSchema, responseTemplate), so agents-ee stays identical to upstream (a native tool would conflict at every sync).
+  Tools: `search_products(q)`, `add_product_to_deal(product_id, quantity)`, `get_deal_quote()`. **Gap to build in Flow first:** the agent knows
+  the conversation (`{{conversation_id}}` fixed field) but not the card id, so add conversation-scoped routes with the same "most recently
+  updated open deal" rule as `kanban_task`: `GET kanban/conversations/:display_id/deal` (with lines, total) and
+  `POST kanban/conversations/:display_id/deal/items`. Guards: the price always comes from the catalog (the agent cannot send
+  `unit_price_cents`), discount capped by a board setting (default 0), quantity cap, one line per product (adding again updates the
+  quantity), history event with `actor_kind: agent_bot`, service user only needs `update?` on the card. Later option: one MCP server
+  in Flow for products, deals and quote (typed tools, one registration), after the HTTP tools prove the flow. RAG (a knowledge base
+  synced from `products/export`) only helps with descriptions, never with price or write. Open question for the user: is the catalog
+  source of truth Flow Products or the store ERP through `wsac-gateway` (production bridge for catalog, availability and quote)?
+  Accept: e2e on staging: the customer asks for N units of a product, the agent searches, adds the line, the deal value is the catalog
+  price times N, and the quote text matches `POST cards/:id/quote`.
 - **B-11 [me] Docs:** record the staging topology and the e2e recipe in `custom/README.md` (this file holds the working notes).
 
 ## 2. HOW TO START A SESSION (cheapest path)
