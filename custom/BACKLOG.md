@@ -80,8 +80,15 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
     Agent 2 "Vendedor Concreto (e2e)" is bound to inbox 3, mode `production`, model `deepseek-flash` (the id DeepSeek lists).
 - Production (**do not touch without explicit go-ahead**): `chatwoot-baileys` (Chatwoot + Baileys) and `agents` (official
   `ghcr.io/fazer-ai/agents:v1.36.0`, three versions behind). Shared infra in project `infra-compartilhada`.
-- Coolify API: `Authorization: Bearer <token>`; services are `services/<uuid>` (`/envs` PATCH, `/restart` and `/start` are POST,
-  compose is `PATCH {docker_compose_raw: <base64>}`). No exec endpoint exists, so `rake` needs the Coolify web terminal.
+- Coolify API (v4.4.2): `Authorization: Bearer <token>`; services are `services/<uuid>` (`/envs` PATCH, `/restart` and `/start` are
+  POST, compose is `PATCH {docker_compose_raw: <base64>}`). No exec endpoint, but **scheduled tasks run a command in a service
+  container**: `POST services/<uuid>/scheduled-tasks {name, command, frequency:"* * * * *", container:"rails"}`, read
+  `…/<task>/executions` (field `message`), then `DELETE` the task at once (it repeats every minute). Output carries
+  secrets: do not echo it unmasked. Needs the user's go-ahead each time.
+- Creating the service user: `POST /accounts/1/agents {name,email,role:"administrator"}` (SuperAdmin token) → then, in the
+  container, `rake flow:kanban:agent_bot[EMAIL]` **only flags an existing user and prints no token**; the token comes from
+  `rails runner 'puts User.from_email(EMAIL).access_token.token'` (write it with `%q()` instead of quotes inside a task).
+  Then `PATCH agents /v1/chatwoot/deployment {adminToken}`. A future `CREATE=1` option on the rake would remove two steps.
 - Agents API: `https://agentes-hml…/api/v1` with a fleet key + `X-Tenant-Id: 1`. Useful: `GET chatwoot/deployment`,
   `POST chatwoot/instances/1/sync-inboxes`, `PATCH chatwoot/inboxes/:id {agentId}`, `POST vault`, `POST agents`
   (`modelConfig.credentialRef = "vault:<id>"`), `PATCH agents/:id {mode}`. Spec: `openapi.json` in the agents repo.
@@ -98,16 +105,16 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 
 ## 1. NEXT (ordered; each item: why, acceptance)
 
-- **B-01 [human + me] Agent identity.** Why: staging history shows the agent's actions as the human admin because agents-ee
-  uses a personal SuperAdmin token. Do: user runs `rake flow:kanban:agent_bot[EMAIL]` in the staging rails terminal (Coolify web
-  terminal) and gives the token; rotate the deployment token in agents-ee (`PATCH chatwoot/deployment`). Accept: a fresh e2e
-  conversation shows `actor_kind: agent_bot` on `stage_moved`; the service token gets 403 on webhooks/imports/automations.
+- **B-01 DONE on staging (2026-10-08):** agents-ee now uses the service user "Agente Flow (servico)" (Chatwoot user id 2,
+  `agente-flow-hml@…`, flagged `agent_bot`). Verified: e2e conversation 18 shows `actor_kind: agent_bot` on `stage_moved`,
+  `priority_changed`, `attributes_changed`; the token reads boards (200) and gets "not authorized" (401) on webhooks, imports
+  and automations. **Left to do:** rotate that token (it was printed in a session log) and repeat the setup for production (B-05).
 - **B-02 [me] Deal value from the agent.** Why: `value` is not in `UPDATABLE`, so agents cannot record the amount.
   Check whether the Pro contract/`update_kanban_task` exposes a value field (read `src/graph/tools/native.ts`, contract md);
   if it does, add `value` to `UPDATABLE` + contract + spec + harness; if not, document it as a Flow-only ability (C5) and use
   `custom_attributes` or a prompt rule. Accept: e2e deal shows the quoted total; spec in `pro_fields_spec.rb`.
 - **B-03 [human] Revoke exposed credentials** (pasted in chat on 2026-10-07/08): Coolify API token, agents fleet key, staging
-  Chatwoot user token, DeepSeek key. Then remove the vault entry/agents on staging if the key is not renewed.
+  Chatwoot SuperAdmin token, DeepSeek key, and the service user's token (rotate: new token, then PATCH the agents deployment). Then remove the vault entry/agents on staging if the key is not renewed.
 - **B-04 [human, needs permission] Staging cleanup:** delete boards 2 and 3 (classifier blocked it), `harness-inbox`, conversation 13.
 - **B-05 [decision] Production:** promote `chatwoot-baileys` to the Phase P image and move `agents` from v1.36.0 to our agents-ee.
   Needs: migration plan for agents' database (v1.36→v1.39 migrations), backup, rollback tag, user go-ahead. Never self-initiate.
