@@ -96,7 +96,11 @@ class Custom::WhiteLabel::Palette
   # theme with a class on <body>, which is where the dark values have to land.
   def to_css
     light, dark = variables.values_at(:light, :dark)
-    ":root{#{declarations(light)}}body.dark{#{declarations(dark)}}"
+    # `html:root` and `html.dark, html .dark` out-rank the app's own `:root` and `.dark` blocks, so the ramp wins whatever the order of
+    # the stylesheets: the layout writes this before the app's CSS, and Vite (dev) appends that CSS after it. The dark block covers the
+    # root (the sign-in page puts the class on <html>) and any descendant that carries it (the sign-in wrapper, and the dashboard's body),
+    # because the app's `.dark` redefines the ramp on that element itself, where an inherited value would lose.
+    "html:root{#{declarations(light)}}html.dark,html .dark{#{declarations(dark)}}"
   end
 
   private

@@ -84,7 +84,7 @@ RSpec.describe Custom::WhiteLabel do
 
     it 'adds the accent ramp in the brand colour, and none without a colour' do
       brand!(color: '#0F766E')
-      expect(described_class.new(account).dashboard_payload[:theme_css]).to start_with(':root{--blue-1:').and include('body.dark{')
+      expect(described_class.new(account).dashboard_payload[:theme_css]).to start_with('html:root{--blue-1:').and include('html.dark,html .dark{')
 
       account.assign_white_label('white_label_color' => '')
       account.save!
@@ -134,8 +134,8 @@ RSpec.describe Custom::WhiteLabel do
     it 'writes the ramp for both themes, light on :root and dark on the body class the dashboard toggles' do
       css = described_class.new('#0F766E').to_css
 
-      expect(css).to match(/\A:root\{(--blue-\d+:\d+ \d+ \d+;)+--solid-blue:/)
-      expect(css).to include('body.dark{', '--border-blue:')
+      expect(css).to match(/\Ahtml:root\{(--blue-\d+:\d+ \d+ \d+;)+--solid-blue:/)
+      expect(css).to include('html.dark,html .dark{', '--border-blue:')
       expect(css).not_to include('<')
     end
   end
@@ -173,7 +173,7 @@ RSpec.describe Custom::WhiteLabel do
       brand!(color: '#0F766E', domain: 'atendimento.cliente.com.br')
 
       get '/app/login', headers: { 'HOST' => 'atendimento.cliente.com.br' }
-      expect(response.body).to include('<style id="flow-white-label-theme">:root{--blue-1:')
+      expect(response.body).to include('<style id="flow-white-label-theme">html:root{--blue-1:')
 
       get '/app/login'
       expect(response.body).not_to include('flow-white-label-theme')

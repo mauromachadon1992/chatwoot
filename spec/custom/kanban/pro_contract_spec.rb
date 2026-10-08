@@ -5,7 +5,10 @@ require 'rails_helper'
 # custom/ROADMAP.md and skipped by name until then, so this list and the harness report stay the
 # same 15 lines.
 RSpec.describe 'Pro Kanban contract', type: :request do
-  contract_files = %w[pro-kanban.md pro-kanban.v1.schema.json flow-extensions.md protocol.md].map { |name| "custom/contracts/#{name}" }
+  contract_files = %w[
+    pro-kanban.md pro-kanban.v1.schema.json flow-extensions.md protocol.md identity.md
+    identity/flow-agents-dark.svg identity/flow-agents-light.svg identity/flow-chat-dark.svg identity/flow-chat-light.svg identity/flow-mark.svg
+  ].map { |name| "custom/contracts/#{name}" }
 
   operations = [
     [1, 'GET /kanban/boards', 'C1'],

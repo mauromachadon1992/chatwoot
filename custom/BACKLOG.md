@@ -152,7 +152,7 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - **B-13 (decision still open):** is the catalog's source of truth Flow Products or the store ERP through `wsac-gateway` (production
   bridge for catalog, availability and quote)? Native tools were built and not taken (AG PR #2 closed, branch `feat/flow-product-tools` kept: every upstream merge would conflict). A later option: one MCP server in
   Flow. RAG over `products/export` only helps with descriptions.
-- **B-14 [decision] The name flow-chat / flow-agents beyond the READMEs.** Done 2026-10-08: both READMEs (pt, en) and `custom/README.md` of both
+- **B-14 [decision] The name flow-chat / flow-agents beyond the READMEs.** Identity decided 2026-10-08: one contract (`custom/contracts/identity.md`, five SVGs, hash-checked in both repos). flow-chat applies it with `rake flow:identity:apply` (login page row; not yet run on staging, needs the owner OK); flow-agents carries it as its default brand because `PATCH /v1/branding` is Pro (AG branch `feat/flow-identity`). Done 2026-10-08: both READMEs (pt, en) and `custom/README.md` of both
   repos name the product flow-chat / flow-agents, tell the real state and drop fazer.ai's logo; "fazer.ai" stays only as attribution (the
   derivation, upstream links, license and NOTICE, "not official, no support"). **Not done, on purpose:** a blind replace of "fazer.ai". There are
   169 files here and 253 in AG that mention it, and most are not branding: code and paths (`i18n/fazer-ai/locale/` is a code path, imports depend

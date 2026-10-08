@@ -1,38 +1,38 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-10-04T23:57:57.401Z",
-  "title": "Design System: Chatwoot Flow",
+  "title": "Design System: flow-chat",
   "extensions": {
     "colorMeta": {
-      "brand-blue": {
+      "brand": {
         "role": "primary",
-        "displayName": "Action Blue (account accent)",
-        "canonical": "rgb(var(--blue-9, 39 129 246))",
-        "dark": "#2781F6",
+        "displayName": "Flow Indigo (account accent)",
+        "canonical": "rgb(var(--blue-9, 62 99 221))",
+        "dark": "#3E63DD",
         "tonalRamp": [
-          "#0B3265",
-          "#086DE0",
-          "#1073E9",
-          "#2781F6",
-          "#75ABF7",
-          "#B5D5FF",
-          "#DAECFF",
-          "#F5F9FF"
+          "#1D2F65",
+          "#3255D0",
+          "#3F64DE",
+          "#3E63DD",
+          "#86A6F7",
+          "#BFD2FF",
+          "#E0EAFF",
+          "#F6F9FF"
         ],
         "note": "Step 9 of the accent ramp. A white-labelled account replaces --blue-1..12 with its own colour (Custom::WhiteLabel::Palette); white text on it is guaranteed 4.5:1."
       },
-      "brand-blue-text": {
+      "brand-text": {
         "role": "primary",
-        "displayName": "Action Blue Text",
+        "displayName": "Flow Indigo Text",
         "canonical": "rgb(var(--blue-11))",
-        "dark": "#7EB6FF",
+        "dark": "#91B1FF",
         "note": "Step 11: accent text, links, icons. Guaranteed 4.5:1 on the step-3 wash, in both themes and under any white label."
       },
-      "brand-blue-wash": {
+      "brand-wash": {
         "role": "primary",
         "displayName": "Selection Wash",
         "canonical": "rgb(var(--blue-3))",
-        "dark": "#0F2748",
+        "dark": "#182548",
         "note": "Step 3: selection wash. Re-hued with the account accent."
       },
       "won-teal": {

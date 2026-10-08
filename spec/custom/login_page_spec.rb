@@ -84,7 +84,7 @@ RSpec.describe Custom::LoginPage do
       live_page(copy: { 'pt_BR' => { 'title' => 'Bem-vindo' } })
 
       get '/app/login'
-      expect(response.body).to include('Flow Agents', 'FLOW_LOGIN_PAGE', 'Bem-vindo', '<style id="flow-installation-theme">:root{--blue-1:')
+      expect(response.body).to include('Flow Agents', 'FLOW_LOGIN_PAGE', 'Bem-vindo', '<style id="flow-installation-theme">html:root{--blue-1:')
 
       described_class.first.update!(enabled: false)
       get '/app/login'

@@ -1,10 +1,10 @@
 ---
-name: Chatwoot Flow
+name: flow-chat
 description: The Chatwoot dashboard design system as the Flow fork uses and extends it (Kanban first).
 colors:
-  brand-blue: '#2781F6'
-  brand-blue-text: '#086DE0'
-  brand-blue-wash: '#E9F3FF'
+  brand: '#3E63DD'
+  brand-text: '#3F64DE'
+  brand-wash: '#ECF2FF'
   won-teal: '#12A594'
   won-teal-text: '#008573'
   lost-ruby: '#E54666'
@@ -71,7 +71,7 @@ spacing:
   2xl: '32px'
 components:
   button-primary:
-    backgroundColor: '{colors.brand-blue}'
+    backgroundColor: '{colors.brand}'
     textColor: '{colors.solid}'
     rounded: '{rounded.md}'
     height: '32px'
@@ -106,7 +106,7 @@ components:
     padding: '8px'
 ---
 
-# Design System: Chatwoot Flow
+# Design System: flow-chat
 
 ## Overview
 
@@ -134,20 +134,29 @@ conversation chip, a quiet hover lift on a card being dragged.
 
 ## Colors
 
-A neutral, low-chroma workspace with a single action blue and four semantic accents that only
+A neutral, low-chroma workspace with a single action indigo and four semantic accents that only
 ever mean state.
 
 ### Primary
 
-- **Action Blue** (brand-blue): primary buttons, focus outlines (`outline-n-brand`), current
+- **Flow Indigo** (brand, `#3E63DD`): primary buttons, focus outlines (`outline-n-brand`), current
   selection, links. Its rarity is what makes the next step obvious.
-- **Action Blue Text** (brand-blue-text): blue text on light surfaces, where the brighter
-  blue would miss contrast.
-- **Selection Wash** (brand-blue-wash): selected rows and soft blue backgrounds.
+- **Flow Indigo Text** (brand-text): accent text on light surfaces, where the brighter fill
+  would miss contrast.
+- **Selection Wash** (brand-wash): selected rows and soft accent backgrounds.
 
 The accent is a ramp, not a hex: `n-brand` is step 9 of `--blue-1..12`, and a white-labelled
 account replaces the whole ramp with its own colour (see "The Accent-Ramp Rule"). "Blue" in
-this document means "the account's accent"; on an unbranded account it is Chatwoot's blue.
+this document means "the account's accent". The installation's accent is **Flow Indigo**, the seed
+`#3E63DD` of the ramp (white on step 9 passes at 4.5:1 without adjusting it); Chatwoot's own blue is only
+what an installation shows before the identity is applied (`rake "flow:identity:apply"`). The
+Button colour prop is still called `blue`: it names the accent, whatever its hue.
+
+**Identity.** The name is **flow-chat** (always lowercase and hyphenated), its sibling **flow-agents**; the mark
+is a rounded tile with three columns stepping down, a card moving from stage to stage. Name, mark, seed colour
+and voice are one document shared with the agents repository, `custom/contracts/identity.md`, and the
+SVGs beside it: change them there, in both repositories. Brand stays in precise details (the login screen,
+the tab title and icon, the sidebar), never in decoration on a working screen.
 
 | Role | Token | Step |
 | --- | --- | --- |
