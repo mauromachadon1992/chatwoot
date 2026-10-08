@@ -152,6 +152,16 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - **B-13 (decision still open):** is the catalog's source of truth Flow Products or the store ERP through `wsac-gateway` (production
   bridge for catalog, availability and quote)? Native tools were built and not taken (AG PR #2 closed, branch `feat/flow-product-tools` kept: every upstream merge would conflict). A later option: one MCP server in
   Flow. RAG over `products/export` only helps with descriptions.
+- **B-14 [decision] The name flow-chat / flow-agents beyond the READMEs.** Done 2026-10-08: both READMEs (pt, en) and `custom/README.md` of both
+  repos name the product flow-chat / flow-agents, tell the real state and drop fazer.ai's logo; "fazer.ai" stays only as attribution (the
+  derivation, upstream links, license and NOTICE, "not official, no support"). **Not done, on purpose:** a blind replace of "fazer.ai". There are
+  169 files here and 253 in AG that mention it, and most are not branding: code and paths (`i18n/fazer-ai/locale/` is a code path, imports depend
+  on it), upstream URLs and the `upstream` remote, the license and NOTICE (Apache 2.0 and MIT require the notices to stay), upstream docs. What a
+  rename may touch, one decision each: the app name and logo in the UI (white label is configuration: `CUSTOM_BRANDING.md`, no code; AG still shows
+  the upstream identity, roadmap sprint A0); the image and package names (`ghcr.io/.../chatwoot`, `agents-ee`: published tags are immutable);
+  `package.json` names; docs of the upstream. **Open for the owner:** who holds the copyright of `custom/` and under which license (the READMEs
+  say only that it derives from the code it extends and changes no terms); Chatwoot Enterprise needs a Chatwoot Inc. license in production and the
+  AI deal summary uses Captain.
 - **B-11 [me] Docs:** record the staging topology and the e2e recipe in `custom/README.md` (this file holds the working notes).
 
 ## 2. HOW TO START A SESSION (cheapest path)
@@ -167,3 +177,4 @@ Rule R8 of the AG backlog and section 3 of `custom/contracts/protocol.md`: any A
 - 2026-10-08 AG: native-tool PR (AG#2) closed, not merged (decision (a)); toolpack `custom/toolpacks/flow-products.json` + `toolpack-check.ts` + `apply-toolpack.ts` in AG#6 (PR #9, stacked on #8); contract grew to four files, hash `8fd789ba65d5` (AG#5, PR #8; CW proof: `flow_extensions_contract_spec.rb`); PR template + labels (AG#7, PR #10). Staging still runs the earlier HTTP tools until PR #9 merges and the pack is applied.
 - 2026-10-08 CW: `kanban/conversations/:display_id/deal[/items]` live on staging (image `4.18.0-6ebd0dc7d-ee`), capabilities `deal.items` and `products.read` announced.
 - 2026-10-08 AG+CW: the toolpack of AG#6 was applied to the staging agent 2 (`apply-toolpack.ts --apply`, idempotent on the second run); end to end conversation 22: 8 m3 fck 30 + pumping = R$ 4.880,00 from the catalog, the agent never named a card, `actor_kind: agent_bot`. The agent's earlier tools that took a card id are disabled.
+- 2026-10-08 AG+CW: both READMEs rewritten for flow-chat / flow-agents (AG branch `docs/readme-flow-agents`, CW commit with this line); the AG README no longer says "nothing is implemented" nor "no image of its own". See B-14 for what was not renamed.

@@ -1,6 +1,6 @@
-# Flow customizations
+# flow-chat customizations
 
-Everything the Flow fork adds on top of `fazer-ai/chatwoot` lives here, so merges from
+Everything flow-chat adds on top of `fazer-ai/chatwoot` lives here, so merges from
 upstream rarely touch it.
 
 ## How it plugs in
@@ -419,9 +419,9 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
   profile avatar, the white-label icon without `alt` and the floating help button. The brand
   colour is chosen per account, so contrast of brand-coloured text depends on the palette.
 
-### Phase P: the Pro dialect for the fazer.ai agents (ROADMAP.md, C0 to C4)
+### Phase P: the Pro dialect for flow-agents (ROADMAP.md, C0 to C4)
 
-The agents' client (`flow-agents-ee`, the fazer.ai agents unchanged) talks to the Chatwoot Pro's Kanban
+The agents' client (`flow-agents-ee`, with the upstream agents code unchanged) talks to the Chatwoot Pro's Kanban
 routes. Flow answers them in a compatibility layer, so the agents need no edit; the contract is
 `custom/contracts/pro-kanban.md` and its schema, plus `flow-extensions.md` (what Flow offers beyond the dialect, with a
 machine-readable block that `spec/custom/kanban/flow_extensions_contract_spec.rb` proves against the code) and `protocol.md` (how the two
