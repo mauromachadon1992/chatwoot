@@ -130,7 +130,17 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - **B-12 DONE (2026-10-08) card panel in tabs:** `flowKanban/PanelTabs.vue` + `panelTabs.js` (details, value, tasks, conversations, history;
   identity stays above). Verified in light, dark and 390px with `~/flow-tools/shoot.sh` (Playwright image, dev user `visual@flowagents.test`
   created by `visual-seed.rb`, dev DB only). Same pattern fits `BoardSettingsPanel.vue` if it grows (not done).
-- **B-13 [decision, then me] Products for the agents.** Finding (2026-10-08): the agents have **no native tool for products or card
+- **B-13a DONE on staging (2026-10-08): the HTTP tools work end to end** (conversation 20, agent 2). With three HTTP tools the agent
+  read its deal (`GET conversations/:id`, template `kanban_task.*`), searched the catalog and added two lines (Concreto fck 25 x12 at
+  R$ 480, Bombeamento x12 at R$ 90): the deal value became R$ 6.840,00 from the catalog prices, `value_changed` by `agent_bot`; after
+  "aprovado" it set the priority, moved the card to Ganho and resolved the conversation. Recipe: `custom/script/agents-http-tools.mjs`.
+  Gotchas learned: `POST /v1/tools` needs `name` (the identifier) besides `label`; the vault kind `header` with `paramName` injects the
+  service token (the model never sees it); the context variables an HTTP tool can use are conversation_id, message_id, contact_*,
+  inbox_*, company_name, agent_name, **not the card id** (so the card id comes from a first tool call); `PUT tool-selections`
+  replaces the whole set and `enabledTools: []` means **no** native tool (it silently removed move/priority until fixed by listing the
+  natives by name). **Known risk, still open (B-13b):** the agent supplies the `card_id`, and the service token reads/writes any card
+  it can see (verified: GET of another conversation's card returns 200). Build the conversation-scoped routes below to close it.
+- **B-13 [decision, then me] Products for the agents (remaining: B-13b).** Finding (2026-10-08): the agents have **no native tool for products or card
   items**. Natives (15): handoff_to_human, private_note, set_custom_attribute, set_labels, resolve_conversation, kanban_move_card,
   update_kanban_task (title, description, priority, dates), set_voice_preference, update_contact, react_to_message, send_image,
   open_case_in_inbox, skip_reply, calculator, get_current_time. The Pro dialect has no items either. Flow already has the data:
