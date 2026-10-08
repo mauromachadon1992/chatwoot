@@ -428,9 +428,14 @@ routes. Flow answers them in a compatibility layer, so the agents need no edit; 
 
 - **Measured, not assumed:** the agents' harness (`custom/harness/run.ts` there) runs their real
   `ChatwootClient` through the cycle against a running stack. Before this work 1 of 16 checks passed;
-  now **10 of 16** pass: operations 1 to 5 (boards, steps), 8 to 11 (deals) and 15 (the conversation's
-  deal). Waiting: 6 and 7 (`update_inboxes`, `update_agents`, C4) and 12 to 14 with the reset (priority,
-  dates, labels, attributes on the card, C2).
+  now **16 of 16** pass (C1, C2, C4 and the read half of C3), and the agents' own Kanban tests (78) pass
+  unchanged. Deals carry `priority`, `start_at`, `due_at`, `labels` and `custom_attributes`
+  (`PATCH kanban/tasks/:id`, replace semantics). Boards bind to agents (`flow_kanban_board_agents`) next
+  to inboxes and teams (`update_inboxes`, `update_agents`, idempotent, board update permission).
+  History records the actor (`actor_kind`: user, agent_bot, rule, system). Automations stop at 30 runs
+  per deal per hour. `kanban_task` rides on the conversation in outgoing `webhook_data`, so every
+  conversation webhook and bot receiver sees the deal's title, stage and value, and nothing else.
+  A board made with the `{board:}` root key gets no default stages (confirm against a real Pro board).
 - **Routes** (`Api::V1::Accounts::Kanban::Compat::*`): `GET|POST kanban/boards/:id/steps`;
   `GET|POST kanban/tasks`, `GET kanban/tasks/:id` (the bare card), `POST kanban/tasks/:id/move`.
   A Pro "task" is a Flow card and a "step" a stage (`cancelled` is a lost stage). Boards also take the

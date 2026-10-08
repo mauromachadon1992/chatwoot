@@ -299,6 +299,13 @@ must not reach webhooks, imports or automations), and `.gitattributes` for the c
 with the `{board:}` root key gets no default stages (the caller defines its own); this is a decision to
 confirm against a real Pro board. See README, "Phase P".
 
+**C2 and C4 built (2026-10-07): the harness passes 16/16** on the dev stack, with the agents' own tests
+(78) green. Done: deal priority, dates, labels and custom attributes (UI: details section and priority
+pill), board agents and `update_inboxes`/`update_agents`, history actors, the 30-runs-per-deal-per-hour
+cap, and `kanban_task` in outgoing `webhook_data`. To do: rebuild the image and re-run the harness on
+ee-local, merge `chore/contracts-lf` in flow-agents-ee (its `main` stores the contract with CRLF, so the
+byte hash differs; the content is identical after LF normalisation).
+
 ### C2: Pro fields on the card (a UI story)
 **Goal:** operations 12 to 14, and the fields the agent reads and writes.
 - **Columns:** `priority` (`urgent|high|medium|low`), `start_at`, `due_at` (start before due),
