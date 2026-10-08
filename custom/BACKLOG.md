@@ -24,7 +24,9 @@ Never write a secret here (tokens, keys, passwords). Credentials seen in a chat 
 - Upstream touches are minimal one-line hooks, listed in `custom/README.md`. `prepend_mod_with` resolves `Custom::<Const>`.
 - Agents repo clone (read/merge only): scratchpad `agents-ee-repo` (Windows). `core.autocrlf` is false there; **a tar from
   `git archive` can show CRLF if autocrlf is true; blobs on `main` are LF**. Contract: `custom/contracts/{pro-kanban.md,
-  pro-kanban.v1.schema.json,CONTRACT.sha256}` identical in both repos (hash `a7382804…`); `.gitattributes` keeps LF.
+  pro-kanban.v1.schema.json,flow-extensions.md,protocol.md,CONTRACT.sha256}` identical in both repos (one hash `8fd789ba65d5` over the four);
+  `.gitattributes` keeps LF. **How the two repos talk: `custom/contracts/protocol.md`** (layers, who changes what, order of a cross-repo
+  change, issues/PRs/labels, ladder of proofs). The agents repo has its own `custom/BACKLOG.md` (AG-side state); do not mirror one into the other.
 - Helper scripts: `~/flow-tools/*.sh` (WSL). Key ones: `run.sh check` (gate), `run-agents-harness.sh` (`TARGET=dev|ee-local`),
   `run-harness-remote.sh <base> <acct> <conv> <inbox> <agent>` (token via env `CT` only), `agents-own-tests.sh`,
   `final-harness.sh` (ee-local), `commit-*.sh`, `build-agents-ee.sh <sha>`, `wait-*.sh`.
@@ -133,7 +135,7 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - **B-13a DONE on staging (2026-10-08): the HTTP tools work end to end** (conversation 20, agent 2). With three HTTP tools the agent
   read its deal (`GET conversations/:id`, template `kanban_task.*`), searched the catalog and added two lines (Concreto fck 25 x12 at
   R$ 480, Bombeamento x12 at R$ 90): the deal value became R$ 6.840,00 from the catalog prices, `value_changed` by `agent_bot`; after
-  "aprovado" it set the priority, moved the card to Ganho and resolved the conversation. Recipe: `custom/script/agents-http-tools.mjs`.
+  "aprovado" it set the priority, moved the card to Ganho and resolved the conversation. Recipe now: the toolpack `custom/toolpacks/flow-products.json` of flow-agents-ee, applied by its `custom/script/apply-toolpack.ts` (AG#6, PR #9).
   Gotchas learned: `POST /v1/tools` needs `name` (the identifier) besides `label`; the vault kind `header` with `paramName` injects the
   service token (the model never sees it); the context variables an HTTP tool can use are conversation_id, message_id, contact_*,
   inbox_*, company_name, agent_name, **not the card id** (so the card id comes from a first tool call); `PUT tool-selections`
@@ -144,12 +146,11 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
   `4.18.0-6ebd0dc7d-ee`. Verified on conversation 21 with the service token: read the deal of the conversation, add fck 25 x3 while sending
   `unit_price_cents: 1` and `discount_percent: 90` (both ignored: 3 x 480,00), the same product x5 (replaces), a second product, a
   quantity of 0 (422), an unknown product (404), remove by product id, `value_changed` by `agent_bot`. A conversation whose deals are all won or
-  lost answers 404 "no open deal" (conversation 20). **Left to do:** the end to end run with the NATIVE tools of flow-agents-ee PR #2 (needs
-  that PR merged and an agents-ee image; the CI of #2 is green except gitleaks, fixed by PR #4), then retire the three staging HTTP tools
-  (`custom/script/agents-http-tools.mjs`) or point them at these routes.
+  lost answers 404 "no open deal" (conversation 20). Decision (a) taken 2026-10-08: the native-tool PR (AG#2) is closed, not merged. **Left to do:** merge AG PRs #8 and #9, then
+  `apply-toolpack.ts --apply` on the staging agent (it retires the earlier staging tools `get_current_deal` and `add_product_to_deal`, which
+  took a card id) and repeat the end to end conversation with the toolpack's four tools.
 - **B-13 (decision still open):** is the catalog's source of truth Flow Products or the store ERP through `wsac-gateway` (production
-  bridge for catalog, availability and quote)? Native tools: `search_products`, `set_deal_product`, `remove_deal_product` in flow-agents-ee
-  (issue #1), built only when the Chatwoot announces `deal.items` and the agent is granted one by name. A later option: one MCP server in
+  bridge for catalog, availability and quote)? Native tools were built and not taken (AG PR #2 closed, branch `feat/flow-product-tools` kept: every upstream merge would conflict). A later option: one MCP server in
   Flow. RAG over `products/export` only helps with descriptions.
 - **B-11 [me] Docs:** record the staging topology and the e2e recipe in `custom/README.md` (this file holds the working notes).
 
@@ -159,3 +160,8 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 3. If you touch code: write the spec first, run `~/flow-tools/run.sh check`, then the harness (`TARGET=dev`).
 4. If you touch staging: read-only first (`GET`), state the exact write you will do, expect a classifier denial, stop on denial.
 5. Update this file before ending the session: remove done items, add new facts under 0.x with a date.
+
+## 3. FROM THE AGENTS REPO (one line per change that touches this repo, newest first; written here, never mirrored)
+Rule R8 of the AG backlog and section 3 of `custom/contracts/protocol.md`: any AG change that CW depends on, and every CW change the agents depend on, gets one line here and one in the AG backlog, with ids and SHAs.
+- 2026-10-08 AG: native-tool PR (AG#2) closed, not merged (decision (a)); toolpack `custom/toolpacks/flow-products.json` + `toolpack-check.ts` + `apply-toolpack.ts` in AG#6 (PR #9, stacked on #8); contract grew to four files, hash `8fd789ba65d5` (AG#5, PR #8; CW proof: `flow_extensions_contract_spec.rb`); PR template + labels (AG#7, PR #10). Staging still runs the earlier HTTP tools until PR #9 merges and the pack is applied.
+- 2026-10-08 CW: `kanban/conversations/:display_id/deal[/items]` live on staging (image `4.18.0-6ebd0dc7d-ee`), capabilities `deal.items` and `products.read` announced.

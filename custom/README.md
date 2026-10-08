@@ -423,8 +423,10 @@ What comes next, in sprints and phases with their design gate: [ROADMAP.md](ROAD
 
 The agents' client (`flow-agents-ee`, the fazer.ai agents unchanged) talks to the Chatwoot Pro's Kanban
 routes. Flow answers them in a compatibility layer, so the agents need no edit; the contract is
-`custom/contracts/pro-kanban.md` and its schema, with the hash in `CONTRACT.sha256` (and a
-`.gitattributes` that keeps those files LF, as the hash is over their bytes).
+`custom/contracts/pro-kanban.md` and its schema, plus `flow-extensions.md` (what Flow offers beyond the dialect, with a
+machine-readable block that `spec/custom/kanban/flow_extensions_contract_spec.rb` proves against the code) and `protocol.md` (how the two
+repositories talk and stay aligned). One hash over the four files is in `CONTRACT.sha256`, identical in `flow-agents-ee` (and a
+`.gitattributes` keeps those files LF, as the hash is over their bytes).
 
 - **Measured, not assumed:** the agents' harness (`custom/harness/run.ts` there) runs their real
   `ChatwootClient` through the cycle against a running stack. Before this work 1 of 16 checks passed;
@@ -452,8 +454,9 @@ routes. Flow answers them in a compatibility layer, so the agents need no edit; 
   `POST|DELETE kanban/conversations/:display_id/deal/items[/:product_id]` resolve the card with the same rule as `kanban_task` (the
   most recently updated open deal on a board the caller sees) and the agent never names one. The price is always the catalog's and the
   discount stays at zero: the agent sends a product id and a quantity. One line per product (adding again sets the quantity), at
-  most 50 lines, quantity above zero. The products themselves are `GET kanban/products?q=&active=true`. The agents' native tools
-  `search_products`, `set_deal_product` and `remove_deal_product` (flow-agents-ee, issue #1) call exactly these.
+  most 50 lines, quantity above zero. The products themselves are `GET kanban/products?q=&active=true`. The agents reach them
+  through the HTTP tools of the toolpack `custom/toolpacks/flow-products.json` in `flow-agents-ee` (decided against native tools,
+  `flow-extensions.md` is the contract).
 - **The conversation's deal** (`kanban_task` in `GET conversations/:display_id`, one line in the shared
   jbuilder): the most recently updated *open* deal linked to it on a board the caller sees, else `null`.
   Only on the single read (a list would ask the database per row), only for people signed in with a
