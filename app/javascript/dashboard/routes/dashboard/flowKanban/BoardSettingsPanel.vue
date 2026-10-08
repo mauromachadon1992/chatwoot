@@ -27,13 +27,20 @@ const kanban = useFlowKanbanStore();
 const { hasFeature } = useFlowKanban();
 const inboxes = useMapGetter('inboxes/getInboxes');
 const teams = useMapGetter('teams/getTeams');
+const agents = useMapGetter('agents/getAgents');
 
 const panelRef = ref(null);
 const deleteBoardDialogRef = ref(null);
 const deleteStageDialogRef = ref(null);
 
 const boardId = ref(null);
-const form = ref({ name: '', description: '', inbox_ids: [], team_ids: [] });
+const form = ref({
+  name: '',
+  description: '',
+  inbox_ids: [],
+  team_ids: [],
+  agent_ids: [],
+});
 const stages = ref([]);
 const colorPickerFor = ref(null);
 const stageToDelete = ref(null);
@@ -44,6 +51,9 @@ const isDeleting = ref(false);
 const isCreating = computed(() => !boardId.value);
 const inboxOptions = computed(() =>
   inboxes.value.map(inbox => ({ value: inbox.id, label: inbox.name }))
+);
+const agentOptions = computed(() =>
+  agents.value.map(agent => ({ value: agent.id, label: agent.name }))
 );
 const teamOptions = computed(() =>
   teams.value.map(team => ({ value: team.id, label: team.name }))
@@ -77,6 +87,7 @@ const loadStages = () => {
     staleInvalid: false,
     chanceDraft: stage.win_probability ?? '',
     chanceInvalid: false,
+    descriptionDraft: stage.description || '',
   }));
 };
 
@@ -87,6 +98,7 @@ const open = board => {
     description: board?.description || '',
     inbox_ids: [...(board?.inbox_ids || [])],
     team_ids: [...(board?.team_ids || [])],
+    agent_ids: [...(board?.agent_ids || [])],
   };
   colorPickerFor.value = null;
   loadStages();
@@ -133,6 +145,15 @@ const saveStage = async (stage, changes) => {
     await kanban.updateStage(stage.id, changes);
   });
   loadStages();
+};
+
+// A short note on what the stage means (at most 120 characters); empty clears it.
+const DESCRIPTION_MAX = 120;
+const commitDescription = stage => {
+  const text = String(stage.descriptionDraft ?? '').trim();
+  if (text.length > DESCRIPTION_MAX || text === (stage.description || ''))
+    return;
+  saveStage(stage, { description: text });
 };
 
 // Days a deal may stay in an open stage before it counts as stalled; empty means no alert.
@@ -281,6 +302,14 @@ defineExpose({ open });
             :placeholder="t('FLOW_KANBAN.BOARD_FORM.TEAMS_PLACEHOLDER')"
           />
         </label>
+        <label class="flex flex-col gap-1.5 text-label text-n-slate-12">
+          {{ t('FLOW_KANBAN.BOARD_FORM.AGENTS') }}
+          <TagMultiSelectComboBox
+            v-model="form.agent_ids"
+            :options="agentOptions"
+            :placeholder="t('FLOW_KANBAN.BOARD_FORM.AGENTS_PLACEHOLDER')"
+          />
+        </label>
       </section>
 
       <p v-if="isCreating" class="text-label-small text-n-slate-11">
@@ -384,6 +413,17 @@ defineExpose({ open });
                   :disabled="stages.length <= 1"
                   :aria-label="t('FLOW_KANBAN.BOARD_FORM.DELETE_STAGE')"
                   @click="askDeleteStage(stage)"
+                />
+              </div>
+              <div class="ps-9">
+                <Input
+                  v-model="stage.descriptionDraft"
+                  size="sm"
+                  :maxlength="String(DESCRIPTION_MAX)"
+                  :placeholder="t('FLOW_KANBAN.BOARD_FORM.STAGE_DESCRIPTION')"
+                  :aria-label="t('FLOW_KANBAN.BOARD_FORM.STAGE_DESCRIPTION')"
+                  @blur="commitDescription(stage)"
+                  @keydown.enter.prevent="commitDescription(stage)"
                 />
               </div>
               <div v-if="colorPickerFor === stage.id" class="ps-9">

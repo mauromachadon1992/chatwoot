@@ -15,8 +15,9 @@ module Custom::Kanban::ProSerializer
   # (and `:stage`, `:card_conversations`) on a list so this asks the database nothing per card.
   def card(card)
     { id: card.id, board_id: card.board_id, board_step_id: card.stage_id, title: card.title, description: card.description,
-      priority: nil, status: card.stage.stage_type, value: card.value_cents / 100.0, start_date: nil, due_date: nil,
-      custom_attributes: {}, labels: [], board: board(card.board) }.merge(flow_fields(card))
+      priority: card.priority, status: card.stage.stage_type, value: card.value_cents / 100.0, start_date: card.start_at&.iso8601,
+      due_date: card.due_at&.iso8601, custom_attributes: card.custom_attributes, labels: card.labels,
+      board: board(card.board) }.merge(flow_fields(card))
   end
 
   def board(board)
@@ -39,10 +40,20 @@ module Custom::Kanban::ProSerializer
   def card_for_conversation(conversation, user)
     return nil unless user.is_a?(User)
 
-    linked = preloaded.where(id: Custom::Kanban::CardConversation.where(conversation_id: conversation.id).select(:card_id))
-                      .where(board_id: Custom::Kanban::Board.visible_to(user, conversation.account).select(:id))
-                      .joins(:stage).where(flow_kanban_stages: { stage_type: Custom::Kanban::Stage.stage_types[:open] })
-                      .order(updated_at: :desc, id: :desc).first
+    linked = open_card_of(conversation, preloaded.where(board_id: Custom::Kanban::Board.visible_to(user, conversation.account).select(:id)))
     linked && card(linked)
+  end
+
+  # The same card for the webhooks (the Agents read it from the conversation they are sent, so they
+  # need no second call): no viewer, so every board, as a webhook carries every message of the conversation.
+  def card_for_webhook(conversation)
+    linked = open_card_of(conversation, preloaded)
+    linked && card(linked)
+  end
+
+  def open_card_of(conversation, scope)
+    scope.where(id: Custom::Kanban::CardConversation.where(conversation_id: conversation.id).select(:card_id))
+         .joins(:stage).where(flow_kanban_stages: { stage_type: Custom::Kanban::Stage.stage_types[:open] })
+         .order(updated_at: :desc, id: :desc).first
   end
 end

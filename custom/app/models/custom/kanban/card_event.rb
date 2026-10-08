@@ -4,13 +4,16 @@
 # stage or deleting a task does not rewrite the past.
 class Custom::Kanban::CardEvent < ApplicationRecord
   KINDS = %w[created stage_moved value_changed assignee_changed task_created task_completed
-             conversation_linked quote_prepared task_reopened automation_ran].freeze
+             conversation_linked quote_prepared task_reopened automation_ran priority_changed dates_changed
+             labels_changed attributes_changed].freeze
+  ACTORS = %w[user agent_bot rule system].freeze
 
   belongs_to :account
   belongs_to :card, class_name: 'Custom::Kanban::Card'
   belongs_to :user, optional: true
 
   validates :kind, inclusion: { in: KINDS }
+  validates :actor_kind, inclusion: { in: ACTORS }
 
   # Webhooks are told after the change is committed, so a receiver never hears about a deal
   # that was rolled back.
@@ -20,10 +23,21 @@ class Custom::Kanban::CardEvent < ApplicationRecord
 
   # The actor is whoever is signed in; a rule or a job leaves it empty.
   def self.record!(card, kind, data = {}, user: Current.user)
-    create!(account_id: card.account_id, card: card, user: user, kind: kind, data: data.compact)
+    actor = actor_for(user, kind, data)
+    create!(account_id: card.account_id, card: card, user: user, kind: kind, data: data.compact, actor_kind: actor[:kind], actor_name: actor[:name])
+  end
+
+  # A person, the agents' service user, a rule, or the system, with the name as it is now.
+  def self.actor_for(user, kind, data = {})
+    if user
+      { kind: Custom::Kanban::ServiceUser.agent_bot?(user) ? 'agent_bot' : 'user', name: user.name }
+    else
+      { kind: kind == 'automation_ran' || data[:by_rule] ? 'rule' : 'system', name: nil }
+    end
   end
 
   def push_event_data
-    { id: id, kind: kind, data: data, created_at: created_at.to_i, user: user && { id: user.id, name: user.name, thumbnail: user.avatar_url } }
+    { id: id, kind: kind, data: data, created_at: created_at.to_i, actor_kind: actor_kind, actor_name: actor_name,
+      user: user && { id: user.id, name: user.name, thumbnail: user.avatar_url } }
   end
 end

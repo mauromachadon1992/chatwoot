@@ -33,6 +33,9 @@ pt_BR:
       unsupported_currency: Moeda não suportada.
       quote_template_too_long: A mensagem de orçamento pode ter até 2000 caracteres.
     pro:
+      invalid_date: 'uma data deve estar em ISO 8601, como 2026-10-30T18:00:00-03:00'
+      invalid_attributes: 'custom_attributes deve ser um objeto'
+      invalid_labels: 'labels deve ser uma lista de textos'
       contact_needed: 'um negócio precisa de um contato: envie conversation_id (o display id da conversa) ou contact_id'
     ai:
       nothing_to_summarize: 'Ainda não há mensagens nas conversas vinculadas para resumir.'
@@ -73,6 +76,15 @@ pt_BR:
       models:
         custom/kanban/card:
           attributes:
+            start_at:
+              after_due: 'o início não pode ser depois do prazo'
+            custom_attributes:
+              too_many: 'no máximo %{count}'
+              bad_key: 'cada nome deve ter de 1 a %{max} caracteres'
+              too_big: 'é grande demais (no máximo 10 KB)'
+            labels:
+              too_many: 'no máximo %{count}'
+              too_long: 'cada etiqueta pode ter até %{max} caracteres'
             value_cents:
               follows_items: segue a soma dos produtos; remova os produtos para digitar um valor
         custom/kanban/webhook:

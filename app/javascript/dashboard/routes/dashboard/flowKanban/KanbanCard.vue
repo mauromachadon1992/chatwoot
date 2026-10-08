@@ -6,6 +6,7 @@ import Button from 'dashboard/components-next/button/Button.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import ConversationChips from './ConversationChips.vue';
 import StatePill from './StatePill.vue';
+import { priorityView } from './proFields';
 import { useFlowKanban } from './useFlowKanban';
 
 const props = defineProps({
@@ -21,6 +22,8 @@ const { cardFields, relativeTime, money, hasFeature } = useFlowKanban();
 const staleDays = computed(() =>
   hasFeature('stale_alerts') ? props.card.stale_days : null
 );
+
+const priority = computed(() => priorityView(props.card.priority));
 
 const contactLabel = computed(
   () =>
@@ -89,7 +92,16 @@ const showTasks = computed(() => tasks.value.open > 0);
       <span v-if="showAssignee" class="sr-only">{{ card.assignee.name }}</span>
     </div>
 
-    <div v-if="staleDays || card.needs_review" class="flex flex-wrap gap-1">
+    <div
+      v-if="staleDays || card.needs_review || priority"
+      class="flex flex-wrap gap-1"
+    >
+      <StatePill
+        v-if="priority"
+        :tone="priority.tone"
+        :icon="priority.icon"
+        :label="t(`FLOW_KANBAN.DETAILS.PRIORITIES.${priority.key}`)"
+      />
       <StatePill
         v-if="staleDays"
         tone="amber"

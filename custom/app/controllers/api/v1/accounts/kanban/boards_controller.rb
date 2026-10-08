@@ -6,11 +6,11 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
     { key: 'lost', color: '#EF4444', stage_type: :lost }
   ].freeze
 
-  before_action :board, only: [:show, :update, :destroy]
+  before_action :board, only: [:show, :update, :destroy, :update_inboxes, :update_agents]
 
   def index
     authorize Custom::Kanban::Board
-    boards = visible_boards.ordered.includes(:board_inboxes, :board_teams, :stages)
+    boards = visible_boards.ordered.includes(:board_inboxes, :board_teams, :board_agents, :stages)
     render json: { payload: boards.map(&:push_event_data) }
   end
 
@@ -41,6 +41,16 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
     render json: { payload: @board.push_event_data }
   end
 
+  # The Pro dialect's bindings (operations 6 and 7): the board is shared with exactly these inboxes, or
+  # these agents. A diff, so sending the same list again changes nothing.
+  def update_inboxes
+    rebind(:inbox_ids) { |ids| Current.account.inboxes.where(id: ids).pluck(:id) }
+  end
+
+  def update_agents
+    rebind(:agent_ids) { |ids| Current.account.users.where(id: ids).pluck(:id) }
+  end
+
   def destroy
     tokens = @board.member_tokens
     @board.destroy!
@@ -52,7 +62,14 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
 
   def board
     @board = find_visible_board(params[:id])
-    authorize @board
+    authorize @board, (params[:action].start_with?('update_') ? :update? : nil)
+  end
+
+  def rebind(attribute)
+    previous_tokens = @board.member_tokens
+    @board.update!(attribute => yield(Array(params[attribute]).compact_blank.map(&:to_i)))
+    Custom::Kanban::Broadcaster.board_updated(@board.reload, extra_tokens: previous_tokens)
+    render json: { payload: @board.push_event_data }
   end
 
   # `{board: {...}}` is the Pro dialect's root key; the dashboard sends the fields flat. A board made
@@ -70,9 +87,12 @@ class Api::V1::Accounts::Kanban::BoardsController < Api::V1::Accounts::Kanban::B
     board_source.permit(:name, :description, :position, auto_create: [:enabled, :daily_cap, { inbox_ids: [] }])
   end
 
+  # Inboxes, teams and agents the board is shared with: a key left out keeps what it had, and ids of
+  # another account are dropped.
   def assign_restrictions(board)
-    board.inbox_ids = Current.account.inboxes.where(id: params[:inbox_ids]).pluck(:id) if params.key?(:inbox_ids)
-    board.team_ids = Current.account.teams.where(id: params[:team_ids]).pluck(:id) if params.key?(:team_ids)
+    { inbox_ids: Current.account.inboxes, team_ids: Current.account.teams, agent_ids: Current.account.users }.each do |key, scope|
+      board.public_send("#{key}=", scope.where(id: params[key]).pluck(:id)) if params.key?(key)
+    end
   end
 
   def create_default_stages(board)

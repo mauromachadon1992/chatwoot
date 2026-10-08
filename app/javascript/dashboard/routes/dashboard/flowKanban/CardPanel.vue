@@ -20,6 +20,13 @@ import CardValueSection from './CardValueSection.vue';
 import CardTasksSection from './CardTasksSection.vue';
 import CardHistorySection from './CardHistorySection.vue';
 import CardAiSection from './CardAiSection.vue';
+import CardDetailsSection from './CardDetailsSection.vue';
+import {
+  canSaveDetails,
+  detailsChanged,
+  detailsFromCard,
+  detailsPayload,
+} from './proFields';
 import { appendToDescription } from './aiSummary';
 import StatePill from './StatePill.vue';
 import LostReasonDialog from './LostReasonDialog.vue';
@@ -50,6 +57,7 @@ const form = ref({
   assignee_id: '',
   stage_id: '',
   expected_close_on: '',
+  details: { priority: '', start_at: '', due_at: '', labels: [], rows: [] },
 });
 const isSaving = ref(false);
 const isDeleting = ref(false);
@@ -99,7 +107,8 @@ const isDirty = computed(() => {
     form.value.title !== card.value.title ||
     form.value.description !== (card.value.description || '') ||
     form.value.assignee_id !== (card.value.assignee?.id || '') ||
-    form.value.expected_close_on !== (card.value.expected_close_on || '')
+    form.value.expected_close_on !== (card.value.expected_close_on || '') ||
+    detailsChanged(form.value.details, card.value)
   );
 });
 
@@ -110,6 +119,7 @@ const syncForm = source => {
     assignee_id: source.assignee?.id || '',
     stage_id: source.stage_id,
     expected_close_on: source.expected_close_on || '',
+    details: detailsFromCard(source),
   };
 };
 
@@ -157,7 +167,7 @@ const open = async cardId => {
 };
 
 const save = async () => {
-  if (!form.value.title.trim()) return;
+  if (!form.value.title.trim() || !canSaveDetails(form.value.details)) return;
   isSaving.value = true;
   try {
     card.value = await kanban.updateCard(card.value.id, {
@@ -165,6 +175,7 @@ const save = async () => {
       description: form.value.description,
       assignee_id: form.value.assignee_id || null,
       expected_close_on: form.value.expected_close_on || null,
+      ...detailsPayload(form.value.details),
     });
     syncForm(card.value);
     useAlert(t('FLOW_KANBAN.CARD_FORM.SAVED'));
@@ -297,6 +308,8 @@ defineExpose({ open });
           min-height="6rem"
         />
       </div>
+
+      <CardDetailsSection v-model:details="form.details" />
 
       <div class="flex flex-col gap-4">
         <Input
@@ -445,7 +458,12 @@ defineExpose({ open });
           class="ms-auto"
           :label="t('FLOW_KANBAN.CARD_FORM.SAVE')"
           :is-loading="isSaving"
-          :disabled="!isDirty || !form.title.trim() || isSaving"
+          :disabled="
+            !isDirty ||
+            !form.title.trim() ||
+            !canSaveDetails(form.details) ||
+            isSaving
+          "
           @click="save"
         />
       </div>

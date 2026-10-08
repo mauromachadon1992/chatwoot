@@ -120,7 +120,10 @@
       "STALE_NONE": "—",
       "STALE_INVALID": "Usa un número entero de 1 a 365, o déjalo vacío para no avisar.",
       "CHANCE_LABEL": "Probabilidad de ganar",
-      "CHANCE_INVALID": "Usa un número entero de 0 a 100, o déjalo vacío para el valor por defecto."
+      "CHANCE_INVALID": "Usa un número entero de 0 a 100, o déjalo vacío para el valor por defecto.",
+      "AGENTS": "Agentes",
+      "AGENTS_PLACEHOLDER": "Todos los agentes (o elige cuáles)",
+      "STAGE_DESCRIPTION": "Descripción de la etapa (opcional, hasta 120 caracteres)"
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -567,7 +570,14 @@
       "QUOTE_PREPARED": "Presupuesto de {toValue} llevado a la conversación #{conversation}",
       "NOTE": "«{note}»",
       "TASK_REOPENED": "Tarea reabierta: {task}",
-      "AUTOMATION_RAN": "Automatización ejecutada: {results}"
+      "AUTOMATION_RAN": "Automatización ejecutada: {results}",
+      "PRIORITY_CHANGED": "Prioridad: {from} → {priority}",
+      "DATES_CHANGED": "Fechas actualizadas: inicio {start}, plazo {due}",
+      "LABELS_CHANGED": "Etiquetas cambiadas. Nuevas: {added}. Quitadas: {removed}",
+      "ATTRIBUTES_CHANGED": "Atributos cambiados: {keys}",
+      "BY_AGENT_BOT": "Agente de IA · {name}",
+      "LABELS_ADDED": "Etiquetas añadidas: {added}",
+      "LABELS_REMOVED": "Etiquetas quitadas: {removed}"
     },
     "QUOTE": {
       "BUTTON": "Enviar presupuesto",
@@ -804,6 +814,38 @@
       "ERRORS": {
         "FAILED": "El asistente no pudo responder ahora. No se cambió nada; inténtalo de nuevo en un momento.",
         "NETWORK": "No se pudo hablar con el servidor. Revisa la conexión e inténtalo de nuevo."
+      }
+    },
+    "DETAILS": {
+      "SECTION": "Detalles del negocio",
+      "PRIORITY": "Prioridad",
+      "NO_PRIORITY": "Sin prioridad",
+      "PRIORITIES": {
+        "URGENT": "Urgente",
+        "HIGH": "Alta",
+        "MEDIUM": "Media",
+        "LOW": "Baja"
+      },
+      "START": "Inicio",
+      "DUE": "Plazo",
+      "LABELS": "Etiquetas",
+      "LABELS_PLACEHOLDER": "Elige etiquetas",
+      "ATTRIBUTES": "Atributos",
+      "ATTRIBUTES_HINT": "Información libre del negocio (nombre y valor). Los agentes de IA también leen y escriben aquí.",
+      "ATTRIBUTE_NAME": "Nombre",
+      "ATTRIBUTE_VALUE": "Valor",
+      "ADD_ATTRIBUTE": "Añadir atributo",
+      "REMOVE_ATTRIBUTE": "Quitar atributo",
+      "READ_ONLY": "Este valor es una lista o un objeto: se queda como está.",
+      "PROBLEMS": {
+        "KEY_EMPTY": "Todo atributo con valor necesita un nombre.",
+        "DUPLICATE": "Hay dos atributos con el mismo nombre.",
+        "KEY_LONG": "Un nombre pasa de 60 caracteres.",
+        "TOO_MANY": "Como máximo 50 atributos.",
+        "TOO_BIG": "Los atributos pasan de 10 KB.",
+        "LABELS_TOO_MANY": "Como máximo 20 etiquetas.",
+        "LABEL_LONG": "Una etiqueta pasa de 50 caracteres.",
+        "DATES_ORDER": "El inicio no puede ser posterior al plazo."
       }
     }
   }

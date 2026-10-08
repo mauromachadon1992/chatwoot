@@ -120,7 +120,10 @@
       "STALE_NONE": "—",
       "STALE_INVALID": "Use a whole number from 1 to 365, or leave it empty for no alert.",
       "CHANCE_LABEL": "Chance of winning",
-      "CHANCE_INVALID": "Use a whole number from 0 to 100, or leave it empty for the default."
+      "CHANCE_INVALID": "Use a whole number from 0 to 100, or leave it empty for the default.",
+      "AGENTS": "Agents",
+      "AGENTS_PLACEHOLDER": "All agents (or pick which)",
+      "STAGE_DESCRIPTION": "Stage description (optional, up to 120 characters)"
     },
     "PANEL": {
       "TITLE": "Kanban",
@@ -567,7 +570,14 @@
       "QUOTE_PREPARED": "Quote of {toValue} taken to conversation #{conversation}",
       "NOTE": "“{note}”",
       "TASK_REOPENED": "Task reopened: {task}",
-      "AUTOMATION_RAN": "Automation ran: {results}"
+      "AUTOMATION_RAN": "Automation ran: {results}",
+      "PRIORITY_CHANGED": "Priority: {from} → {priority}",
+      "DATES_CHANGED": "Dates updated: start {start}, due {due}",
+      "LABELS_CHANGED": "Labels changed. Added: {added}. Removed: {removed}",
+      "ATTRIBUTES_CHANGED": "Attributes changed: {keys}",
+      "BY_AGENT_BOT": "AI agent · {name}",
+      "LABELS_ADDED": "Labels added: {added}",
+      "LABELS_REMOVED": "Labels removed: {removed}"
     },
     "QUOTE": {
       "BUTTON": "Send quote",
@@ -804,6 +814,38 @@
       "ERRORS": {
         "FAILED": "The assistant could not answer now. Nothing was changed; try again in a moment.",
         "NETWORK": "Could not reach the server. Check the connection and try again."
+      }
+    },
+    "DETAILS": {
+      "SECTION": "Deal details",
+      "PRIORITY": "Priority",
+      "NO_PRIORITY": "No priority",
+      "PRIORITIES": {
+        "URGENT": "Urgent",
+        "HIGH": "High",
+        "MEDIUM": "Medium",
+        "LOW": "Low"
+      },
+      "START": "Start",
+      "DUE": "Due",
+      "LABELS": "Labels",
+      "LABELS_PLACEHOLDER": "Choose labels",
+      "ATTRIBUTES": "Attributes",
+      "ATTRIBUTES_HINT": "Free information on the deal (name and value). The AI agents read and write here too.",
+      "ATTRIBUTE_NAME": "Name",
+      "ATTRIBUTE_VALUE": "Value",
+      "ADD_ATTRIBUTE": "Add attribute",
+      "REMOVE_ATTRIBUTE": "Remove attribute",
+      "READ_ONLY": "This value is a list or an object: it stays as it is.",
+      "PROBLEMS": {
+        "KEY_EMPTY": "Every attribute with a value needs a name.",
+        "DUPLICATE": "Two attributes have the same name.",
+        "KEY_LONG": "A name is over 60 characters.",
+        "TOO_MANY": "At most 50 attributes.",
+        "TOO_BIG": "The attributes are over 10 KB.",
+        "LABELS_TOO_MANY": "At most 20 labels.",
+        "LABEL_LONG": "A label is over 50 characters.",
+        "DATES_ORDER": "The start cannot be after the due date."
       }
     }
   }

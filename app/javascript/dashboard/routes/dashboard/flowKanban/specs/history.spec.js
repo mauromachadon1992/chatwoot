@@ -118,3 +118,92 @@ describe('describeEvent for a rule that ran', () => {
     expect(view.byRule).toBe(true);
   });
 });
+
+describe('describeEvent for the Pro fields and who did them', () => {
+  const t = key => key.split('.').pop();
+
+  it('says a priority change with both names, and no priority as a name too', () => {
+    const view = describeEvent(
+      event('priority_changed', { from: null, to: 'high' }),
+      money,
+      t
+    );
+    expect(view.key).toBe('FLOW_KANBAN.HISTORY.PRIORITY_CHANGED');
+    expect(view.icon).toBe('i-lucide-flag');
+    expect(view.params.from).toBe('NO_PRIORITY');
+    expect(view.params.priority).toBe('HIGH');
+  });
+
+  it('lists the labels added and removed, and the names of the attributes, never values', () => {
+    const labels = describeEvent(
+      event('labels_changed', { added: ['vip', 'frio'], removed: ['quente'] }),
+      money,
+      t
+    );
+    expect(labels.params).toMatchObject({
+      added: 'vip, frio',
+      removed: 'quente',
+    });
+    expect(labels.key).toBe('FLOW_KANBAN.HISTORY.LABELS_CHANGED');
+
+    const onlyAdded = describeEvent(
+      event('labels_changed', { added: ['vip'], removed: [] }),
+      money,
+      t
+    );
+    const onlyRemoved = describeEvent(
+      event('labels_changed', { added: [], removed: ['vip'] }),
+      money,
+      t
+    );
+    expect([onlyAdded.key, onlyRemoved.key]).toEqual([
+      'FLOW_KANBAN.HISTORY.LABELS_ADDED',
+      'FLOW_KANBAN.HISTORY.LABELS_REMOVED',
+    ]);
+
+    const attributes = describeEvent(
+      event('attributes_changed', { keys: ['cpf', 'origem'] }),
+      money,
+      t
+    );
+    expect(attributes.params.keys).toBe('cpf, origem');
+    expect(attributes.icon).toBe('i-lucide-braces');
+  });
+
+  it('tells the agents’ service user, a rule and a person apart', () => {
+    const agent = describeEvent(
+      event(
+        'stage_moved',
+        {},
+        {
+          actor_kind: 'agent_bot',
+          actor_name: 'Agente IA',
+          user: { name: 'Agente IA' },
+        }
+      ),
+      money,
+      t
+    );
+    expect(agent.agentBot).toBe(true);
+    expect(agent.actor).toBe('Agente IA');
+
+    const rule = describeEvent(
+      event('stage_moved', {}, { actor_kind: 'rule' }),
+      money,
+      t
+    );
+    expect(rule.byRule).toBe(true);
+    expect(rule.agentBot).toBe(false);
+
+    const person = describeEvent(
+      event('stage_moved', {}, { actor_kind: 'user', user: { name: 'Ana' } }),
+      money,
+      t
+    );
+    expect([person.agentBot, person.byRule, person.actor]).toEqual([
+      false,
+      false,
+      'Ana',
+    ]);
+  });
+});

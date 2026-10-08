@@ -6,6 +6,8 @@ class Custom::Kanban::Board < ApplicationRecord
   has_many :inboxes, through: :board_inboxes
   has_many :board_teams, class_name: 'Custom::Kanban::BoardTeam', dependent: :delete_all
   has_many :teams, through: :board_teams
+  has_many :board_agents, class_name: 'Custom::Kanban::BoardAgent', dependent: :delete_all
+  has_many :agents, through: :board_agents, source: :user
   # Cards first: they reference the stages, so the stages can only go once the cards are gone.
   has_many :cards, class_name: 'Custom::Kanban::Card', dependent: :delete_all
   has_many :stages, -> { order(:position, :id) }, class_name: 'Custom::Kanban::Stage', dependent: :delete_all, inverse_of: :board
@@ -23,26 +25,28 @@ class Custom::Kanban::Board < ApplicationRecord
   scope :ordered, -> { order(:position, :id) }
 
   # Boards an account member may open. Administrators see every board; an agent sees the
-  # unrestricted ones plus those shared with one of their inboxes or teams. This mirrors
+  # unrestricted ones plus those shared with one of their inboxes or teams, or with them by name. This mirrors
   # ConversationPolicy, which grants an agent a conversation through its inbox or team.
   def self.visible_to(user, account)
     boards = where(account: account)
     return boards if account.administrators.exists?(id: user.id)
 
-    boards.where.not(id: restricted_ids(Custom::Kanban::BoardInbox.all, Custom::Kanban::BoardTeam.all))
+    boards.where.not(id: restricted_ids(Custom::Kanban::BoardInbox.all, Custom::Kanban::BoardTeam.all, Custom::Kanban::BoardAgent.all))
           .or(boards.where(id: restricted_ids(
             Custom::Kanban::BoardInbox.where(inbox_id: user.inboxes.where(account_id: account.id).select(:id)),
-            Custom::Kanban::BoardTeam.where(team_id: user.teams.where(account_id: account.id).select(:id))
+            Custom::Kanban::BoardTeam.where(team_id: user.teams.where(account_id: account.id).select(:id)),
+            Custom::Kanban::BoardAgent.where(user_id: user.id)
           )))
   end
 
-  # Ids of the boards named by these inbox and team restriction rows.
-  def self.restricted_ids(board_inboxes, board_teams)
-    where(id: board_inboxes.select(:board_id)).or(where(id: board_teams.select(:board_id))).select(:id)
+  # Ids of the boards named by these inbox, team and agent restriction rows.
+  def self.restricted_ids(board_inboxes, board_teams, board_agents)
+    where(id: board_inboxes.select(:board_id)).or(where(id: board_teams.select(:board_id)))
+                                              .or(where(id: board_agents.select(:board_id))).select(:id)
   end
 
   def restricted?
-    board_inboxes.exists? || board_teams.exists?
+    board_inboxes.exists? || board_teams.exists? || board_agents.exists?
   end
 
   def auto_create
@@ -85,7 +89,8 @@ class Custom::Kanban::Board < ApplicationRecord
     agents = if restricted?
                inbox_members = User.joins(:inbox_members).where(inbox_members: { inbox_id: board_inboxes.select(:inbox_id) })
                team_members = User.joins(:team_members).where(team_members: { team_id: board_teams.select(:team_id) })
-               inbox_members.pluck(:pubsub_token) + team_members.pluck(:pubsub_token)
+               inbox_members.pluck(:pubsub_token) + team_members.pluck(:pubsub_token) +
+                 User.where(id: board_agents.select(:user_id)).pluck(:pubsub_token)
              else
                account.agents.pluck(:pubsub_token)
              end
@@ -100,6 +105,7 @@ class Custom::Kanban::Board < ApplicationRecord
       position: position,
       inbox_ids: board_inboxes.map(&:inbox_id),
       team_ids: board_teams.map(&:team_id),
+      agent_ids: board_agents.map(&:user_id),
       stages: stages.map(&:push_event_data),
       auto_create: auto_create_data
     }
@@ -110,6 +116,7 @@ class Custom::Kanban::Board < ApplicationRecord
   def restrictions_belong_to_account
     errors.add(:inboxes, :invalid) if inboxes.any? { |inbox| inbox.account_id != account_id }
     errors.add(:teams, :invalid) if teams.any? { |team| team.account_id != account_id }
+    errors.add(:agents, :invalid) if agents.any? { |agent| agent.account_users.where(account_id: account_id).none? }
   end
 
   def auto_create_is_valid

@@ -2,6 +2,7 @@ class Custom::Kanban::Card < ApplicationRecord
   include Custom::Kanban::CardHistory
   include Custom::Kanban::CardOutcome
   include Custom::Kanban::CardStaleness
+  include Custom::Kanban::CardProFields
 
   # Cards are ordered by a float `position`, so a move rewrites one row: the card lands
   # halfway between its new neighbours. Only when two neighbours get closer than MIN_GAP is
@@ -112,6 +113,7 @@ class Custom::Kanban::Card < ApplicationRecord
       items_count: items_count,
       tasks: task_summary,
       **state_data,
+      **pro_data,
       created_by_id: created_by_id,
       **timestamps_data,
       contact: contact_data,

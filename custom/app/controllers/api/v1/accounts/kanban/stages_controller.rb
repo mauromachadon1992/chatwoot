@@ -68,8 +68,10 @@ class Api::V1::Accounts::Kanban::StagesController < Api::V1::Accounts::Kanban::B
 
   # The history of each card handed over, as a single move would write it.
   def record_bulk_events(target, now)
+    actor = Custom::Kanban::CardEvent.actor_for(Current.user, 'stage_moved')
     rows = @stage.cards.pluck(:id, :account_id).map do |card_id, account_id|
       { account_id: account_id, card_id: card_id, user_id: Current.user&.id, kind: 'stage_moved', created_at: now,
+        actor_kind: actor[:kind], actor_name: actor[:name],
         data: { from_stage_id: @stage.id, to_stage_id: target.id, from_stage_name: @stage.name, to_stage_name: target.name,
                 stage_type: target.stage_type, stage_deleted: true } }
     end

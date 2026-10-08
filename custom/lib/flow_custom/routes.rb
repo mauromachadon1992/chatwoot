@@ -6,6 +6,10 @@ module FlowCustom::Routes
           scope module: :accounts do
             namespace :kanban do
               resources :boards, only: [:index, :show, :create, :update, :destroy] do
+                member do
+                  post :update_inboxes
+                  post :update_agents
+                end
                 resources :stages, only: [:create, :update, :destroy] do
                   collection { patch :reorder }
                 end
@@ -31,7 +35,7 @@ module FlowCustom::Routes
               end
               # `kanban/tasks` is the Pro dialect's deals; the agent's own follow-ups are `kanban/my_tasks`.
               resources :my_tasks, only: [:index], controller: 'my_tasks'
-              resources :tasks, only: [:index, :show, :create], controller: 'compat/tasks' do
+              resources :tasks, only: [:index, :show, :create, :update], controller: 'compat/tasks' do
                 member { post :move }
               end
               resources :ai_drafts, only: [], controller: 'ai_summaries' do

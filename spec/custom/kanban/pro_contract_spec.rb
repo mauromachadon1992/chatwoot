@@ -31,10 +31,10 @@ RSpec.describe 'Pro Kanban contract', type: :request do
     expect(actual).to eq(Rails.root.join('custom/contracts/CONTRACT.sha256').read.strip)
   end
 
-  # Answered and proven in pro_dialect_spec.rb (and by the Agents' harness); the rest wait for their sprint.
-  answered = [1, 2, 3, 4, 5, 8, 9, 10, 11, 15]
+  # All 15 are answered and proven in pro_dialect_spec.rb and pro_fields_spec.rb (and by the Agents' harness).
+  answered = (1..15).to_a
 
-  it 'accounts for all 15 operations, answered or waiting for a sprint' do
+  it 'accounts for all 15 operations, every one of them answered' do
     expect(operations.map(&:first)).to eq((1..15).to_a)
     expect(answered - operations.map(&:first)).to be_empty
   end

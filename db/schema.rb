@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_10_14_100000) do
+ActiveRecord::Schema[7.2].define(version: 2026_10_15_120000) do
   # These extensions should be enabled to support this database
   enable_extension "pg_stat_statements"
   enable_extension "pg_trgm"
@@ -1168,6 +1168,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_100000) do
     t.index ["card_id"], name: "index_flow_kanban_automation_runs_on_card"
   end
 
+  create_table "flow_kanban_board_agents", force: :cascade do |t|
+    t.bigint "board_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["board_id", "user_id"], name: "index_flow_kanban_board_agents_on_board_and_user", unique: true
+    t.index ["user_id"], name: "index_flow_kanban_board_agents_on_user_id"
+  end
+
   create_table "flow_kanban_board_inboxes", force: :cascade do |t|
     t.bigint "board_id", null: false
     t.bigint "inbox_id", null: false
@@ -1216,6 +1225,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_100000) do
     t.string "kind", null: false
     t.jsonb "data", default: {}, null: false
     t.datetime "created_at", null: false
+    t.string "actor_kind", default: "system", null: false
+    t.string "actor_name"
     t.index ["account_id", "kind", "created_at"], name: "index_flow_kanban_card_events_on_account_kind_created"
     t.index ["card_id", "created_at"], name: "index_flow_kanban_card_events_on_card_and_created"
   end
@@ -1277,18 +1288,27 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_100000) do
     t.date "expected_close_on"
     t.bigint "lost_reason_id"
     t.text "lost_note"
+    t.string "priority"
+    t.datetime "start_at"
+    t.datetime "due_at"
+    t.jsonb "custom_attributes", default: {}, null: false
+    t.string "labels", default: [], null: false, array: true
     t.index ["account_id"], name: "index_flow_kanban_cards_on_account_id"
     t.index ["assignee_id"], name: "index_flow_kanban_cards_on_assignee_id"
     t.index ["board_id", "assignee_id"], name: "index_flow_kanban_cards_on_board_id_and_assignee_id"
     t.index ["board_id", "expected_close_on"], name: "index_flow_kanban_cards_on_board_and_close"
+    t.index ["board_id", "priority"], name: "index_flow_kanban_cards_on_board_and_priority"
     t.index ["board_id", "source", "created_at"], name: "index_flow_kanban_cards_on_board_source_created"
     t.index ["board_id"], name: "index_flow_kanban_cards_on_board_id"
     t.index ["contact_id"], name: "index_flow_kanban_cards_on_contact_id"
     t.index ["created_by_id"], name: "index_flow_kanban_cards_on_created_by_id"
+    t.index ["labels"], name: "index_flow_kanban_cards_on_labels", using: :gin
     t.index ["lost_reason_id"], name: "index_flow_kanban_cards_on_lost_reason"
     t.index ["stage_id", "position"], name: "index_flow_kanban_cards_on_stage_id_and_position"
     t.index ["stage_id", "stage_changed_at"], name: "index_flow_kanban_cards_on_stage_and_changed"
     t.index ["stage_id"], name: "index_flow_kanban_cards_on_stage_id"
+    t.check_constraint "priority IS NULL OR (priority::text = ANY (ARRAY['urgent'::character varying, 'high'::character varying, 'medium'::character varying, 'low'::character varying]::text[]))", name: "flow_kanban_cards_priority_known"
+    t.check_constraint "start_at IS NULL OR due_at IS NULL OR start_at <= due_at", name: "flow_kanban_cards_start_before_due"
   end
 
   create_table "flow_kanban_imports", force: :cascade do |t|
@@ -2184,6 +2204,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_10_14_100000) do
   add_foreign_key "flow_kanban_ai_drafts", "users"
   add_foreign_key "flow_kanban_automation_runs", "flow_kanban_cards", column: "card_id", on_delete: :cascade
   add_foreign_key "flow_kanban_automation_runs", "flow_kanban_stage_automations", column: "automation_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_board_agents", "flow_kanban_boards", column: "board_id", on_delete: :cascade
+  add_foreign_key "flow_kanban_board_agents", "users", on_delete: :cascade
   add_foreign_key "flow_kanban_board_inboxes", "flow_kanban_boards", column: "board_id", on_delete: :cascade
   add_foreign_key "flow_kanban_board_inboxes", "inboxes", on_delete: :cascade
   add_foreign_key "flow_kanban_board_teams", "flow_kanban_boards", column: "board_id", on_delete: :cascade

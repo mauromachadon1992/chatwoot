@@ -162,7 +162,11 @@ onMounted(load);
                 />
                 <span>
                   {{
-                    row.view.actor ||
+                    (row.view.agentBot
+                      ? t('FLOW_KANBAN.HISTORY.BY_AGENT_BOT', {
+                          name: row.view.actor,
+                        })
+                      : row.view.actor) ||
                     (row.view.byRule
                       ? t('FLOW_KANBAN.HISTORY.BY_RULE')
                       : t('FLOW_KANBAN.HISTORY.BY_SYSTEM'))

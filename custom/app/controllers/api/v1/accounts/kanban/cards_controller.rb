@@ -100,7 +100,8 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
   end
 
   def card_params
-    params.permit(:title, :description, :assignee_id, :value_cents, :expected_close_on)
+    params.permit(:title, :description, :assignee_id, :value_cents, :expected_close_on, :priority, :start_at, :due_at,
+                  custom_attributes: {}, labels: [])
   end
 
   # The board is set here, not left to validation, because the policy reads it.

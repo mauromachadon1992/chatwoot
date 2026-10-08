@@ -4,7 +4,17 @@
 class Api::V1::Accounts::Kanban::Compat::TasksController < Api::V1::Accounts::Kanban::BaseController
   LIST_LIMIT = 500
 
-  before_action :card, only: [:show, :move]
+  # The card attribute, then the key the dialect calls it and how its value is read.
+  UPDATABLE = {
+    title: [:title, :keep], description: [:description, :keep], priority: [:priority, :blank_to_nil],
+    start_at: [:start_date, :parse_time], due_at: [:due_date, :parse_time],
+    custom_attributes: [:custom_attributes, :parse_attributes], labels: [:labels, :parse_labels]
+  }.freeze
+
+  # A value in the body that cannot be read; the message is the key of flow_kanban.pro.*.
+  class InvalidField < StandardError; end
+
+  before_action :card, only: [:show, :move, :update]
 
   def index
     cards = cards_in_visible_boards
@@ -37,6 +47,17 @@ class Api::V1::Accounts::Kanban::Compat::TasksController < Api::V1::Accounts::Ka
     saved = cards_in_visible_boards.find(card.id)
     Custom::Kanban::Broadcaster.card_created(saved)
     render json: Custom::Kanban::ProSerializer.card(saved)
+  end
+
+  # A partial update: only the keys sent change, and `null` clears a description, a date or the priority. The
+  # attributes are assigned whole (the Agents merge theirs before sending) and the labels replace the set.
+  def update
+    @card.update!(update_attributes)
+    updated = cards_in_visible_boards.find(@card.id)
+    Custom::Kanban::Broadcaster.card_updated(updated)
+    render json: Custom::Kanban::ProSerializer.card(updated)
+  rescue InvalidField => e
+    render json: { message: I18n.t("flow_kanban.pro.#{e.message}") }, status: :unprocessable_content
   end
 
   # `board_step_id` is the target; `insert_before_task_id` the card it lands above (a card of that step).
@@ -115,6 +136,53 @@ class Api::V1::Accounts::Kanban::Compat::TasksController < Api::V1::Accounts::Ka
 
     reason = Custom::Kanban::LostReason.where(account: Current.account).find(params[:lost_reason_id]) if params[:lost_reason_id].present?
     { lost_reason: reason, lost_note: params[:lost_note].presence }
+  end
+
+  def update_source
+    params[:task].is_a?(ActionController::Parameters) ? params[:task] : params
+  end
+
+  # The attributes to change, from the keys the body really has (a missing key is not a null).
+  def update_attributes
+    source = update_source
+    UPDATABLE.each_with_object({}) do |(attribute, (key, reader)), attrs|
+      attrs[attribute] = send(reader, source[key]) if source.key?(key)
+    end
+  end
+
+  def keep(value)
+    value
+  end
+
+  def blank_to_nil(value)
+    value.presence
+  end
+
+  # ISO 8601 (or a plain date); a string that is not one is an error, never a silent clear.
+  def parse_time(value)
+    return nil if value.blank?
+
+    Time.iso8601(value.to_s)
+  rescue ArgumentError
+    begin
+      Date.iso8601(value.to_s).in_time_zone
+    rescue ArgumentError
+      raise InvalidField, 'invalid_date'
+    end
+  end
+
+  def parse_attributes(value)
+    return {} if value.nil?
+    raise InvalidField, 'invalid_attributes' unless value.is_a?(ActionController::Parameters)
+
+    value.to_unsafe_h
+  end
+
+  def parse_labels(value)
+    return [] if value.nil?
+    raise InvalidField, 'invalid_labels' unless value.is_a?(Array) && value.all?(String)
+
+    value
   end
 
   def render_problem(key)

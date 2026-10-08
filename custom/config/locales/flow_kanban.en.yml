@@ -33,6 +33,9 @@ en:
       unsupported_currency: Currency not supported.
       quote_template_too_long: The quote message can have up to 2000 characters.
     pro:
+      invalid_date: 'a date must be ISO 8601, like 2026-10-30T18:00:00-03:00'
+      invalid_attributes: 'custom_attributes must be an object'
+      invalid_labels: 'labels must be a list of texts'
       contact_needed: 'a deal needs a contact: send conversation_id (the conversation display id) or contact_id'
     ai:
       nothing_to_summarize: 'There are no messages in the linked conversations to summarize yet.'
@@ -73,6 +76,15 @@ en:
       models:
         custom/kanban/card:
           attributes:
+            start_at:
+              after_due: 'the start must not be after the due date'
+            custom_attributes:
+              too_many: 'at most %{count} allowed'
+              bad_key: 'each name must have from 1 to %{max} characters'
+              too_big: 'is too big (at most 10 KB)'
+            labels:
+              too_many: 'at most %{count} allowed'
+              too_long: 'each label can have up to %{max} characters'
             value_cents:
               follows_items: follows the sum of the products; remove the products to type a value
         custom/kanban/webhook:
