@@ -21,6 +21,10 @@ class Custom::Kanban::Card < ApplicationRecord
   # inside JavaScript's safe integer range.
   MAX_VALUE_CENTS = 1_000_000_000_000
 
+  # The attribute an agent sets to record what it quoted: the Pro client has no tool for the amount (see
+  # Compat::TasksController#with_deal_value).
+  VALUE_ATTRIBUTE = 'deal_value'.freeze
+
   has_many :card_conversations, class_name: 'Custom::Kanban::CardConversation', dependent: :delete_all
   has_many :conversations, through: :card_conversations
   has_many :items, -> { order(:position, :id) }, class_name: 'Custom::Kanban::CardItem', dependent: :delete_all,

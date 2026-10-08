@@ -145,9 +145,28 @@ class Api::V1::Accounts::Kanban::Compat::TasksController < Api::V1::Accounts::Ka
   # The attributes to change, from the keys the body really has (a missing key is not a null).
   def update_attributes
     source = update_source
-    UPDATABLE.each_with_object({}) do |(attribute, (key, reader)), attrs|
-      attrs[attribute] = send(reader, source[key]) if source.key?(key)
+    attrs = UPDATABLE.each_with_object({}) do |(attribute, (key, reader)), changes|
+      changes[attribute] = send(reader, source[key]) if source.key?(key)
     end
+    with_deal_value(attrs)
+  end
+
+  # The agents' client has no tool for the amount, only for the card's attributes, so the reserved attribute
+  # `deal_value` carries it: a typed amount ("3.420,00", "R$ 10", 1200) becomes the deal's value. The attribute stays
+  # as sent; text that is not an amount, a deal worth its products and a value already set change nothing.
+  def with_deal_value(attrs)
+    cents = deal_value_cents(attrs[:custom_attributes])
+    return attrs if cents.nil? || cents == @card.value_cents || @card.items.exists?
+
+    attrs.merge(value_cents: cents)
+  end
+
+  def deal_value_cents(attributes)
+    raw = attributes.is_a?(Hash) ? attributes[Custom::Kanban::Card::VALUE_ATTRIBUTE] : nil
+    return unless raw.is_a?(String) || raw.is_a?(Numeric)
+
+    cents = Custom::Kanban::MoneyParser.cents(raw.to_s)
+    cents if cents && cents <= Custom::Kanban::Card::MAX_VALUE_CENTS
   end
 
   def keep(value)

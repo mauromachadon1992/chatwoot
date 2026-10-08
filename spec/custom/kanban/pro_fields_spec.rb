@@ -142,6 +142,59 @@ RSpec.describe 'Kanban Pro dialect, fields and bindings', type: :request do
     end
   end
 
+  # The agents' client has no tool for the amount, only the card's attributes: the reserved attribute
+  # `deal_value` is how an agent records what it quoted, and the deal's value follows it.
+  describe 'the deal value an agent records as the attribute deal_value' do
+    it 'sets the value from a typed amount, keeps the attribute, and answers with the value' do
+      patch_task(custom_attributes: { deal_value: 'R$ 3.420,00', origem: 'chat' })
+
+      expect(response).to have_http_status(:ok)
+      expect(body).to include('value' => 3420.0)
+      expect(body['custom_attributes']).to eq('deal_value' => 'R$ 3.420,00', 'origem' => 'chat')
+      expect(card.reload.value_cents).to eq(342_000)
+    end
+
+    it 'takes a plain number, and records one history event per change, naming the agents\' service user' do
+      Custom::Kanban::ServiceUser.mark!(service)
+      patch_task(user: service, custom_attributes: { deal_value: 1200 })
+      patch_task(user: service, custom_attributes: { deal_value: 1200, origem: 'chat' })
+      patch_task(user: service, custom_attributes: { deal_value: '1500.50' })
+
+      expect(card.reload.value_cents).to eq(150_050)
+      expect(events('value_changed').map { |event| event.data['to_cents'] }).to eq([120_000, 150_050])
+      expect(events('value_changed').last).to have_attributes(actor_kind: 'agent_bot', actor_name: service.name)
+    end
+
+    it 'leaves the value alone when the text is not an amount, and never fails the request' do
+      card.update!(value_cents: 5_000)
+      patch_task(custom_attributes: { deal_value: 'a combinar' })
+
+      expect(response).to have_http_status(:ok)
+      expect(card.reload.value_cents).to eq(5_000)
+      expect(card.custom_attributes).to eq('deal_value' => 'a combinar')
+
+      patch_task(custom_attributes: { deal_value: '-10' })
+      expect(card.reload.value_cents).to eq(5_000)
+    end
+
+    it 'leaves the value alone when the deal is worth its products, and when the attribute is not sent' do
+      product = create(:flow_kanban_product, account: account, price_cents: 2_000)
+      Custom::Kanban::CardItemsService.new(card).add(product: product)
+      patch_task(custom_attributes: { deal_value: '9999' })
+      expect(response).to have_http_status(:ok)
+      expect(card.reload.value_cents).to eq(2_000)
+
+      other = create(:flow_kanban_card, stage: lead, contact: create(:contact, account: account), value_cents: 700)
+      as(admin, :patch, "tasks/#{other.id}", task: { custom_attributes: { origem: 'chat' } })
+      expect(other.reload.value_cents).to eq(700)
+    end
+
+    it 'is announced in the capabilities' do
+      as(admin, :get, 'settings')
+      expect(body.dig('payload', 'capabilities')).to include('tasks.value_attribute')
+    end
+  end
+
   describe 'the dashboard edits the same fields' do
     it 'takes them on PATCH kanban/cards/:id' do
       as(admin, :patch, "cards/#{card.id}", priority: 'urgent', due_at: '2026-10-30T18:00:00Z', labels: ['vip'],
