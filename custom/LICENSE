@@ -1,0 +1,31 @@
+Flow custom code: proprietary license
+
+Copyright (c) 2026 useFlow.ai.br. All rights reserved.
+
+Scope. This license covers only what useFlow.ai.br authored in this repository: everything under the `custom/`
+directory and the files listed in the deviation table of `custom/README.md` as additions of this fork (for
+example `custom/ui/flow.css`, the Flow Kanban, the Flow identity, the release workflows). It does not cover, and
+does not change the terms of, the upstream code this repository derives from: that code stays under its own
+license and notices, which must be kept (the `LICENSE`, `NOTICE` and `enterprise/LICENSE` files, and the
+attributions in `custom/README.md`).
+
+Grant. No license is granted to copy, modify, distribute, sublicense, host for third parties or otherwise use the
+covered code, except to useFlow.ai.br and to those it grants a written license. Reading it in a repository does
+not grant a license.
+
+No warranty. The covered code is provided "as is", without warranty of any kind.
+
+Trademarks. "Flow", "Flow Chat", "Flow Agents" and useFlow.ai.br are identifiers of the owner. The names and marks
+of fazer.ai and Chatwoot are not licensed to this project (see the NOTICE files).
+
+This text is a statement of ownership and terms for the code authored here; it is not legal advice. Have the
+combination with the upstream licenses (Apache 2.0, MIT and the Chatwoot Enterprise license) reviewed by counsel
+before the first commercial use or any redistribution.
+
+---
+
+Licença do código próprio do Flow (resumo em português): o código escrito neste repositório (pasta `custom/` e os
+arquivos que a tabela de desvios do `custom/README.md` declara como acréscimos do fork) pertence a useFlow.ai.br
+e é privado: todos os direitos reservados. O código do upstream continua sob as licenças e avisos originais, que
+devem ser mantidos. Isto não é aconselhamento jurídico; revise a combinação com as licenças do upstream antes do
+primeiro uso comercial.

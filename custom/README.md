@@ -15,6 +15,10 @@ upstream rarely touch it.
   - `Custom::Concerns::Account` adds account accessors.
   - `Custom::Internal::CheckNewVersionsJob` restores the Chatwoot Hub plan sync (see below).
 
+## Licença do código próprio
+
+O que foi escrito neste fork (`custom/` e os acréscimos declarados nas tabelas deste arquivo) é **privado e pertence a useFlow.ai.br**: todos os direitos reservados, conforme `custom/LICENSE`. O código do upstream (Chatwoot, MIT; `enterprise/`, sob a `enterprise/LICENSE`; fazer.ai) continua sob as licenças e avisos originais, que não são editados. O repositório é público por ser um fork de repositório público: ler o código não concede licença. Revise a combinação com as licenças do upstream antes do primeiro uso comercial.
+
 ## Chatwoot Enterprise
 
 `enterprise/` ships with the fork and loads before `custom/` (`ChatwootApp.extensions` is
