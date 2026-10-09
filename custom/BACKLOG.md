@@ -76,7 +76,7 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
     `ghcr.io/mauromachadon1992/chatwoot:4.18.0-a0dcb1877-ee` via env `FLOW_IMAGE_TAG` (B-02, the card tabs, B-13b and the Flow identity, applied with `flow:identity:apply`). Compose: `custom/docker/coolify.staging.compose.yaml`.
     **`FRONTEND_URL` is a literal in the compose (Coolify restores compose values on restart); env overrides do not stick.**
   - `agents-staging` uuid `oig9l2odn1nkhf7fuvf4sxls`, host `agentes-hml.freitascasaeconstrucao.com.br`, image
-    `ghcr.io/mauromachadon1992/agents-ee:4deeb6b7` via env `AGENTS_IMAGE` (head of AG PR #16 = #14 identity + #16 branding editor, NOT merged yet; previous: `1ecbbed3`, then `6b441a4`). Own Postgres (pgvector) and volume.
+    `ghcr.io/mauromachadon1992/agents-ee:4deeb6b7` via env `AGENTS_IMAGE` (= AG `main` `ad3dd787` after PRs #14 and #16 were merged, same tree; previous: `1ecbbed3`, then `6b441a4`). Own Postgres (pgvector) and volume.
   - Staging data left from tests: Chatwoot account 1; boards 1 "Teste" (user's), 2-3 "harness …", 4 "Vendas e2e"; inboxes 2
     `harness-inbox`, 3 `e2e-vendas`; conversations 13-21; catalog products 1-3 (Concreto fck 25, fck 30, Bombeamento); agents-ee tenant 1, agent 1 and 2, vault entry 1 (DeepSeek key).
     Agent 2 "Vendedor Concreto (e2e)" is bound to inbox 3, mode `production`, model `deepseek-flash` (the id DeepSeek lists).
@@ -180,3 +180,4 @@ Rule R8 of the AG backlog and section 3 of `custom/contracts/protocol.md`: any A
 - 2026-10-08 AG+CW: both READMEs rewritten for flow-chat / flow-agents (AG branch `docs/readme-flow-agents`, CW commit with this line); the AG README no longer says "nothing is implemented" nor "no image of its own". See B-14 for what was not renamed.
 - 2026-10-09 AG+CW: identity on staging: Chatwoot image `4.18.0-a0dcb1877-ee` + `flow:identity:apply` (scheduled task, deleted), agents image `agents-ee:1ecbbed3` (AG PR #14 head, unmerged) through the new env `AGENTS_IMAGE`; both sign-in screens checked in light and dark. Upstream issue fazer-ai/agents#1175: the code-sandbox budget test fails on 1 CPU (rerun the shard when it hits).
 - 2026-10-09 AG: own branding editor (AG issue #15, PR #16, stacked on #14): the Free edition's three branding writes implemented by us (fleet-level audit) and Admin > Branding as a real editor instead of the Pro gate. On staging as `agents-ee:4deeb6b7`; an unauthenticated PATCH answers 401; assets persist in the `storage` volume (`/app/storage/branding`).
+- 2026-10-09 AG: PRs #14 (Flow identity, `32aa6e7e`) and #16 (own branding editor, `ad3dd787`) merged into `main`; issues #13 and #15 closed. Staging `agents-ee:4deeb6b7` has the same tree as `main`.
