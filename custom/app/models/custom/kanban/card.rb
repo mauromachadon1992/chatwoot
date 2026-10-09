@@ -55,10 +55,13 @@ class Custom::Kanban::Card < ApplicationRecord
   # inside a transaction, with its conversation linked a moment later).
   after_create_commit :run_deal_created_rules
 
+  # What conversation_data reads for each linked conversation (its inbox's agent bot says who answers it).
+  CONVERSATION_PRELOAD = { conversation: { inbox: :agent_bot_inbox } }.freeze
+
   scope :ordered, -> { order(:position, :id) }
   # Everything push_event_data reads, loaded together.
   scope :preloaded, lambda {
-    includes(:assignee, :tasks, :stage, :board, card_conversations: :conversation, contact: { avatar_attachment: :blob })
+    includes(:assignee, :tasks, :stage, :board, card_conversations: CONVERSATION_PRELOAD, contact: { avatar_attachment: :blob })
   }
 
   # Moves the card to `stage`, between the cards the dashboard showed around the drop point.
@@ -167,8 +170,14 @@ class Custom::Kanban::Card < ApplicationRecord
       display_id: conversation.display_id,
       inbox_id: conversation.inbox_id,
       status: conversation.status,
+      handled_by_agent: handled_by_agent?(conversation),
       last_activity_at: conversation.last_activity_at&.to_i
     }
+  end
+
+  # A conversation an agent bot answers starts `pending` and hides under the default "Open" filter, so the board says who has it.
+  def handled_by_agent?(conversation)
+    conversation.pending? && conversation.inbox.agent_bot_inbox&.active? == true
   end
 
   def inherit_from_stage

@@ -36,6 +36,7 @@
       "LAST_ACTIVITY": "Last activity in its conversations",
       "NO_CONVERSATIONS": "No conversations",
       "CONVERSATIONS": "{count} conversation | {count} conversations",
+      "HANDLED_BY_AGENT": "Pending: an AI agent is handling it",
       "RESTRICTED_CONVERSATION": "Conversation from an inbox you cannot access",
       "VALUE": "Deal value",
       "TASKS_OPEN": "Open tasks: {count}",

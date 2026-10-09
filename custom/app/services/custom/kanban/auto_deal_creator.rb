@@ -64,7 +64,8 @@ class Custom::Kanban::AutoDealCreator
       assignee: assignee
     )
     card.card_conversations.create!(conversation: @conversation)
-    Custom::Kanban::Card.includes(:assignee, :tasks, :stage, card_conversations: :conversation, contact: { avatar_attachment: :blob })
+    Custom::Kanban::Card.includes(:assignee, :tasks, :stage, card_conversations: Custom::Kanban::Card::CONVERSATION_PRELOAD,
+                                                             contact: { avatar_attachment: :blob })
                         .find(card.id)
   end
 

@@ -7,7 +7,7 @@ class Custom::Kanban::StaleCardsJob < ApplicationJob
 
   # What the notification and the board update read, loaded once.
   PRELOADS = [:account, :board, :assignee, :tasks, :stage,
-              { card_conversations: :conversation, contact: { avatar_attachment: :blob } }].freeze
+              { card_conversations: Custom::Kanban::Card::CONVERSATION_PRELOAD, contact: { avatar_attachment: :blob } }].freeze
 
   def perform
     now = Time.current

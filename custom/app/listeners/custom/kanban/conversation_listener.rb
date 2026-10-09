@@ -10,8 +10,7 @@ class Custom::Kanban::ConversationListener < BaseListener
     conversation = event.data[:conversation]
     card_ids = Custom::Kanban::CardConversation.where(conversation_id: conversation.id).select(:card_id)
 
-    Custom::Kanban::Card.where(id: card_ids)
-                        .includes(:board, :assignee, :tasks, :stage, card_conversations: :conversation, contact: { avatar_attachment: :blob })
+    Custom::Kanban::Card.where(id: card_ids).preloaded
                         .find_each { |card| Custom::Kanban::Broadcaster.card_updated(card) }
     Custom::Kanban::AutomationRunner.status_changed(conversation)
   end

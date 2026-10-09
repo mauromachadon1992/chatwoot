@@ -19,6 +19,7 @@ class Api::V1::Accounts::Kanban::BaseController < Api::V1::Accounts::BaseControl
   end
 
   def cards_scope
-    Custom::Kanban::Card.includes(:assignee, :tasks, :stage, card_conversations: :conversation, contact: { avatar_attachment: :blob })
+    Custom::Kanban::Card.includes(:assignee, :tasks, :stage, card_conversations: Custom::Kanban::Card::CONVERSATION_PRELOAD,
+                                                             contact: { avatar_attachment: :blob })
   end
 end

@@ -437,7 +437,8 @@ repositories talk and stay aligned). One hash over the four files is in `CONTRAC
   History records the actor (`actor_kind`: user, agent_bot, rule, system). Automations stop at 30 runs
   per deal per hour. `kanban_task` rides on the conversation in outgoing `webhook_data`, so every
   conversation webhook and bot receiver sees the deal's title, stage and value, and nothing else.
-  A board made with the `{board:}` root key gets no default stages (confirm against a real Pro board).
+  A board made with the `{board:}` root key gets no default stages, on purpose: the agents' funnel wizard creates its own steps and
+  Flow's four would sit beside them (`pro_dialect_spec.rb` pins it; we could not compare with a real Pro board).
 - **Routes** (`Api::V1::Accounts::Kanban::Compat::*`): `GET|POST kanban/boards/:id/steps`;
   `GET|POST kanban/tasks`, `GET kanban/tasks/:id` (the bare card), `POST kanban/tasks/:id/move`.
   A Pro "task" is a Flow card and a "step" a stage (`cancelled` is a lost stage). Boards also take the
@@ -457,6 +458,14 @@ repositories talk and stay aligned). One hash over the four files is in `CONTRAC
   most 50 lines, quantity above zero. The products themselves are `GET kanban/products?q=&active=true`. The agents reach them
   through the HTTP tools of the toolpack `custom/toolpacks/flow-products.json` in `flow-agents-ee` (decided against native tools,
   `flow-extensions.md` is the contract).
+- **The quote, built on the server** (capability `deal.quote`; C5): `GET kanban/cards/:id/quote_preview` (the dashboard) and
+  `GET kanban/conversations/:display_id/deal/quote` (the agent, no card id) answer the same `{text, length, too_long, total_cents,
+  currency, locale, lines}`. The text is the account's template or the default in `pt_BR`, `en` or `es`, with money and quantities
+  written in that locale; the agent sends it and never adds up. The quote dialog reads it instead of composing it in the browser.
+  The toolpack tool is `get_deal_quote`.
+- **Conversations handled by an agent** (B-10): a conversation of an inbox with an active agent bot starts `pending` and hides under the
+  default "Open" filter, so each linked conversation of a card carries `handled_by_agent` (pending and a bot on the inbox) and the
+  card's chip shows a robot with the title "Pending: an AI agent is handling it" instead of the plain amber dot.
 - **The conversation's deal** (`kanban_task` in `GET conversations/:display_id`, one line in the shared
   jbuilder): the most recently updated *open* deal linked to it on a board the caller sees, else `null`.
   Only on the single read (a list would ask the database per row), only for people signed in with a
@@ -472,3 +481,26 @@ repositories talk and stay aligned). One hash over the four files is in `CONTRAC
   now; the dashboard edits it in C2.
 - **Specs:** `spec/custom/kanban/pro_dialect_spec.rb` (each operation, visibility, the leak, the service
   user) and `pro_contract_spec.rb` (the hash, and that all 15 operations are accounted for).
+
+### Staging and the end-to-end recipe (B-11)
+
+Staging is a Coolify project `atendimento`, environment `staging`: a `chatwoot-staging` service (this image, tag in the
+`FLOW_IMAGE_TAG` variable; `custom/docker/coolify.staging.compose.yaml`) and an `agents-staging` service (`flow-agents-ee`'s
+`agents-ee:<sha>` image, tag in `AGENTS_IMAGE`; its own Postgres with pgvector). Each has its own host. Production
+(`chatwoot-baileys` and the official agents image) is a separate service set and is not touched without an explicit go-ahead.
+`FRONTEND_URL` is a literal in the compose, because Coolify restores compose values on restart and environment overrides do not stick.
+The uuids, tokens and the day-to-day notes are in `BACKLOG.md` (never write a secret there).
+
+The end-to-end test that was run on staging, in order:
+
+1. Create the service user and mark it (`POST accounts/:id/agents`, then `rake "flow:kanban:agent_bot[EMAIL]"`), and give its token to
+   the agents' deployment (`PATCH /v1/chatwoot/deployment {adminToken}`).
+2. Apply the white-label and Flow identity (`rake flow:identity:apply`) once per environment.
+3. In the agents, store the model key in the vault, create the agent with `modelConfig.credentialRef = "vault:<id>"`, set its prompt
+   (it must say: `set_custom_attribute` scope `task`, key `deal_value`, number only, only if it does not use the deal tools), bind it to an
+   inbox (`PATCH chatwoot/inboxes/:id {agentId}`) and set `mode: production` (`test` does not answer real contacts).
+4. Apply the toolpack: `bun custom/script/apply-toolpack.ts --apply` in `flow-agents-ee` (idempotent, needs the capabilities the pack lists).
+5. Seed a board whose stages include a won one, a product catalog and a card linked to a conversation (the agent cannot create a card).
+6. Write to the inbox as a contact. The conversation starts `pending`; look under Pending or All, not Open. Check the reply, the lines
+   on the deal, the value, `actor_kind: agent_bot` in the history, and that "aprovado" moves the card to the won stage.
+7. Clean up what the test made (boards `harness *`, the test inbox and conversations).

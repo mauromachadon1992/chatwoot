@@ -36,6 +36,7 @@
       "LAST_ACTIVITY": "Última actividad en sus conversaciones",
       "NO_CONVERSATIONS": "Sin conversaciones",
       "CONVERSATIONS": "{count} conversación | {count} conversaciones",
+      "HANDLED_BY_AGENT": "Pendiente: la atiende el agente de IA",
       "RESTRICTED_CONVERSATION": "Conversación de una bandeja de entrada sin acceso",
       "VALUE": "Valor del negocio",
       "TASKS_OPEN": "Tareas abiertas: {count}",

@@ -108,8 +108,8 @@ RSpec.describe 'Kanban API', type: :request do
       card = response.parsed_body['payload']
       expect(card['contact']['id']).to eq(contact.id)
       expect(card['title']).to eq(contact.name)
-      expect(card['conversations']).to eq([{ 'display_id' => conversation.display_id, 'inbox_id' => email_inbox.id,
-                                             'status' => 'open', 'last_activity_at' => conversation.last_activity_at.to_i }])
+      expect(card['conversations']).to eq([{ 'display_id' => conversation.display_id, 'inbox_id' => email_inbox.id, 'status' => 'open',
+                                             'handled_by_agent' => false, 'last_activity_at' => conversation.last_activity_at.to_i }])
     end
 
     it 'refuses a conversation the agent cannot see' do
