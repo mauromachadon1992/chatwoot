@@ -40,7 +40,7 @@ const SKELETON_ROWS = 4;
         class="flex flex-col items-center gap-3 py-16 text-center"
         role="alert"
       >
-        <p class="text-body-main text-n-slate-11">
+        <p class="max-w-prose text-body-main text-n-slate-11">
           {{ t('FLOW_KANBAN.REPORT.ERROR') }}
         </p>
         <Button
@@ -58,10 +58,10 @@ const SKELETON_ROWS = 4;
 
         <section class="flex flex-col gap-4">
           <div class="flex flex-col gap-1">
-            <h2 class="text-heading-2 text-n-slate-12">
+            <h2 class="text-heading-1 text-n-slate-12">
               {{ t('FLOW_KANBAN.REPORT.FUNNEL.TITLE') }}
             </h2>
-            <p v-if="report" class="text-body-main text-n-slate-11">
+            <p v-if="report" class="max-w-prose text-body-main text-n-slate-11">
               {{
                 t('FLOW_KANBAN.REPORT.FUNNEL.DESCRIPTION', {
                   count: report.summary.created,
@@ -95,10 +95,10 @@ const SKELETON_ROWS = 4;
           aria-labelledby="flow-forecast-title"
         >
           <div class="flex flex-col gap-1">
-            <h2 id="flow-forecast-title" class="text-heading-2 text-n-slate-12">
+            <h2 id="flow-forecast-title" class="text-heading-1 text-n-slate-12">
               {{ t('FLOW_KANBAN.REPORT.FORECAST.TITLE') }}
             </h2>
-            <p class="text-body-main text-n-slate-11">
+            <p class="max-w-prose text-body-main text-n-slate-11">
               {{ t('FLOW_KANBAN.REPORT.FORECAST.DESCRIPTION') }}
             </p>
           </div>
@@ -122,10 +122,10 @@ const SKELETON_ROWS = 4;
 
         <section class="flex flex-col gap-4" aria-labelledby="flow-lost-title">
           <div class="flex flex-col gap-1">
-            <h2 id="flow-lost-title" class="text-heading-2 text-n-slate-12">
+            <h2 id="flow-lost-title" class="text-heading-1 text-n-slate-12">
               {{ t('FLOW_KANBAN.REPORT.LOST_REASONS.TITLE') }}
             </h2>
-            <p class="text-body-main text-n-slate-11">
+            <p class="max-w-prose text-body-main text-n-slate-11">
               {{ t('FLOW_KANBAN.REPORT.LOST_REASONS.DESCRIPTION') }}
             </p>
           </div>
@@ -147,7 +147,9 @@ const SKELETON_ROWS = 4;
           />
         </section>
 
-        <p class="flex items-start gap-2 text-label-small text-n-slate-11">
+        <p
+          class="flex items-start max-w-prose gap-2 text-label-small text-n-slate-11"
+        >
           <Icon icon="i-lucide-history" class="flex-shrink-0 mt-0.5 size-3.5" />
           {{ t('FLOW_KANBAN.REPORT.HISTORY_NOTE') }}
         </p>

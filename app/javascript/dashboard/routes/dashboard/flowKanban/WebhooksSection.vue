@@ -252,7 +252,7 @@ onMounted(load);
   <section class="flex flex-col gap-4" aria-labelledby="flow-webhooks-title">
     <div class="flex items-start justify-between gap-3">
       <div class="flex flex-col gap-1">
-        <h2 id="flow-webhooks-title" class="text-heading-2 text-n-slate-12">
+        <h2 id="flow-webhooks-title" class="text-heading-1 text-n-slate-12">
           {{ t('FLOW_KANBAN.SETTINGS.WEBHOOKS.TITLE') }}
         </h2>
         <p class="text-body-main text-n-slate-11">

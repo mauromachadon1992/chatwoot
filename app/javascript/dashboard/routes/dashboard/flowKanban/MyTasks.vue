@@ -177,7 +177,7 @@ onMounted(load);
     >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex flex-col gap-1 min-w-0">
-          <h2 class="text-heading-2 text-n-slate-12">
+          <h2 class="text-heading-1 text-n-slate-12">
             {{
               scope === 'all'
                 ? t('FLOW_KANBAN.MY_TASKS.TITLE_ALL')

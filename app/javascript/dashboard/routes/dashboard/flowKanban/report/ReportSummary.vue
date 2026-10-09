@@ -33,7 +33,6 @@ const metrics = computed(() => {
       key: 'WON',
       value: money(s.won.value_cents, { whole: true }),
       detail: deals(s.won.count),
-      tone: 'text-n-teal-11',
     },
     {
       key: 'LOST',
@@ -102,10 +101,7 @@ const metrics = computed(() => {
             :aria-label="t(`FLOW_KANBAN.REPORT.SUMMARY.${metric.key}_HINT`)"
           />
         </span>
-        <span
-          class="text-2xl tabular-nums truncate"
-          :class="metric.tone || 'text-n-slate-12'"
-        >
+        <span class="text-2xl tabular-nums truncate text-n-slate-12">
           {{ metric.value }}
         </span>
         <span v-if="metric.detail" class="text-label-small text-n-slate-11">

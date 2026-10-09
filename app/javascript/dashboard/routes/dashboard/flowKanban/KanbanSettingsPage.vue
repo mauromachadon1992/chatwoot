@@ -190,7 +190,7 @@ onMounted(load);
           <div class="flex flex-col gap-1">
             <h2
               id="flow-lost-reasons-title"
-              class="text-heading-2 text-n-slate-12"
+              class="text-heading-1 text-n-slate-12"
             >
               {{ t('FLOW_KANBAN.SETTINGS.LOST_REASONS.TITLE') }}
             </h2>
@@ -296,7 +296,7 @@ onMounted(load);
 
         <section class="flex flex-col gap-4" aria-labelledby="flow-quote-title">
           <div class="flex flex-col gap-1">
-            <h2 id="flow-quote-title" class="text-heading-2 text-n-slate-12">
+            <h2 id="flow-quote-title" class="text-heading-1 text-n-slate-12">
               {{ t('FLOW_KANBAN.SETTINGS.QUOTE.TITLE') }}
             </h2>
             <p class="text-body-main text-n-slate-11">

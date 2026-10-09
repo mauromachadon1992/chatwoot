@@ -70,7 +70,7 @@ onMounted(async () => {
 <template>
   <section class="flex flex-col gap-4" aria-labelledby="flow-data-title">
     <div class="flex flex-col gap-1">
-      <h2 id="flow-data-title" class="text-heading-2 text-n-slate-12">
+      <h2 id="flow-data-title" class="text-heading-1 text-n-slate-12">
         {{ t('FLOW_KANBAN.SETTINGS.DATA.TITLE') }}
       </h2>
       <p class="text-body-main text-n-slate-11">
