@@ -63,7 +63,7 @@ const onChange = event => {
         :style="{ backgroundColor: stage.color }"
       />
       <div class="flex items-center min-w-0 gap-2">
-        <h3 class="min-w-0 text-heading-3 truncate text-n-slate-12">
+        <h3 class="min-w-0 text-heading-2 truncate text-n-slate-12">
           {{ stage.name }}
         </h3>
         <Icon
@@ -74,10 +74,7 @@ const onChange = event => {
             )
           "
           :icon="STAGE_TYPE_ICONS[stage.stage_type]"
-          class="flex-shrink-0 size-4"
-          :class="
-            stage.stage_type === 'won' ? 'text-n-teal-11' : 'text-n-ruby-11'
-          "
+          class="flex-shrink-0 size-4 text-n-slate-11"
         />
         <span
           class="px-1.5 text-label-small rounded-md tabular-nums bg-n-alpha-2 text-n-slate-11"

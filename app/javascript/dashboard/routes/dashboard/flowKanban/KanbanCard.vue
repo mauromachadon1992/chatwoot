@@ -128,7 +128,7 @@ const showTasks = computed(() => tasks.value.open > 0);
 
     <div
       v-if="cardFields.has('contact')"
-      class="flex items-center min-w-0 gap-1.5"
+      class="flex items-center min-w-0 gap-1.5 py-1"
     >
       <Avatar
         :src="card.contact.thumbnail"

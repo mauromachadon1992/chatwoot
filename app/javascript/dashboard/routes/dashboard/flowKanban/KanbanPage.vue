@@ -244,7 +244,7 @@ const SKELETON_CARDS = [3, 2, 4, 1];
             icon="i-lucide-chevrons-up-down"
             :label="kanban.activeBoard?.name || t('FLOW_KANBAN.TITLE')"
             :disabled="!kanban.boards.length && !isAdmin"
-            class="!text-heading-2 !text-n-slate-12 max-w-full"
+            class="!text-heading-1 !text-n-slate-12 max-w-full"
             @click="isBoardMenuOpen = !isBoardMenuOpen"
           />
           <DropdownMenu
