@@ -257,8 +257,8 @@ onMounted(async () => {
                   class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-label-small"
                   :class="
                     product.active
-                      ? 'bg-n-teal-3 text-n-teal-11'
-                      : 'bg-n-alpha-2 text-n-slate-11'
+                      ? 'bg-n-alpha-2 text-n-slate-12'
+                      : 'bg-n-alpha-1 text-n-slate-11'
                   "
                 >
                   <Icon
