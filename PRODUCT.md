@@ -18,7 +18,7 @@ that happens.
 
 ## Product Purpose
 
-flow-chat is a fork of fazer.ai's Chatwoot that adds what a sales-led conversation business
+Flow Chat is a fork of fazer.ai's Chatwoot that adds what a sales-led conversation business
 needs on top of the inbox: a Kanban of deals, their value and products, a funnel and revenue report,
 follow-up tasks, rules that act on a deal when something happens, quotes, webhooks, CSV import and
 export, and an AI draft that summarizes a deal on request. Success is an agent who never
@@ -29,7 +29,7 @@ without leaving the tool.
 
 The deal belongs to the contact, not to a conversation or a channel: one card gathers the
 conversations of any inbox, with its value, products and follow-ups beside them. It runs on the
-native WhatsApp connector and pairs with AI agents (flow-agents, or Chatwoot's own Captain,
+native WhatsApp connector and pairs with AI agents (Flow Agents, or Chatwoot's own Captain,
 whichever is consistent with the purpose), and each account can carry its own brand.
 
 ## Operating Context
@@ -59,7 +59,7 @@ whichever is consistent with the purpose), and each account can carry its own br
 
 The fork keeps Chatwoot's design system and extends it (`DESIGN.md`); a white label re-colours it
 per account, so brand colour comes from tokens and never from a literal. Name and logo are the
-account's own once white label is on. The installation's own identity is **flow-chat** (and **flow-agents**
+account's own once white label is on. The installation's own identity is **Flow Chat** (and **Flow Agents**
 for the agents), mark and **Flow Indigo** `#3E63DD`, one document for both products:
 `custom/contracts/identity.md`. It lives in precise details (login, tab title and icon, sidebar), not in decoration.
 

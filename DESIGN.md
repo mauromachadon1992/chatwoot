@@ -1,5 +1,5 @@
 ---
-name: flow-chat
+name: Flow Chat
 description: The Chatwoot dashboard design system as the Flow fork uses and extends it (Kanban first).
 colors:
   brand: '#3E63DD'
@@ -106,7 +106,7 @@ components:
     padding: '8px'
 ---
 
-# Design System: flow-chat
+# Design System: Flow Chat
 
 ## Overview
 
@@ -152,8 +152,8 @@ this document means "the account's accent". The installation's accent is **Flow 
 what an installation shows before the identity is applied (`rake "flow:identity:apply"`). The
 Button colour prop is still called `blue`: it names the accent, whatever its hue.
 
-**Identity.** The name is **flow-chat** (always lowercase and hyphenated), its sibling **flow-agents**; the mark
-is a rounded tile with three columns stepping down, a card moving from stage to stage. Name, mark, seed colour
+**Identity.** The name is **Flow Chat** (never lowercase or hyphenated on screen; the slug `flow-chat` is for repositories, images and URLs), its sibling **Flow Agents**; the mark
+is a rounded tile with three columns stepping up, a card moving from stage to stage and gaining ground (Flow Agents adds a spark over the last column). Name, mark, seed colour
 and voice are one document shared with the agents repository, `custom/contracts/identity.md`, and the
 SVGs beside it: change them there, in both repositories. Brand stays in precise details (the login screen,
 the tab title and icon, the sidebar), never in decoration on a working screen.

@@ -4,14 +4,14 @@
 # keeps its layout, background and options. Nothing here is code to ship with the page: the SVGs are the
 # contract's own files, the same bytes the agents repository applies to its interface.
 module Custom::Identity
-  NAME = 'flow-chat'.freeze
+  NAME = 'Flow Chat'.freeze
   ACCENT = '#3E63DD'.freeze
   DIR = Rails.root.join('custom/contracts/identity')
   FILES = { logo: 'flow-chat-light.svg', logo_dark: 'flow-chat-dark.svg', icon: 'flow-mark.svg' }.freeze
   COPY = {
-    'pt_BR' => { 'title' => 'Entrar no flow-chat', 'subtitle' => 'Atendimento, negócios e agentes de IA no mesmo lugar.' },
-    'en' => { 'title' => 'Sign in to flow-chat', 'subtitle' => 'Support, deals and AI agents in one place.' },
-    'es' => { 'title' => 'Entrar en flow-chat', 'subtitle' => 'Atención, negocios y agentes de IA en un solo lugar.' }
+    'pt_BR' => { 'title' => 'Entrar no Flow Chat', 'subtitle' => 'Atendimento, negócios e agentes de IA no mesmo lugar.' },
+    'en' => { 'title' => 'Sign in to Flow Chat', 'subtitle' => 'Support, deals and AI agents in one place.' },
+    'es' => { 'title' => 'Entrar en Flow Chat', 'subtitle' => 'Atención, negocios y agentes de IA en un solo lugar.' }
   }.freeze
 
   module_function

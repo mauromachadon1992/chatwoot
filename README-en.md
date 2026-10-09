@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>flow-chat</h1>
+<h1>Flow Chat</h1>
 
 <p>The Flow project's Chatwoot: WhatsApp customer support with a sales Kanban and AI agents.</p>
 <p>A private fork of fazer.ai's Chatwoot, which extends the official Chatwoot. It is not the official distribution.</p>
@@ -11,11 +11,11 @@
 
 ## What it is
 
-**flow-chat** is the Flow project's Chatwoot. It starts from [fazer.ai's fork](https://github.com/fazer-ai/chatwoot), which in turn extends the [official Chatwoot](https://github.com/chatwoot/chatwoot), and adds, in the [`custom/`](custom/) folder, a sales Kanban of its own and the conversation with **flow-agents**, the project's AI agents (`mauromachadon1992/flow-agents-ee`).
+**Flow Chat** is the Flow project's Chatwoot. It starts from [fazer.ai's fork](https://github.com/fazer-ai/chatwoot), which in turn extends the [official Chatwoot](https://github.com/chatwoot/chatwoot), and adds, in the [`custom/`](custom/) folder, a sales Kanban of its own and the conversation with **Flow Agents**, the project's AI agents (`mauromachadon1992/flow-agents-ee`).
 
-Three layers, each with its own owner: Chatwoot (Chatwoot Inc.), the additions of fazer.ai's fork (FAZER.AI LTDA) and those of flow-chat. flow-chat is **not** an official Chatwoot or fazer.ai product, release, image or support channel.
+Three layers, each with its own owner: Chatwoot (Chatwoot Inc.), the additions of fazer.ai's fork (FAZER.AI LTDA) and those of Flow Chat. Flow Chat is **not** an official Chatwoot or fazer.ai product, release, image or support channel.
 
-## What flow-chat adds
+## What Flow Chat adds
 
 ### Sales Kanban (`custom/`)
 
@@ -30,21 +30,21 @@ Three layers, each with its own owner: Chatwoot (Chatwoot Inc.), the additions o
 
 What each part does and does not do is in [`custom/README.md`](custom/README.md). The plan is in [`custom/ROADMAP.md`](custom/ROADMAP.md), and the state right now in [`custom/BACKLOG.md`](custom/BACKLOG.md).
 
-### The conversation with flow-agents
+### The conversation with Flow Agents
 
-- flow-chat speaks the **Kanban dialect** the agent's client already uses (15 operations; flow-agents' harness passes 16 of 16 against it) and offers **extensions** (catalog, the deal's products, value), all behind capabilities announced in `GET kanban/settings`.
+- Flow Chat speaks the **Kanban dialect** the agent's client already uses (15 operations; Flow Agents' harness passes 16 of 16 against it) and offers **extensions** (catalog, the deal's products, value), all behind capabilities announced in `GET kanban/settings`.
 - The agent acts as a **service user** (`agent_bot`), which cannot reach webhooks, imports or automations.
 - The contract, in [`custom/contracts/`](custom/contracts/), is the same in both repositories, with a single hash. The [protocol](custom/contracts/protocol.md) says who changes what, in which order, and how each side proves its part.
 
 ### What comes from fazer.ai's fork
 
-flow-chat inherits all of this; the details are in the [fork's README](https://github.com/fazer-ai/chatwoot#readme).
+Flow Chat inherits all of this; the details are in the [fork's README](https://github.com/fazer-ai/chatwoot#readme).
 
 - **WhatsApp:** QR code or the official API, a native provider in beta (fazer.ai's open-source connector), groups, reactions, quoted replies, editing and deleting, phone history.
 - **Internal chat between agents**, with the open edition's limits.
 - **Conversations and messages:** scheduled messages, edits with history, pinned conversations, per-inbox signature, custom filters.
 - **Automations and integrations:** new triggers, observer bots, a webhook per inbox.
-- **Operations:** white label ([CUSTOM_BRANDING.md](CUSTOM_BRANDING.md); flow-chat uses it for the name and the login screen), email through Resend, S3-compatible storage, sortable reports.
+- **Operations:** white label ([CUSTOM_BRANDING.md](CUSTOM_BRANDING.md); Flow Chat uses it for the name and the login screen), email through Resend, S3-compatible storage, sortable reports.
 
 ## Image and deploy
 
@@ -55,18 +55,18 @@ flow-chat inherits all of this; the details are in the [fork's README](https://g
 
 ## Updating from upstream
 
-flow-chat's trunk is `feat/kanban`; `main` mirrors fazer.ai's fork and gets no commits of ours. Bring upstream in by merge, preferably at a tag, and check the upstream files we touch, listed in [`custom/README.md`](custom/README.md) ("Upstream files we touch"). Back up the database before swapping the image.
+Flow Chat's trunk is `feat/kanban`; `main` mirrors fazer.ai's fork and gets no commits of ours. Bring upstream in by merge, preferably at a tag, and check the upstream files we touch, listed in [`custom/README.md`](custom/README.md) ("Upstream files we touch"). Back up the database before swapping the image.
 
 ## License
 
 The original Chatwoot is copyright (c) 2017-2026 Chatwoot Inc. and uses the MIT license, except the contents of `enterprise/`, which follow the terms of [enterprise/LICENSE](enterprise/LICENSE). The `enterprise/` features (SSO, Captain, audit logs, custom roles and the rest) need a Chatwoot Inc. license in production; the AI deal summary uses Captain.
 
-The changes and additions of fazer.ai's fork are copyright (c) 2025-2026 FAZER.AI LTDA and follow the same terms as the code they extend. flow-chat's additions (`custom/` and the hooks listed in `custom/README.md`) derive from that code and do not change the terms of what they extend. Third-party components keep their own licenses.
+The changes and additions of fazer.ai's fork are copyright (c) 2025-2026 FAZER.AI LTDA and follow the same terms as the code they extend. Flow Chat's additions (`custom/` and the hooks listed in `custom/README.md`) derive from that code and do not change the terms of what they extend. Third-party components keep their own licenses.
 
 When redistributing the software or substantial parts of it, keep the copyright notices and the permission notice. The requirement also applies to copies of individual files. See [NOTICE](NOTICE) and [LICENSE](LICENSE) for the full terms.
 
 ## Links
 
-- **flow-agents:** `mauromachadon1992/flow-agents-ee`
+- **Flow Agents:** `mauromachadon1992/flow-agents-ee`
 - **Upstream:** [fazer.ai's fork](https://github.com/fazer-ai/chatwoot) · [official Chatwoot](https://www.chatwoot.com) · [official Chatwoot code](https://github.com/chatwoot/chatwoot)
 - **Support:** this repository has no third-party support; support for the original product is Chatwoot Inc.'s and fazer.ai's.

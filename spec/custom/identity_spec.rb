@@ -12,17 +12,17 @@ RSpec.describe Custom::Identity do
       page = described_class.apply!
 
       expect(page).to be_persisted
-      expect(page).to have_attributes(enabled: true, name: 'flow-chat', accent_color: '#3E63DD')
+      expect(page).to have_attributes(enabled: true, name: 'Flow Chat', accent_color: '#3E63DD')
       expect([page.logo, page.logo_dark, page.icon]).to all(be_attached)
-      expect(page.copy_for('pt_BR', 'title')).to eq('Entrar no flow-chat')
-      expect(page.copy_for('en', 'title')).to eq('Sign in to flow-chat')
-      expect(page.copy_for('es', 'title')).to eq('Entrar en flow-chat')
+      expect(page.copy_for('pt_BR', 'title')).to eq('Entrar no Flow Chat')
+      expect(page.copy_for('en', 'title')).to eq('Sign in to Flow Chat')
+      expect(page.copy_for('es', 'title')).to eq('Entrar en Flow Chat')
     end
 
     it 'is what the dashboard reads: the installation name, the logos and the accent' do
       config = described_class.apply!.global_config
 
-      expect(config).to include('INSTALLATION_NAME' => 'flow-chat', 'BRAND_COLOR' => '#3E63DD')
+      expect(config).to include('INSTALLATION_NAME' => 'Flow Chat', 'BRAND_COLOR' => '#3E63DD')
       expect(config.values_at('LOGO', 'LOGO_DARK', 'LOGO_THUMBNAIL')).to all(be_present)
       expect(config['LOGO']).not_to eq(config['LOGO_DARK'])
     end
@@ -38,10 +38,10 @@ RSpec.describe Custom::Identity do
 
       described_class.apply!
 
-      expect(page.reload).to have_attributes(layout: 'split', name: 'flow-chat')
+      expect(page.reload).to have_attributes(layout: 'split', name: 'Flow Chat')
       expect(page.toggle?(:hide_signup)).to be(true)
       expect(page.copy_for('pt_BR', 'panel_message')).to eq('Bem-vindo')
-      expect(page.copy_for('pt_BR', 'title')).to eq('Entrar no flow-chat')
+      expect(page.copy_for('pt_BR', 'title')).to eq('Entrar no Flow Chat')
     end
 
     it 'puts back an image whose file is gone from storage, though its record says it is there' do
@@ -85,9 +85,9 @@ RSpec.describe Custom::Identity do
         expect(path.read).to start_with('<svg xmlns="http://www.w3.org/2000/svg"')
       end
 
-      expect(described_class::DIR.join('flow-chat-light.svg').read).to include('aria-label="flow-chat"')
-      expect(described_class::DIR.join('flow-chat-dark.svg').read).to include('aria-label="flow-chat"')
-      expect(described_class::DIR.join('flow-agents-light.svg').read).to include('aria-label="flow-agents"')
+      expect(described_class::DIR.join('flow-chat-light.svg').read).to include('aria-label="Flow Chat"')
+      expect(described_class::DIR.join('flow-chat-dark.svg').read).to include('aria-label="Flow Chat"')
+      expect(described_class::DIR.join('flow-agents-light.svg').read).to include('aria-label="Flow Agents"')
     end
 
     it 'keep the accent of the identity document the same as the one applied' do

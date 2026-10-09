@@ -8,22 +8,23 @@ o agents pela **marca padrão que o repositório embarca**.
 ## Nomes
 
 - **Flow** é o projeto e a família. Sozinho, só nesse sentido.
-- **flow-chat** é o Chatwoot do projeto (atendimento, Kanban de vendas). **flow-agents** são os agentes de IA do projeto.
-- Sempre **minúsculas e com hífen**, em título, interface, README e mensagem. Nunca "Flow Chat", "FlowChat", "Flow Agents".
+- **Flow Chat** é o Chatwoot do projeto (atendimento, Kanban de vendas). **Flow Agents** são os agentes de IA do projeto. O padrão é "Flow" + um substantivo.
+- Uma regra, dos dois lados: **slug para máquina, nome próprio para gente.** Na interface, no título, no README e na mensagem: **Flow Chat** e **Flow Agents** (maiúsculas, com espaço). Em repositório, imagem, pacote, URL e código: `flow-chat` e `flow-agents`. Nunca "FlowChat", "flow chat" ou "Flow-Chat".
+- Nos logos, "Flow" vai em peso 600 e o substantivo em 400: é o peso, mais que a grafia, que liga os dois produtos.
 - O nome do produto nunca leva "fazer.ai" nem "Chatwoot" junto. A origem aparece como atribuição (README, licença), não na marca.
 
 ## A marca
 
-Um azulejo arredondado com três colunas que descem em degraus: um card passando de etapa em etapa. É o Kanban do flow-chat e o fluxo
+Um azulejo arredondado com três colunas que sobem em degraus: um card passando de etapa em etapa e ganhando terreno. É o Kanban do Flow Chat e o fluxo
 de trabalho dos agentes na mesma imagem. Desenhada para este projeto, sem aproveitar nenhuma marca anterior.
 
 | Arquivo | Uso |
 | --- | --- |
 | `identity/flow-mark.svg` | a marca sozinha: ícone, favicon, barra lateral recolhida. O azulejo lê bem em fundo claro e escuro, então é um só arquivo para os dois temas |
-| `identity/flow-chat-light.svg`, `flow-chat-dark.svg` | marca e o nome `flow-chat`, para fundo claro e escuro |
-| `identity/flow-agents-light.svg`, `flow-agents-dark.svg` | marca e o nome `flow-agents`, para fundo claro e escuro |
+| `identity/flow-chat-light.svg`, `flow-chat-dark.svg` | marca e o nome **Flow Chat**, para fundo claro e escuro |
+| `identity/flow-agents-light.svg`, `flow-agents-dark.svg` | marca com uma faísca sobre a última coluna (o detalhe do Flow Agents) e o nome **Flow Agents**, para fundo claro e escuro |
 
-O nome nos lockups é desenho (Inter 600, convertida em curvas, `-0,01em` de espaçamento), não texto: um SVG usado como imagem não carrega
+O nome nos lockups é desenho (Inter 600 em "Flow" e 400 no substantivo, convertida em curvas, `-0,01em` de espaçamento), não texto: um SVG usado como imagem não carrega
 fonte. Foram gerados por `custom/script/build-identity.mjs` (repositório `flow-agents-ee`); mudou o desenho, rode o script, não edite os SVGs.
 
 Regras de uso: tamanho mínimo da marca **16 px**; respiro livre de um quarto da altura; nunca esticar, girar, recolorir nem pôr sombra;
@@ -45,11 +46,11 @@ nem de promessa. O mesmo registro nas duas interfaces.
 
 | Interface | Como | O que recebe |
 | --- | --- | --- |
-| flow-chat | `rake "flow:identity:apply"` (Super Admin → Login page) | nome `flow-chat`, logos clara e escura, ícone, acento `#3E63DD`, textos da tela de entrada em pt-BR, en e es |
-| flow-agents | a marca **padrão** do repositório: os PNG de `public/` e `public/assets/` (logo, marca e favicon nos dois temas, gerados a partir dos SVGs por `custom/script/build-identity.mjs`) e o nome padrão `DEFAULT_BRAND_NAME` e o título de `public/index.html`; o rodapé do menu sem os links do upstream | nome `flow-agents`, a marca e o favicon; a API de branding da edição Pro não é usada nem contornada |
+| Flow Chat | `rake "flow:identity:apply"` (Super Admin → Login page) | nome `Flow Chat`, logos clara e escura, ícone, acento `#3E63DD`, textos da tela de entrada em pt-BR, en e es |
+| Flow Agents | a marca **padrão** do repositório: os PNG de `public/` e `public/assets/` (logo, marca e favicon nos dois temas, gerados a partir dos SVGs por `custom/script/build-identity.mjs`) e o nome padrão `DEFAULT_BRAND_NAME`, o título de `public/index.html` e o acento padrão de `public/index.css` (a rampa do Flow Indigo, no lugar do violeta do upstream); o rodapé do menu sem os links do upstream | nome `Flow Agents`, a marca com a faísca e o favicon; a API de branding da edição Pro não é usada nem contornada |
 
-A aplicação no flow-chat é **idempotente** e só mexe na identidade; cada ambiente (dev, staging, produção) recebe a sua, e aplicar em
-produção é decisão do dono. Desfazer: no flow-chat, `rake "flow:identity:reset"`; no agents, reverter o commit da marca padrão.
+A aplicação no Flow Chat é **idempotente** e só mexe na identidade; cada ambiente (dev, staging, produção) recebe a sua, e aplicar em
+produção é decisão do dono. Desfazer: no Flow Chat, `rake "flow:identity:reset"`; no agents, reverter o commit da marca padrão.
 
 ## O que não muda
 
