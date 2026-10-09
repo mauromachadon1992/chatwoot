@@ -1,39 +1,4 @@
-import { quoteLines, renderQuote, replyDraftKey } from '../quote';
-
-const options = {
-  money: cents => `R$ ${(cents / 100).toFixed(2).replace('.', ',')}`,
-  locale: 'pt_BR',
-  unitLabel: unit => ({ sc: 'sc', un: 'un' })[unit],
-  discountLabel: percent => `${percent}% de desconto`,
-};
-
-describe('quoteLines', () => {
-  it('writes one line per product, with the discount when there is one', () => {
-    const lines = quoteLines(
-      [
-        {
-          name: 'Cimento CP II',
-          unit: 'sc',
-          quantity: '2.0',
-          discount_percent: '0.0',
-          total_cents: 7980,
-        },
-        {
-          name: 'Areia média',
-          unit: 'un',
-          quantity: '1.5',
-          discount_percent: '10.0',
-          total_cents: 13500,
-        },
-      ],
-      options
-    );
-
-    expect(lines).toBe(
-      '• 2 sc Cimento CP II — R$ 79,80\n• 1,5 un Areia média — R$ 135,00 (10% de desconto)'
-    );
-  });
-});
+import { renderQuote, replyDraftKey } from '../quote';
 
 describe('renderQuote', () => {
   it('fills the placeholders, with or without spaces inside the braces', () => {

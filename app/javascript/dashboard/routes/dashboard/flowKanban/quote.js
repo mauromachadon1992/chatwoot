@@ -1,5 +1,3 @@
-import { formatQuantity } from './money';
-
 // The placeholders a quote message may use, in the order the settings page offers them.
 export const QUOTE_PLACEHOLDERS = [
   'contact',
@@ -9,25 +7,9 @@ export const QUOTE_PLACEHOLDERS = [
   'agent',
 ];
 
-// WhatsApp cuts a text message at 4,096 characters; the dialog warns before that.
+// WhatsApp cuts a text message at 4,096 characters; the dialog warns before that. The server builds
+// the quote itself (GET cards/:id/quote_preview); `renderQuote` only fills the settings page sample.
 export const QUOTE_MAX_LENGTH = 4096;
-
-// One line per product: "2 sc Cimento CP II 50kg — R$ 79,80", with the discount when there is one.
-export const quoteLines = (
-  items,
-  { money, locale, unitLabel, discountLabel }
-) =>
-  items
-    .map(item => {
-      const quantity = formatQuantity(item.quantity, locale);
-      const unit = unitLabel(item.unit);
-      const discount =
-        Number(item.discount_percent) > 0
-          ? ` (${discountLabel(formatQuantity(item.discount_percent, locale))})`
-          : '';
-      return `• ${quantity} ${unit} ${item.name} — ${money(item.total_cents)}${discount}`;
-    })
-    .join('\n');
 
 // Fills `{{placeholder}}` with the deal's values; an unknown placeholder stays as written, so a
 // typo shows in the preview instead of vanishing.

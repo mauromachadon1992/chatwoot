@@ -21,6 +21,10 @@ class Custom::Kanban::CardPolicy < ApplicationPolicy
     board_visible?
   end
 
+  def quote_preview?
+    board_visible?
+  end
+
   def destroy?
     return false unless board_visible?
 

@@ -6,7 +6,7 @@ class Api::V1::Accounts::Kanban::SettingsController < Api::V1::Accounts::Kanban:
   QUOTE_TEMPLATE_MAX_LENGTH = 2_000
   # What the Pro dialect already answers (contract operations): a client reads this instead of probing.
   CAPABILITIES = %w[boards.read boards.write boards.bindings steps.read steps.write tasks.read tasks.create tasks.move tasks.update
-                    tasks.value_attribute products.read deal.items conversation.kanban_task webhook.kanban_task].freeze
+                    tasks.value_attribute products.read deal.items deal.quote conversation.kanban_task webhook.kanban_task].freeze
 
   def show
     render json: { payload: payload }

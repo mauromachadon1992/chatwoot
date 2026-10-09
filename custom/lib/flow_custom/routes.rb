@@ -26,6 +26,7 @@ module FlowCustom::Routes
                 member do
                   patch :move
                   post :quote
+                  get :quote_preview
                 end
                 resources :conversations, only: [:create, :destroy], controller: 'card_conversations'
                 resources :items, only: [:create, :update, :destroy], controller: 'card_items'
@@ -37,6 +38,7 @@ module FlowCustom::Routes
               # The deal of a conversation and its product lines, for the fazer.ai agents (capability deal.items):
               # the agent knows the conversation, not the card, so it never names a card id.
               get 'conversations/:display_id/deal', to: 'conversation_deals#show'
+              get 'conversations/:display_id/deal/quote', to: 'conversation_deals#quote'
               post 'conversations/:display_id/deal/items', to: 'conversation_deals#add_item'
               delete 'conversations/:display_id/deal/items/:product_id', to: 'conversation_deals#remove_item'
               resources :my_tasks, only: [:index], controller: 'my_tasks'

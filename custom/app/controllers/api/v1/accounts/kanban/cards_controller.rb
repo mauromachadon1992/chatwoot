@@ -1,7 +1,7 @@
 class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::BaseController
   PER_STAGE = 50
 
-  before_action :card, only: [:show, :update, :move, :destroy, :quote]
+  before_action :card, only: [:show, :update, :move, :destroy, :quote, :quote_preview]
 
   # The board view asks for every stage at once (first PER_STAGE cards of each, plus the
   # stage's total); a column's "load more" passes `stage_id` and `offset`. Both honour the
@@ -66,6 +66,12 @@ class Api::V1::Accounts::Kanban::CardsController < Api::V1::Accounts::Kanban::Ba
     Custom::Kanban::CardEvent.record!(@card, 'quote_prepared', { display_id: link.conversation.display_id,
                                                                  total_cents: @card.value_cents, lines: @card.items_count })
     head :ok
+  end
+
+  # The quote message and its totals as the server builds them: the dashboard shows it for review, and the agent's
+  # HTTP tool reads the same text through the conversation's deal (capability `deal.quote`).
+  def quote_preview
+    render json: { payload: Custom::Kanban::QuotePreview.new(@card, account: Current.account, user: Current.user, locale: params[:locale]) }
   end
 
   def destroy

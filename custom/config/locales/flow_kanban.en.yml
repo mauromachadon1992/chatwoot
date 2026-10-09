@@ -32,6 +32,24 @@ en:
     settings:
       unsupported_currency: Currency not supported.
       quote_template_too_long: The quote message can have up to 2000 characters.
+    quote:
+      default_template: "Hi {{contact}}! Here is the quote:\n\n{{items}}\n\nTotal: {{total}}\n\nAny questions, just reply to this message. — {{agent}}"
+      discount: "%{percent}% off"
+      units:
+        un: "ea"
+        m: "m"
+        m2: "m²"
+        m3: "m³"
+        kg: "kg"
+        t: "t"
+        l: "L"
+        cx: "box"
+        pc: "pc"
+        sc: "bag"
+        par: "pair"
+        kit: "kit"
+        h: "h"
+        srv: "svc"
     pro:
       invalid_date: 'a date must be ISO 8601, like 2026-10-30T18:00:00-03:00'
       invalid_attributes: 'custom_attributes must be an object'

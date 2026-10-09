@@ -4,18 +4,12 @@ import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useAlert } from 'dashboard/composables';
-import { useMapGetter } from 'dashboard/composables/store';
 import FlowKanbanAPI from 'dashboard/api/flowKanban';
 
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import TextArea from 'dashboard/components-next/textarea/TextArea.vue';
 import RequiredComboBox from './RequiredComboBox.vue';
-import {
-  QUOTE_MAX_LENGTH,
-  quoteLines,
-  renderQuote,
-  replyDraftKey,
-} from './quote';
+import { QUOTE_MAX_LENGTH, replyDraftKey } from './quote';
 import { useFlowKanban } from './useFlowKanban';
 
 // "Send quote": the message is built from the deal's product lines, shown for review, and put
@@ -28,8 +22,7 @@ const props = defineProps({
 const { t, locale } = useI18n();
 const router = useRouter();
 const store = useStore();
-const currentUser = useMapGetter('getCurrentUser');
-const { money, conversationPath } = useFlowKanban();
+const { conversationPath } = useFlowKanban();
 
 const dialogRef = ref(null);
 const message = ref('');
@@ -51,26 +44,20 @@ const conversationOptions = computed(() =>
   }))
 );
 
-// The account's own message (Settings → Kanban), or the default in this agent's language.
-const template = computed(
-  () =>
-    store.getters.getCurrentAccount?.settings?.flow_kanban_quote_template ||
-    t('FLOW_KANBAN.QUOTE.DEFAULT_TEMPLATE')
-);
-
-const build = () =>
-  renderQuote(template.value, {
-    contact: props.card.contact?.name || '',
-    deal: props.card.title,
-    items: quoteLines(props.card.items || [], {
-      money,
-      locale: locale.value,
-      unitLabel: unit => t(`FLOW_KANBAN.UNITS.${unit}`),
-      discountLabel: percent => t('FLOW_KANBAN.QUOTE.DISCOUNT', { percent }),
-    }),
-    total: money(props.card.value_cents),
-    agent: currentUser.value?.name || '',
-  });
+// The server builds the message (the account's own template, or the default in this agent's
+// language), so the dashboard and an agent's tool read the same text and the same totals.
+const build = async () => {
+  try {
+    const { data } = await FlowKanbanAPI.getQuotePreview(
+      props.card.id,
+      locale.value
+    );
+    return data.payload.text;
+  } catch {
+    useAlert(t('FLOW_KANBAN.QUOTE.FAILED'));
+    return '';
+  }
+};
 
 const length = computed(() => message.value.length);
 const tooLong = computed(() => length.value > QUOTE_MAX_LENGTH);
@@ -78,10 +65,11 @@ const canSend = computed(
   () => message.value.trim() && conversationId.value && !tooLong.value
 );
 
-const open = () => {
-  message.value = build();
+const open = async () => {
+  message.value = '';
   conversationId.value = conversations.value[0]?.display_id ?? '';
   dialogRef.value?.open();
+  message.value = await build();
 };
 
 // The dashboard knows a conversation by its display_id (AGENTS.md, "Conversation ids"), and so

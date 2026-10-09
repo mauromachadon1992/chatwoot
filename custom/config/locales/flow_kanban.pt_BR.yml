@@ -32,6 +32,24 @@ pt_BR:
     settings:
       unsupported_currency: Moeda não suportada.
       quote_template_too_long: A mensagem de orçamento pode ter até 2000 caracteres.
+    quote:
+      default_template: "Olá, {{contact}}! Segue o orçamento:\n\n{{items}}\n\nTotal: {{total}}\n\nQualquer dúvida, é só responder esta mensagem. — {{agent}}"
+      discount: "%{percent}% de desconto"
+      units:
+        un: "un"
+        m: "m"
+        m2: "m²"
+        m3: "m³"
+        kg: "kg"
+        t: "t"
+        l: "L"
+        cx: "cx"
+        pc: "pç"
+        sc: "sc"
+        par: "par"
+        kit: "kit"
+        h: "h"
+        srv: "serv."
     pro:
       invalid_date: 'uma data deve estar em ISO 8601, como 2026-10-30T18:00:00-03:00'
       invalid_attributes: 'custom_attributes deve ser um objeto'

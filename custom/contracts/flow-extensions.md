@@ -23,6 +23,7 @@ sua capacidade está na lista; quem chama (uma ferramenta, um script) verifica a
 | `tasks.value_attribute` | este | o atributo reservado `deal_value` |
 | `products.read` | este | catálogo de produtos |
 | `deal.items` | este | linhas de produto do negócio da conversa |
+| `deal.quote` | este | o texto do orçamento e os totais, calculados no servidor |
 
 ```json flow-extensions
 {
@@ -30,12 +31,13 @@ sua capacidade está na lista; quem chama (uma ferramenta, um script) verifica a
   "announced": [
     "boards.read", "boards.write", "boards.bindings", "steps.read", "steps.write",
     "tasks.read", "tasks.create", "tasks.move", "tasks.update", "tasks.value_attribute",
-    "products.read", "deal.items", "conversation.kanban_task", "webhook.kanban_task"
+    "products.read", "deal.items", "deal.quote", "conversation.kanban_task", "webhook.kanban_task"
   ],
   "routes": [
     { "id": "settings", "method": "GET", "path": "/kanban/settings" },
     { "id": "products.search", "method": "GET", "path": "/kanban/products", "requires": "products.read" },
     { "id": "deal.show", "method": "GET", "path": "/kanban/conversations/:display_id/deal", "requires": "deal.items" },
+    { "id": "deal.quote", "method": "GET", "path": "/kanban/conversations/:display_id/deal/quote", "requires": "deal.quote" },
     { "id": "deal.items.set", "method": "POST", "path": "/kanban/conversations/:display_id/deal/items", "requires": "deal.items" },
     { "id": "deal.items.remove", "method": "DELETE", "path": "/kanban/conversations/:display_id/deal/items/:product_id", "requires": "deal.items" }
   ]
@@ -78,6 +80,19 @@ Regras (invariantes; a spec do Chatwoot as prova):
 
 Erros: `404` (conversa inexistente; sem negócio aberto, com `{message}`; produto desconhecido, inativo ou de outra conta; produto fora do
 negócio no `DELETE`), `422` (quantidade inválida; mais de 50 linhas), `401` (chamador sem acesso à conversa).
+
+## `deal.quote`: o orçamento pronto
+
+`GET …/conversations/:display_id/deal/quote?locale=<pt_BR|en|es>` responde `{payload: {text, length, too_long, total_cents,
+currency, locale, lines: [{name, unit, quantity (texto), unit_price_cents, discount_percent (texto), total_cents}]}}`. O negócio é o
+mesmo de `deal.items` (o aberto mais recente de um board que o chamador vê, sem id de card).
+
+- **O servidor calcula, o agente envia.** `text` é o modelo do orçamento da conta (ou o padrão no idioma pedido) preenchido com contato,
+  negócio, linhas, total e o nome de quem pede; o agente não soma nem formata dinheiro. Sem `locale`, vale o idioma da conta.
+- `too_long` avisa que o texto passa de 4.096 caracteres (o corte do WhatsApp).
+- O painel do Flow lê o mesmo texto (`GET /kanban/cards/:id/quote_preview`): há um só lugar que monta o orçamento.
+
+Erros: `404` (conversa inexistente ou sem negócio aberto), `401` (chamador sem acesso à conversa).
 
 ## Compatibilidade
 

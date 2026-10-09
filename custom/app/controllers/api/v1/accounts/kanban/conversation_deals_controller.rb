@@ -17,6 +17,12 @@ class Api::V1::Accounts::Kanban::ConversationDealsController < Api::V1::Accounts
     render_deal
   end
 
+  # The quote text and totals, computed on the server; the agent sends it, it does not calculate.
+  def quote
+    authorize @card, :show?
+    render json: { payload: Custom::Kanban::QuotePreview.new(@card, account: Current.account, user: Current.user, locale: params[:locale]) }
+  end
+
   def add_item
     authorize @card, :update?
     product = Custom::Kanban::Product.where(account: Current.account).find(params.require(:product_id))

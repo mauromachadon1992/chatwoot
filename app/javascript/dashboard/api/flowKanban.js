@@ -80,6 +80,13 @@ class FlowKanbanAPI extends ApiClient {
     });
   }
 
+  // The quote message and totals as the server builds them (the agent's tool reads the same text).
+  getQuotePreview(cardId, locale) {
+    return axios.get(`${this.url}/cards/${cardId}/quote_preview`, {
+      params: { locale },
+    });
+  }
+
   // Writes the quote taken to a conversation in the deal's history.
   recordQuote(cardId, conversationDisplayId) {
     return axios.post(`${this.url}/cards/${cardId}/quote`, {
