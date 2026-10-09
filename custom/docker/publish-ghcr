@@ -46,16 +46,21 @@ if [ -n "$token" ]; then
   printf '%s' "$token" | docker login ghcr.io -u "$owner" --password-stdin > /dev/null
 fi
 
-for tag in "${version}-${sha}-ee" "${sha}-ee"; do
+# The fork's own release (build-ee with FLOW_VERSION): one more immutable tag, flow-chat-vX.Y.Z.
+flow_tag=""
+flow_version="$(docker inspect "$source_image" --format '{{index .Config.Labels "io.flow.chat.version"}}' 2>/dev/null || true)"
+if [ -n "$flow_version" ] && [ "$flow_version" != "<no value>" ]; then flow_tag="flow-chat-v${flow_version}"; fi
+
+for tag in "${version}-${sha}-ee" "${sha}-ee" ${flow_tag:+"$flow_tag"}; do
   if docker manifest inspect "${target}:${tag}" > /dev/null 2>&1; then
     echo "${target}:${tag} is already published; immutable tags are not overwritten." >&2
     exit 1
   fi
 done
 
-for tag in "${version}-${sha}-ee" "${sha}-ee" "${version}-ee" latest-ee; do
+for tag in "${version}-${sha}-ee" "${sha}-ee" ${flow_tag:+"$flow_tag"} "${version}-ee" latest-ee; do
   docker tag "$source_image" "${target}:${tag}"
   docker push -q "${target}:${tag}"
 done
 
-echo "Published ${target}: ${version}-${sha}-ee, ${sha}-ee, ${version}-ee, latest-ee"
+echo "Published ${target}: ${version}-${sha}-ee, ${sha}-ee, ${flow_tag:+${flow_tag}, }${version}-ee, latest-ee"

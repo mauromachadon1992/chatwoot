@@ -33,6 +33,7 @@ sidekiq, with its pairings in the `chatwoot_staging_whatsapp_connector` database
 | `<sha>-ee` | `3bd220e2f-ee` | Never. The same build, by commit alone. |
 | `<version>-ee` | `4.18.0-ee` | The last build on that Chatwoot version. |
 | `latest-ee` | | The last build published. |
+| `flow-chat-vX.Y.Z` | `flow-chat-v0.1.0` | Never. The fork's own release (built with `FLOW_VERSION=0.1.0 build-ee flow-chat-v0.1.0`, or by the tag's workflow). |
 
 `publish-ghcr` refuses to push an immutable tag that already exists. The image carries
 `org.opencontainers.image.{title,version,revision,created,ref.name}`, but not `.source`:

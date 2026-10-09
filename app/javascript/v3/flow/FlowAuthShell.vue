@@ -199,7 +199,7 @@ const links = computed(() => {
 <style lang="scss">
 /* Not scoped: the screens' own cards are slot content, and inside the surface they become
    plain sections of it (one surface, no card in a card). */
-.flow-auth__surface > :is(section, form) {
+.flow-auth .flow-auth__surface > :is(section, form) {
   margin: 0;
   padding: 0;
   max-width: none;
@@ -209,7 +209,7 @@ const links = computed(() => {
   border-radius: 0;
 }
 
-.flow-auth__surface > :is(section, form) + :is(section, form) {
+.flow-auth .flow-auth__surface > :is(section, form) + :is(section, form) {
   margin-top: 1.5rem;
 }
 
@@ -217,6 +217,7 @@ const links = computed(() => {
    take the surface's, whatever layout and theme it is in. */
 .flow-auth .section-separator span {
   background: var(--flow-auth-surface);
+  color: rgb(var(--slate-11));
 }
 
 /* Links under a screen's title (e.g. "or create a new account") follow the start-aligned header. */

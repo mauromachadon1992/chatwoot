@@ -3,6 +3,7 @@
 # so local edits and untracked files never end up in it.
 #
 #   custom/docker/build-ee [branch]     default: the current branch
+#   FLOW_VERSION=0.1.0 custom/docker/build-ee flow-chat-v0.1.0   also bakes the fork release and tags flow-chat-v0.1.0
 #
 # Tags flow-chatwoot:<version>-<sha>-ee, <sha>-ee and latest-ee (<version> is Chatwoot's, from
 # config/app.yml; <sha> is 9 characters) and stamps the OCI labels publish-ghcr reads. Test it
@@ -25,6 +26,12 @@ test -n "$version"
 # The edition marker fazer.ai's latest-ee workflow adds; enterprise/ is kept (no rm -rf).
 printf '\nENV CW_EDITION="ee"\n' >> docker/Dockerfile
 test -d enterprise && test -d custom
+
+# The fork's own release (git tag flow-chat-vX.Y.Z), when the build is one: baked in as FLOW_VERSION, read by /flow/version.
+flow_version="${FLOW_VERSION:-}"
+if [ -n "$flow_version" ]; then
+  printf '\nENV FLOW_VERSION="%s"\n' "$flow_version" >> docker/Dockerfile
+fi
 
 # Hardening applied to the checkout instead of editing fazer.ai's files, so a sync from
 # upstream never conflicts. Each step fails the build when its target is gone, rather than
@@ -57,5 +64,6 @@ docker build -f docker/Dockerfile \
   --label org.opencontainers.image.revision="$(git rev-parse HEAD)" \
   --label org.opencontainers.image.created="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
   --label org.opencontainers.image.ref.name="$branch" \
+  ${flow_version:+--label io.flow.chat.version="$flow_version" -t "flow-chatwoot:flow-chat-v$flow_version"} \
   -t "flow-chatwoot:${version}-${sha}-ee" -t "flow-chatwoot:${sha}-ee" -t flow-chatwoot:latest-ee .
 docker images flow-chatwoot --format '{{.Repository}}:{{.Tag}} {{.Size}} {{.CreatedSince}}'

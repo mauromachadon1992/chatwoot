@@ -50,6 +50,8 @@ The production image is this fork with `enterprise/` and `custom/`, published pr
 `ghcr.io/mauromachadon1992/chatwoot`. Building, local checks, publishing and the Coolify
 stack: `custom/docker/README.md`.
 
+**The fork's own version** is a git tag `flow-chat-vX.Y.Z` (semver of what changed here, independent of the Chatwoot version). Pushing it runs the workflow `flow_chat_release.yml`: it builds the image with `FLOW_VERSION` baked in, publishes the tags `flow-chat-vX.Y.Z`, `<chatwoot version>-<sha>-ee` and `<sha>-ee` to the private package, and opens the GitHub release with generated notes. The package must list this repository under Package settings > Manage Actions access (Write). The running build answers its release, the Chatwoot version and the commit at `GET /flow/version` (no sign-in).
+
 ## Upstream files we touch (check these on every merge)
 
 | File | Why |

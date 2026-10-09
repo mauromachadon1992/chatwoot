@@ -81,6 +81,9 @@ module FlowCustom::Routes
     # blob id, so a new upload gets a new URL and the response can be cached for good.
     get 'flow/brand/:account_id/:name/:version', to: 'white_label_images#show', as: :flow_white_label_image,
                                                  constraints: { account_id: /\d+/, version: /\d+/ }
+    # Which build answers (the fork's release, Chatwoot's version, the commit), public like /api.
+    get 'flow/version', to: 'flow_version#show'
+
     # The installation login page's images, on the same terms.
     get 'flow/login/:name/:version', to: 'login_page_images#show', as: :flow_login_page_image,
                                      constraints: { version: /\d+/ }
