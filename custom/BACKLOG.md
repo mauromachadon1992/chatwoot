@@ -73,10 +73,10 @@ plus `rubocop custom spec/custom`. UI work: follow `DESIGN.md`; load skills `imp
 - Dev: docker compose in `~/chatwoot`. ee-local: `custom/docker/ee-local up` (built image, throwaway data).
 - Staging (Coolify `https://vps.freitascasaeconstrucao.com.br`, project `atendimento`, env `staging`):
   - `chatwoot-staging` service uuid `5brvjno3ifszb3dm4xweecsy`, host `chat-hml.freitascasaeconstrucao.com.br`, image
-    `ghcr.io/mauromachadon1992/chatwoot:4.18.0-6ebd0dc7d-ee` via env `FLOW_IMAGE_TAG` (B-02, the card tabs and B-13b). Compose: `custom/docker/coolify.staging.compose.yaml`.
+    `ghcr.io/mauromachadon1992/chatwoot:4.18.0-a0dcb1877-ee` via env `FLOW_IMAGE_TAG` (B-02, the card tabs, B-13b and the Flow identity, applied with `flow:identity:apply`). Compose: `custom/docker/coolify.staging.compose.yaml`.
     **`FRONTEND_URL` is a literal in the compose (Coolify restores compose values on restart); env overrides do not stick.**
   - `agents-staging` uuid `oig9l2odn1nkhf7fuvf4sxls`, host `agentes-hml.freitascasaeconstrucao.com.br`, image
-    `ghcr.io/mauromachadon1992/agents-ee:6b441a4` (agents-ee main, = upstream v1.39.0 + Flow files). Own Postgres (pgvector) and volume.
+    `ghcr.io/mauromachadon1992/agents-ee:1ecbbed3` via env `AGENTS_IMAGE` (head of AG PR #14, the Flow identity, NOT merged yet; previous: `6b441a4`). Own Postgres (pgvector) and volume.
   - Staging data left from tests: Chatwoot account 1; boards 1 "Teste" (user's), 2-3 "harness …", 4 "Vendas e2e"; inboxes 2
     `harness-inbox`, 3 `e2e-vendas`; conversations 13-21; catalog products 1-3 (Concreto fck 25, fck 30, Bombeamento); agents-ee tenant 1, agent 1 and 2, vault entry 1 (DeepSeek key).
     Agent 2 "Vendedor Concreto (e2e)" is bound to inbox 3, mode `production`, model `deepseek-flash` (the id DeepSeek lists).
@@ -178,3 +178,4 @@ Rule R8 of the AG backlog and section 3 of `custom/contracts/protocol.md`: any A
 - 2026-10-08 CW: `kanban/conversations/:display_id/deal[/items]` live on staging (image `4.18.0-6ebd0dc7d-ee`), capabilities `deal.items` and `products.read` announced.
 - 2026-10-08 AG+CW: the toolpack of AG#6 was applied to the staging agent 2 (`apply-toolpack.ts --apply`, idempotent on the second run); end to end conversation 22: 8 m3 fck 30 + pumping = R$ 4.880,00 from the catalog, the agent never named a card, `actor_kind: agent_bot`. The agent's earlier tools that took a card id are disabled.
 - 2026-10-08 AG+CW: both READMEs rewritten for flow-chat / flow-agents (AG branch `docs/readme-flow-agents`, CW commit with this line); the AG README no longer says "nothing is implemented" nor "no image of its own". See B-14 for what was not renamed.
+- 2026-10-09 AG+CW: identity on staging: Chatwoot image `4.18.0-a0dcb1877-ee` + `flow:identity:apply` (scheduled task, deleted), agents image `agents-ee:1ecbbed3` (AG PR #14 head, unmerged) through the new env `AGENTS_IMAGE`; both sign-in screens checked in light and dark. Upstream issue fazer-ai/agents#1175: the code-sandbox budget test fails on 1 CPU (rerun the shard when it hits).
