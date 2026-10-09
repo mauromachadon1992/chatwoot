@@ -19,9 +19,7 @@ const emit = defineEmits(['open', 'add', 'move', 'loadMore']);
 const { t } = useI18n();
 const { cardFields, money } = useFlowKanban();
 
-const showTotalValue = computed(
-  () => cardFields.value.has('value') && props.column.totalValue > 0
-);
+const showTotalValue = computed(() => cardFields.value.has('value'));
 
 const STAGE_TYPE_ICONS = {
   won: 'i-lucide-circle-check',
