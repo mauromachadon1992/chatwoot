@@ -4,9 +4,9 @@ RSpec.describe Custom::Internal::CheckNewVersionsJob do
   let(:job) { Internal::CheckNewVersionsJob.new }
 
   # The CE job runs with DISABLE_ENTERPRISE: the Enterprise job and the plan service do not exist there.
-  before { skip 'needs the enterprise edition' unless ChatwootApp.enterprise? }
-
   before do
+    skip 'needs the enterprise edition' unless ChatwootApp.enterprise?
+
     allow(Rails.env).to receive(:production?).and_return(true)
     allow(job).to receive(:fetch_latest_github_release).and_return('4.18.0')
     allow(Internal::ReconcilePlanConfigService).to receive(:new).and_return(instance_double(Internal::ReconcilePlanConfigService, perform: nil))
