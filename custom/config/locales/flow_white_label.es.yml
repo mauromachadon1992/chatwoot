@@ -1,0 +1,70 @@
+es:
+  flow_white_label:
+    field:
+      label: Marca blanca
+      enabled: Activa
+      disabled: Desactivada
+      configure: Configurar marca blanca
+    super_admin:
+      title: Marca blanca
+      description: La marca que usa esta cuenta en el panel, en el inicio de sesión de su dominio propio, en los correos, en la encuesta de satisfacción y en el widget.
+      back: Volver a la cuenta
+      saved: Marca blanca guardada.
+      not_saved: No se pudo guardar. Corrige los campos indicados.
+      session_expired: Tu sesión expiró y no se guardó nada. Cerrar sesión en el panel también cierra la del Super Admin. Revisa los campos y guarda de nuevo.
+      save: Guardar marca blanca
+      cancel: Cancelar
+      enable:
+        title: Activar marca blanca
+        hint: Desactivada, la cuenta vuelve a usar la marca de la instalación. No se borra nada de lo configurado.
+      identity:
+        title: Identidad
+        name: Nombre de la marca
+        name_hint: Aparece en la pestaña del navegador, en el inicio de sesión y en lugar del nombre del producto.
+        name_placeholder: 'Ej.: Clínica Sonrisa'
+        color: Color de la marca
+        color_hint: Pasa a ser el color de acento del panel (botones, enlaces, foco y selección) y se usa en los correos, en la encuesta de satisfacción y en la app instalada.
+        color_adjusted: 'El texto blanco sobre este color alcanza un contraste de %{ratio}:1, por debajo del mínimo de 4,5:1. En los botones, el panel usa un tono más oscuro del mismo color:'
+        palette: Paleta del panel
+      logos:
+        title: Logos
+        logo: Logo (fondo claro)
+        logo_dark: Logo (fondo oscuro)
+        icon: Icono
+        logo_email: Logo de correo
+        logo_hint: PNG, JPG, SVG o WebP, hasta 2 MB. Formato horizontal.
+        logo_dark_hint: Opcional. Sin él, el logo claro se usa también en el tema oscuro.
+        icon_hint: PNG o SVG cuadrado (512×512), hasta 1 MB. Se usa como favicon e icono de la app.
+        logo_email_hint: PNG, JPG o GIF, hasta 2 MB. Los clientes de correo no muestran SVG.
+        choose: Elegir archivo
+        replace: Cambiar
+        remove: Quitar
+        empty: Sin imagen
+      domain:
+        title: Dominio propio
+        label: Dominio
+        placeholder: soporte.cliente.com
+        hint: Con el dominio configurado, el inicio de sesión y el favicon ya muestran la marca de la cuenta.
+        dns: 'Crea un registro CNAME de %{domain} que apunte a %{target} y emite su certificado HTTPS en tu proxy (ej.: Coolify).'
+      links:
+        title: Enlaces
+        terms: Términos de uso
+        privacy: Política de privacidad
+        url_placeholder: https://
+      powered_by:
+        title: Powered by
+        hint: La línea "Desarrollado por" de los correos, la encuesta de satisfacción y el widget. En blanco, usa el nombre de la marca.
+        name: Nombre
+        name_placeholder: 'Ej.: Flow Agents'
+        url: Enlace
+      preview:
+        title: Vista previa
+        hint: Se actualiza mientras editas. Guarda para aplicar.
+        tab: Pestaña del navegador
+        dashboard: Panel
+        login: Inicio de sesión
+        login_button: Entrar
+        email: Correo
+        email_body: ¡Hola! Tu conversación fue actualizada.
+        powered_by: Desarrollado por %{name}
+        conversations: Conversaciones

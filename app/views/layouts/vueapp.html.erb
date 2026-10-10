@@ -38,6 +38,7 @@
     <% end %>
     <link rel="icon" type="image/png" sizes="512x512" href="<%= @global_config['LOGO_THUMBNAIL'] %>">
     <%= csrf_meta_tags %>
+    <% { 'flow-installation-theme' => @flow_installation_theme_css, 'flow-white-label-theme' => @white_label_theme_css }.compact.each do |id, css| %><%= tag.style(css.html_safe, id: id) %><% end %>
     <script>
       window.chatwootConfig = {
         hostURL: '<%= ENV.fetch('FRONTEND_URL', '') %>',

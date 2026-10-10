@@ -1,0 +1,2 @@
+# The contract hash is computed over these bytes: a CRLF checkout (Windows autocrlf) would change it.
+* text eol=lf

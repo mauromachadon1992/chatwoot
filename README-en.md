@@ -1,164 +1,72 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/brand/logo-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset=".github/brand/logo-light.png">
-  <img src=".github/brand/logo-light.png" alt="fazer.ai" width="200">
-</picture>
+<h1>Flow Chat</h1>
 
-<h1>Chatwoot fazer.ai</h1>
-
-<p>Official Chatwoot, with the features needed to serve customers in Brazil.</p>
-<p>WhatsApp customer support on your server, with an open-source edition and a Pro option.</p>
+<p>The Flow project's Chatwoot: WhatsApp customer support with a sales Kanban and AI agents.</p>
+<p>A private fork of fazer.ai's Chatwoot, which extends the official Chatwoot. It is not the official distribution.</p>
 
 [Português (Brasil)](README.md) · **English**
 
-[![Release](https://img.shields.io/github/v/release/fazer-ai/chatwoot)](https://github.com/fazer-ai/chatwoot/releases)
-[![Downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Ffazer.ai%2Fapi%2Fbadges%2Fchatwoot-downloads)](https://github.com/fazer-ai/chatwoot/pkgs/container/chatwoot)
-
 </div>
 
-## About
+## What it is
 
-Chatwoot fazer.ai is a fork of official Chatwoot, maintained by fazer.ai (FAZER.AI LTDA), Chatwoot's official partner in Brazil. Chatwoot Inc. develops the original product and is a separate company.
+**Flow Chat** is the Flow project's Chatwoot. It starts from [fazer.ai's fork](https://github.com/fazer-ai/chatwoot), which in turn extends the [official Chatwoot](https://github.com/chatwoot/chatwoot), and adds, in the [`custom/`](custom/) folder, a sales Kanban of its own and the conversation with **Flow Agents**, the project's AI agents (`mauromachadon1992/flow-agents-ee`).
 
-The fork follows official Chatwoot releases and adds features for teams that set up and operate WhatsApp customer support. You can use the open-source edition for free or subscribe to Chatwoot fazer.ai Pro to add the sales Kanban.
+Three layers, each with its own owner: Chatwoot (Chatwoot Inc.), the additions of fazer.ai's fork (FAZER.AI LTDA) and those of Flow Chat. Flow Chat is **not** an official Chatwoot or fazer.ai product, release, image or support channel.
 
-## What fazer.ai adds
+## What Flow Chat adds
 
-### WhatsApp
+### Sales Kanban (`custom/`)
 
-- Connect by scanning a QR code with your phone, without a paid third-party API, or through the official API with WhatsApp Business app coexistence.
-- fazer.ai's own QR code provider, “WhatsApp (native)”, in beta. Runs on your installation's server without a third-party service, using an [open-source Go connector](https://github.com/fazer-ai/whatsapp-connector) maintained by fazer.ai.
-- Change an inbox's connection method without losing its history.
-- Import your phone's message history when connecting.
-- WhatsApp groups.
-- Reactions and quoted replies, plus message editing and deletion.
-- Typing and audio recording indicators.
-- Voice notes are sent as voice notes instead of audio files.
-- Contact profile photos retrieved from WhatsApp.
+- Boards, stages (open, won, lost) and cards: a deal tied to a contact, with the conversations of any inbox. Drag and drop, filters, real time, and visibility by inbox, team and agent.
+- Value and products: a catalog, the deal's product lines, a quote built from the card, a probability per stage, and funnel and forecast reports.
+- Tasks per card, "my tasks", reminders and notifications.
+- Deals that open on their own from new conversations (per account and per board), a stale-deal alert and a lost reason.
+- Stage automations, signed outgoing webhooks (HMAC) and CSV import and export.
+- An AI summary of the deal (Captain), off by default.
+- A timeline for each card, with who acted: a person, an AI agent, a rule or the system.
+- A card panel in tabs, mobile, Portuguese, English and Spanish, light and dark.
 
-### Internal team chat
+What each part does and does not do is in [`custom/README.md`](custom/README.md). The plan is in [`custom/ROADMAP.md`](custom/ROADMAP.md), and the state right now in [`custom/BACKLOG.md`](custom/BACKLOG.md).
 
-Agents communicate within the support platform, through public or private channels and direct messages.
+### The conversation with Flow Agents
 
-- Threads and reactions, with conversation mentions.
-- Paste or drag files to attach them, with support for message drafts.
-- Native notifications and a mobile layout.
+- Flow Chat speaks the **Kanban dialect** the agent's client already uses (15 operations; Flow Agents' harness passes 16 of 16 against it) and offers **extensions** (catalog, the deal's products, value), all behind capabilities announced in `GET kanban/settings`.
+- The agent acts as a **service user** (`agent_bot`), which cannot reach webhooks, imports or automations.
+- The contract, in [`custom/contracts/`](custom/contracts/), is the same in both repositories, with a single hash. The [protocol](custom/contracts/protocol.md) says who changes what, in which order, and how each side proves its part.
 
-The Pro edition provides the full internal chat.
+### What comes from fazer.ai's fork
 
-### Conversations and messages
+Flow Chat inherits all of this; the details are in the [fork's README](https://github.com/fazer-ai/chatwoot#readme).
 
-- Scheduled messages, including recurring messages or WhatsApp templates. You can hold a scheduled message if the customer replies first.
-- Edit sent messages while retaining their content history.
-- Pin conversations or mark them as unread.
-- Keep a conversation assigned to the agent who claimed it.
-- Per-inbox signatures.
-- Personal or shared custom filters, including filters for contacts or conversations missing a custom attribute.
+- **WhatsApp:** QR code or the official API, a native provider in beta (fazer.ai's open-source connector), groups, reactions, quoted replies, editing and deleting, phone history.
+- **Internal chat between agents**, with the open edition's limits.
+- **Conversations and messages:** scheduled messages, edits with history, pinned conversations, per-inbox signature, custom filters.
+- **Automations and integrations:** new triggers, observer bots, a webhook per inbox.
+- **Operations:** white label ([CUSTOM_BRANDING.md](CUSTOM_BRANDING.md); Flow Chat uses it for the name and the login screen), email through Resend, S3-compatible storage, sortable reports.
 
-### Automations and integrations
+## Image and deploy
 
-- Triggers for edited messages and conversations idle for a set period.
-- Observer bots receive everything that happens in an inbox without replying or taking over conversations. They can classify or review customer support while the team or another bot responds.
-- Per-inbox webhooks, with incoming or outgoing message events and retries on failure.
-- n8n node: [`@fazer-ai/n8n-nodes-chatwoot`](https://www.npmjs.com/package/@fazer-ai/n8n-nodes-chatwoot).
-- [fazer.ai agents](https://fazer.ai/agents): AI agents that handle conversations through either edition of Chatwoot, with [source code on GitHub](https://github.com/fazer-ai/agents).
+- **Image:** private, `ghcr.io/mauromachadon1992/chatwoot`, with the tags `<version>-<sha>-ee` (immutable, the one to pin in production), `<sha>-ee`, `<version>-ee` and `latest-ee`. It carries `enterprise/` and `custom/`. fazer.ai's public image does **not** serve: it removes `enterprise/` and has no `custom/`.
+- **Build and publish:** `custom/docker/build-ee` and `custom/docker/publish-ghcr`. Run the image on your machine: `custom/docker/ee-local up` (http://localhost:3100, with its own database and Redis).
+- **Coolify:** `custom/docker/coolify.compose.yaml` (production) and `custom/docker/coolify.staging.compose.yaml` (staging, with its own PostgreSQL and Redis). The walkthrough and the tags are in [`custom/docker/README.md`](custom/docker/README.md).
+- **Development:** Docker, with `docker compose`; the project's rules are in [AGENTS.md](AGENTS.md) and the interface rules in [DESIGN.md](DESIGN.md).
 
-### Operations
+## Updating from upstream
 
-- Interface in Portuguese or the account's language, along with transactional emails and activity messages.
-- White labeling with your own name and logo, plus brand colors and branded emails. See [CUSTOM_BRANDING.md](CUSTOM_BRANDING.md).
-- Email delivery through Resend and storage through S3-compatible services, such as R2 or MinIO.
-- Bulk email imports through IMAP.
-- Reports sortable by any column, with cross-tabulated views across agents, inboxes, and teams.
-
-See changes for each version in the [release notes](https://fazer.ai/chatwoot-release-notes) or [GitHub releases](https://github.com/fazer-ai/chatwoot/releases).
-
-## Editions
-
-| | Chatwoot fazer.ai | Chatwoot fazer.ai Pro |
-| --- | --- | --- |
-| Core features | Official Chatwoot with fazer.ai additions | Everything in the open-source edition |
-| Sales Kanban | No | Pipelines and deals with monetary values, products, tasks, automations, and pipeline reports |
-| Internal chat | Up to 2 private channels, search within the last 90 days, no polls | Full internal chat, without these limits and with polls |
-| License | Free, MIT outside `enterprise/` | fazer.ai's own license for Pro code, in a separate repository |
-| Docker image | Public: `ghcr.io/fazer-ai/chatwoot` | Private, available with a subscription |
-
-Explore the [Pro Kanban](https://fazer.ai/kanban) and activate your license at [app.fazer.ai](https://app.fazer.ai). A Chatwoot fazer.ai Pro license is included at no extra charge with a Pro subscription to the [Comunidade Lucas Moreira](https://www.lucasmoreira.ai).
-
-### Chatwoot Enterprise
-
-fazer.ai licenses do not include Chatwoot Enterprise features. SSO and Captain, along with audit logs and custom roles, are licensed by Chatwoot Inc.
-
-To use these features with the fork, purchase a license from Chatwoot Inc. and use the `ghcr.io/fazer-ai/chatwoot:latest-ee` image. The image with the `-ee` suffix does not replace the license. The partnership offers a [licensing discount](https://fazer.ai/parceria-chatwoot).
-
-## Install
-
-### With the fazer.ai agents installer
-
-The shortest path is the [fazer.ai agents installer](https://fazer.ai/agents). A coding agent guides the installation of Chatwoot fazer.ai and the AI agent, together with the supporting services, on a VPS.
-
-### Chatwoot only, with Docker
-
-Use the public `ghcr.io/fazer-ai/chatwoot:latest` image. If you have an existing installation, back up the database before replacing the official image and follow the migration steps below.
-
-The repository includes [docker-compose.coolify.yaml](docker-compose.coolify.yaml) and a [Coolify deployment guide](docker/README-coolify-deploy.md), written in Portuguese.
-
-Fork-specific environment variables are documented in [.env.example](.env.example). The public image provides the `latest` tag and a tag for each release.
-
-### WhatsApp (native)
-
-The connector comes with the Chatwoot fazer.ai image and runs in the Sidekiq container, on by default for every account. It uses the same Redis and creates its own database on the same PostgreSQL server on first start. To turn it off, set:
-
-```bash
-WHATSAPP_CONNECTOR_ENABLED=false
-```
-
-To run the connector as a separate service in your stack, set `WHATSAPP_CONNECTOR_EMBEDDED=false`. The [connector README](https://github.com/fazer-ai/whatsapp-connector/blob/main/README-en.md#install-with-chatwoot-fazerai) covers both modes step by step, with docker-compose examples and inbox migration.
-
-> [!WARNING]
-> If you already run the connector separately, set `WHATSAPP_CONNECTOR_EMBEDDED=false` before updating the image. Otherwise, a second connector starts and competes for the same sessions.
-
-## Update and migrate from official Chatwoot
-
-### Update
-
-1. Back up the database before changing the image.
-2. Pull the new image and restart the services from the panel where Chatwoot runs.
-
-To pin a version, use its release tag instead of `latest`.
-
-### Migrate from official Chatwoot
-
-1. Choose a fork version equal to or newer than your installed version.
-2. Back up the database before changing the image.
-3. Replace the official image with `ghcr.io/fazer-ai/chatwoot`, using your chosen tag, then restart the services.
-
-Your database and attachments are preserved, along with your settings.
-
-## Support and community
-
-- Installation and usage questions: [Comunidade Lucas Moreira Q&A](https://www.lucasmoreira.ai/c/perguntas-e-respostas).
-- Bugs and feature requests: [GitHub issues](https://github.com/fazer-ai/chatwoot/issues).
-- Videos in Portuguese: [Lucas Moreira's channel](https://youtube.com/@eulucassmoreira).
-- API documentation, including Kanban: [docs-chatwoot.fazer.ai](https://docs-chatwoot.fazer.ai).
+Flow Chat's trunk is `feat/kanban`; `main` mirrors fazer.ai's fork and gets no commits of ours. Bring upstream in by merge, preferably at a tag, and check the upstream files we touch, listed in [`custom/README.md`](custom/README.md) ("Upstream files we touch"). Back up the database before swapping the image.
 
 ## License
 
-The original Chatwoot is copyright (c) 2017-2026 Chatwoot Inc. and uses the MIT license, except for content in `enterprise/`. That directory follows the terms in [enterprise/LICENSE](enterprise/LICENSE).
+The original Chatwoot is copyright (c) 2017-2026 Chatwoot Inc. and uses the MIT license, except the contents of `enterprise/`, which follow the terms of [enterprise/LICENSE](enterprise/LICENSE). The `enterprise/` features (SSO, Captain, audit logs, custom roles and the rest) need a Chatwoot Inc. license in production; the AI deal summary uses Captain.
 
-Modifications and additions in this fork are copyright (c) 2025-2026 FAZER.AI LTDA. They follow the same terms as the code they extend, with the MIT license applying outside `enterprise/`. Third-party components retain their respective licenses.
+The changes and additions of fazer.ai's fork are copyright (c) 2025-2026 FAZER.AI LTDA and follow the same terms as the code they extend. Flow Chat's additions (`custom/` and the hooks listed in `custom/README.md`) derive from that code and do not change the terms of what they extend. Third-party components keep their own licenses.
 
-When redistributing the software or substantial portions of it, keep both copyright notices and the permission notice. This requirement also applies to copies of individual files.
-
-See [NOTICE](NOTICE) and [LICENSE](LICENSE) for the full terms.
+When redistributing the software or substantial parts of it, keep the copyright notices and the permission notice. The requirement also applies to copies of individual files. See [NOTICE](NOTICE) and [LICENSE](LICENSE) for the full terms.
 
 ## Links
 
-- [Chatwoot fazer.ai](https://fazer.ai/chatwoot)
-- [fazer.ai licenses](https://app.fazer.ai)
-- [Official Chatwoot](https://www.chatwoot.com)
-- [Official Chatwoot source code](https://github.com/chatwoot/chatwoot)
-
-Maintained by fazer.ai, Chatwoot's official partner in Brazil.
+- **Flow Agents:** `mauromachadon1992/flow-agents-ee`
+- **Upstream:** [fazer.ai's fork](https://github.com/fazer-ai/chatwoot) · [official Chatwoot](https://www.chatwoot.com) · [official Chatwoot code](https://github.com/chatwoot/chatwoot)
+- **Support:** this repository has no third-party support; support for the original product is Chatwoot Inc.'s and fazer.ai's.

@@ -1,0 +1,7 @@
+# Base images of docker/Dockerfile, pinned by digest. build-ee reads this file: one
+# `<image:tag>=<digest>` per line, and the build fails if the Dockerfile no longer has that FROM.
+#
+# To move a pin: `docker buildx imagetools inspect <image:tag>`, copy its Digest, rebuild,
+# run custom/docker/ee-local check and publish. Pinned 2026-10-07 (Alpine 3.21.3, Node 24.21.0).
+node:24-alpine=sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1
+ruby:3.4.4-alpine3.21=sha256:5bdfa2312f3f0bc9bd077e954c943652155a093db228af978873ff92389300d3

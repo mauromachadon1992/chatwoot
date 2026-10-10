@@ -1,0 +1,141 @@
+pt_BR:
+  flow_kanban:
+    default_stages:
+      new: Novo
+      in_progress: Em andamento
+      won: Ganho
+      lost: Perdido
+    card_fields:
+      label: Campos do card do Kanban
+      hint: O que o quadro mostra em cada card sem abri-lo. O título sempre aparece.
+      contact: Contato
+      value: Valor
+      conversations: Conversas e canais
+      assignee: Responsável
+      time_in_stage: Tempo na etapa
+      last_activity: Última atividade
+    features:
+      label: Recursos do Kanban
+      hint: O que esta conta pode usar. Um administrador ainda configura cada um por funil.
+      auto_create:
+        label: Negócios automáticos
+        hint: Uma conversa nova pode abrir um negócio sozinha, nos funis e caixas de entrada escolhidos por um administrador.
+      stale_alerts:
+        label: Alerta de negócio parado
+        hint: Um negócio que fica tempo demais numa etapa é sinalizado e o agente é avisado, nas etapas com limite definido.
+      webhooks:
+        label: Webhooks
+        hint: Um administrador pode enviar eventos dos negócios (criado, movido, ganho, perdido, valor alterado, tarefa criada) a um endereço.
+      ai_summary:
+        label: 'Resumo de negócio com IA'
+        hint: 'Os agentes podem pedir um rascunho de resumo do negócio e uma próxima tarefa sugerida. O texto do negócio e das conversas que eles podem abrir é enviado ao provedor de IA do Captain.'
+    settings:
+      unsupported_currency: Moeda não suportada.
+      quote_template_too_long: A mensagem de orçamento pode ter até 2000 caracteres.
+    quote:
+      default_template: "Olá, {{contact}}! Segue o orçamento:\n\n{{items}}\n\nTotal: {{total}}\n\nQualquer dúvida, é só responder esta mensagem. — {{agent}}"
+      discount: "%{percent}% de desconto"
+      units:
+        un: "un"
+        m: "m"
+        m2: "m²"
+        m3: "m³"
+        kg: "kg"
+        t: "t"
+        l: "L"
+        cx: "cx"
+        pc: "pç"
+        sc: "sc"
+        par: "par"
+        kit: "kit"
+        h: "h"
+        srv: "serv."
+    pro:
+      invalid_date: 'uma data deve estar em ISO 8601, como 2026-10-30T18:00:00-03:00'
+      invalid_attributes: 'custom_attributes deve ser um objeto'
+      invalid_labels: 'labels deve ser uma lista de textos'
+      no_deal: 'esta conversa não tem negócio em aberto'
+      invalid_quantity: 'quantity deve ser um número maior que zero'
+      too_many_lines: 'um negócio comporta no máximo %{max} linhas de produto'
+      contact_needed: 'um negócio precisa de um contato: envie conversation_id (o display id da conversa) ou contact_id'
+    ai:
+      nothing_to_summarize: 'Ainda não há mensagens nas conversas vinculadas para resumir.'
+      rate_limited: 'Você pediu muitos resumos. Tente de novo em %{minutes} min.'
+      disabled: 'O resumo com IA não está ativado nesta conta.'
+      not_configured: 'O assistente de IA não está configurado. Peça a um administrador para adicionar a chave de API do Captain.'
+      quota: 'A conta usou as respostas de IA deste período.'
+      failed: 'O assistente não conseguiu responder agora. Nada foi alterado; tente de novo em instantes.'
+    imports:
+      file:
+        too_big: 'O arquivo tem mais de 2 MB.'
+        encoding: 'O arquivo não está em UTF-8. Salve como CSV UTF-8 e tente de novo.'
+        empty: 'O arquivo não tem linha de cabeçalho.'
+        no_rows: 'O arquivo tem cabeçalho, mas nenhuma linha.'
+        too_many_rows: 'O arquivo tem mais de %{max} linhas. Divida e importe em partes.'
+        malformed: 'O arquivo não é um CSV válido (confira aspas e separadores).'
+      errors:
+        name_blank: 'o nome está vazio'
+        name_too_long: 'o nome passa de %{max} caracteres'
+        sku_too_long: 'o SKU passa de %{max} caracteres'
+        unit_unknown: 'unidade desconhecida (use uma de %{units})'
+        price_invalid: 'o preço não é um valor'
+        repeated_in_file: 'este item se repete no arquivo'
+        email_invalid: 'o e-mail não é válido'
+        phone_invalid: 'o telefone precisa ser um número com código do país, como +5511999998888'
+        contact_missing: 'precisa de e-mail ou telefone para achar ou criar o contato'
+        stage_unknown: 'não existe etapa chamada "%{name}" (etapas: %{stages})'
+        value_invalid: 'o valor não é um valor monetário'
+        date_invalid: 'a data precisa ser AAAA-MM-DD ou DD/MM/AAAA'
+        assignee_unknown: 'não há agente com o e-mail %{email}'
+        unexpected: 'algo deu errado com esta linha'
+    task_reminder:
+      due_soon: 'Tarefa vence em %{minutes} min: %{title} (%{card})'
+      overdue: 'Tarefa atrasada: %{title} (%{card})'
+      open: Abrir o funil
+  activerecord:
+    errors:
+      models:
+        custom/kanban/card:
+          attributes:
+            start_at:
+              after_due: 'o início não pode ser depois do prazo'
+            custom_attributes:
+              too_many: 'no máximo %{count}'
+              bad_key: 'cada nome deve ter de 1 a %{max} caracteres'
+              too_big: 'é grande demais (no máximo 10 KB)'
+            labels:
+              too_many: 'no máximo %{count}'
+              too_long: 'cada etiqueta pode ter até %{max} caracteres'
+            value_cents:
+              follows_items: segue a soma dos produtos; remova os produtos para digitar um valor
+        custom/kanban/webhook:
+          attributes:
+            url:
+              https: deve ser um endereço https completo
+            events:
+              empty: escolha ao menos um evento
+          too_many: uma conta pode ter no máximo %{max} webhooks
+        custom/kanban/stage_automation:
+          attributes:
+            trigger_config:
+              no_reply: precisa de um número de horas de 1 a 720 e de quem está em silêncio, o cliente ou a equipe
+            actions:
+              empty: precisa de pelo menos uma ação
+              too_many: pode ter no máximo %{count} ações
+              step_stage: 'ação %{position}: escolha uma etapa deste funil'
+              step_title: 'ação %{position}: dê à tarefa um título de até 255 caracteres'
+              step_task_type: 'ação %{position}: escolha o tipo da tarefa'
+              step_due: 'ação %{position}: o prazo vai de 0 a 720 horas'
+              step_agent: 'ação %{position}: escolha um agente desta conta'
+              step_label: 'ação %{position}: escolha uma etiqueta desta conta'
+              step_type: 'ação %{position}: ação desconhecida'
+        custom/kanban/board:
+          attributes:
+            auto_create:
+              daily_cap: o limite diário deve ficar entre 1 e 500
+              inboxes: inclui uma caixa de entrada de fora desta conta
+              no_inbox: precisa de pelo menos uma caixa de entrada
+        custom/kanban/stage:
+          attributes:
+            stale_after_days:
+              open_only: vale só para etapas abertas

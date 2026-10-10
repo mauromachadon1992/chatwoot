@@ -9,6 +9,10 @@ require_relative '../lib/middleware/fazer_ai_platform_header'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+# Flow customizations (custom/), kept out of upstream files to keep fazer-ai merges clean.
+flow_custom_engine = File.expand_path('../custom/lib/flow_custom/engine.rb', __dir__)
+require flow_custom_engine if File.exist?(flow_custom_engine)
+
 ## Load the specific APM agent
 # We rely on DOTENV to load the environment variables
 # We need these environment variables to load the specific APM agent

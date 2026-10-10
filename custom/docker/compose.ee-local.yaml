@@ -1,0 +1,79 @@
+# The fork's production image (flow-chatwoot:*-ee: enterprise/ + custom/) on this machine,
+# to check a build before it goes anywhere. Its own database, Redis and port (3100), so it
+# never touches the development stack. Started by custom/docker/ee-local, which also
+# creates the gitignored .ee-local.env with fresh secrets.
+#
+# This is a production build: the Enterprise plan comes from a Chatwoot Inc license through
+# the Chatwoot Hub (CHATWOOT_HUB_SYNC=true), not from flow:enterprise:dev_enable, which runs
+# only in development and test. Without a license the installation is `community`.
+name: flow-ee-local
+
+x-app: &app
+  image: ${FLOW_IMAGE:-flow-chatwoot:latest-ee}
+  env_file: .ee-local.env
+  environment:
+    RAILS_ENV: production
+    NODE_ENV: production
+    INSTALLATION_ENV: docker
+    RAILS_LOG_TO_STDOUT: 'true'
+    FRONTEND_URL: http://localhost:3100
+    POSTGRES_HOST: postgres
+    POSTGRES_USERNAME: postgres
+    REDIS_URL: redis://redis:6379
+    # The embedded WhatsApp connector needs a real phone session; off for a smoke test.
+    WHATSAPP_CONNECTOR_ENABLED: 'false'
+  # A restart of Docker Desktop leaves containers without a policy exited (255).
+  restart: unless-stopped
+  volumes:
+    - storage:/app/storage
+  depends_on:
+    - postgres
+    - redis
+
+services:
+  # Health is per service, not a HEALTHCHECK in the image: rails and sidekiq share the image,
+  # and a web probe would mark the worker unhealthy. Same probes as coolify.compose.yaml.
+  rails:
+    <<: *app
+    entrypoint: docker/entrypoints/rails.sh
+    command: ['bundle', 'exec', 'rails', 's', '-p', '3000', '-b', '0.0.0.0']
+    ports:
+      - '127.0.0.1:3100:3000'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- --header="Accept: text/html" http://127.0.0.1:3000/ > /dev/null']
+      interval: 30s
+      timeout: 20s
+      retries: 10
+      start_period: 90s
+
+  sidekiq:
+    <<: *app
+    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    healthcheck:
+      test: ['CMD-SHELL', 'ps aux | grep [s]idekiq | grep -qv entrypoints']
+      interval: 30s
+      timeout: 20s
+      retries: 10
+      start_period: 60s
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    env_file: .ee-local.env
+    environment:
+      # The database Rails expects in production (POSTGRES_DATABASE's default).
+      POSTGRES_DB: chatwoot_production
+      POSTGRES_USER: postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - redis:/data
+
+volumes:
+  storage:
+  postgres:
+  redis:

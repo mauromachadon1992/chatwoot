@@ -17,6 +17,8 @@ permissions:
 jobs:
   deployment_check:
     name: Check Deployment
+    # Waits for upstream's Heroku review app, which the fork does not have.
+    if: github.repository == 'chatwoot/chatwoot'
     runs-on: ubuntu-latest
     steps:
       - name: Install jq

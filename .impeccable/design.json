@@ -1,0 +1,333 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-04T23:57:57.401Z",
+  "title": "Design System: Flow Chat",
+  "extensions": {
+    "colorMeta": {
+      "brand": {
+        "role": "primary",
+        "displayName": "Flow Indigo (account accent)",
+        "canonical": "rgb(var(--blue-9, 62 99 221))",
+        "dark": "#3E63DD",
+        "tonalRamp": [
+          "#1D2F65",
+          "#3255D0",
+          "#3F64DE",
+          "#3E63DD",
+          "#86A6F7",
+          "#BFD2FF",
+          "#E0EAFF",
+          "#F6F9FF"
+        ],
+        "note": "Step 9 of the accent ramp. A white-labelled account replaces --blue-1..12 with its own colour (Custom::WhiteLabel::Palette); white text on it is guaranteed 4.5:1."
+      },
+      "brand-text": {
+        "role": "primary",
+        "displayName": "Flow Indigo Text",
+        "canonical": "rgb(var(--blue-11))",
+        "dark": "#91B1FF",
+        "note": "Step 11: accent text, links, icons. Guaranteed 4.5:1 on the step-3 wash, in both themes and under any white label."
+      },
+      "brand-wash": {
+        "role": "primary",
+        "displayName": "Selection Wash",
+        "canonical": "rgb(var(--blue-3))",
+        "dark": "#182548",
+        "note": "Step 3: selection wash. Re-hued with the account accent."
+      },
+      "won-teal": {
+        "role": "secondary",
+        "displayName": "Won Teal",
+        "canonical": "rgb(var(--teal-9))",
+        "dark": "#12A594"
+      },
+      "won-teal-text": {
+        "role": "secondary",
+        "displayName": "Won Teal Text",
+        "canonical": "rgb(var(--teal-11))",
+        "dark": "#0BD8B6"
+      },
+      "lost-ruby": {
+        "role": "secondary",
+        "displayName": "Lost Ruby",
+        "canonical": "rgb(var(--ruby-9))",
+        "dark": "#E54666"
+      },
+      "lost-ruby-text": {
+        "role": "secondary",
+        "displayName": "Lost Ruby Text",
+        "canonical": "rgb(var(--ruby-11))",
+        "dark": "#FF949D"
+      },
+      "pending-amber": {
+        "role": "secondary",
+        "displayName": "Pending Amber",
+        "canonical": "rgb(var(--amber-9))",
+        "dark": "#FFC53D"
+      },
+      "pending-amber-text": {
+        "role": "secondary",
+        "displayName": "Pending Amber Text",
+        "canonical": "rgb(var(--amber-11))",
+        "dark": "#FFCA16"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "rgb(var(--slate-12))",
+        "dark": "#EDEEF0"
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "rgb(var(--slate-11))",
+        "dark": "#B0B4BA"
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Faint Ink",
+        "canonical": "rgb(var(--slate-10))",
+        "dark": "#777B84"
+      },
+      "ink-disabled": {
+        "role": "neutral",
+        "displayName": "Disabled Ink",
+        "canonical": "rgb(var(--slate-9))",
+        "dark": "#696E77"
+      },
+      "hairline-strong": {
+        "role": "neutral",
+        "displayName": "Strong Hairline",
+        "canonical": "rgb(var(--slate-6))",
+        "dark": "#363A3F"
+      },
+      "canvas": {
+        "role": "neutral",
+        "displayName": "Canvas",
+        "canonical": "rgb(var(--background-color))",
+        "dark": "#1C1D20"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "rgb(var(--surface-1))",
+        "dark": "#141517"
+      },
+      "solid": {
+        "role": "neutral",
+        "displayName": "Solid",
+        "canonical": "rgb(var(--solid-1))",
+        "dark": "#17171A"
+      },
+      "border-weak": {
+        "role": "neutral",
+        "displayName": "Weak Border",
+        "canonical": "rgb(var(--border-weak))",
+        "dark": "#1F1F25"
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Strong Border",
+        "canonical": "rgb(var(--border-strong))",
+        "dark": "#2E2D32"
+      }
+    },
+    "typographyMeta": {
+      "heading-1": {
+        "displayName": "Heading 1",
+        "purpose": "Page and panel titles (text-heading-1)."
+      },
+      "heading-2": {
+        "displayName": "Heading 2",
+        "purpose": "Section headings, empty-state titles (text-heading-2)."
+      },
+      "heading-3": {
+        "displayName": "Heading 3",
+        "purpose": "Card titles, column names, subsections (text-heading-3)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "General text and descriptions (text-body-main)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Form field labels (text-label)."
+      },
+      "label-small": {
+        "displayName": "Label Small",
+        "purpose": "Metadata, counts, chips, captions (text-label-small)."
+      }
+    },
+    "shadows": [
+      {
+        "name": "resting-card",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Kanban cards at rest (shadow-sm)."
+      },
+      {
+        "name": "lifted",
+        "value": "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        "purpose": "Hover on a draggable card (shadow-md)."
+      },
+      {
+        "name": "overlay",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Dropdowns, side panels, dialogs (shadow-lg)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "state",
+        "value": "150ms ease-out",
+        "purpose": "Hover, shadow and opacity changes on controls and cards."
+      },
+      {
+        "name": "panel",
+        "value": "300ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Side panel slide-in."
+      },
+      {
+        "name": "drag",
+        "value": "150ms",
+        "purpose": "vuedraggable reorder animation."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      },
+      {
+        "name": "2xl",
+        "value": "1536px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one main action of a view (Button solid blue). Follows the account accent.",
+      "html": "<button class=\"ds-btn-primary\">New card</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: none; border-radius: 8px; background: rgb(var(--blue-9, 39 129 246)); color: #fff; font: 460 14px/21px Inter, system-ui, sans-serif; letter-spacing: -0.28px; cursor: pointer; transition: filter 150ms ease-out; } .ds-btn-primary:hover { filter: brightness(1.1); } .ds-btn-primary:focus-visible { outline: 2px solid rgb(var(--blue-9, 39 129 246)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Faded Accent Button",
+      "kind": "button",
+      "refersTo": "button-faded-blue",
+      "description": "Secondary accent action (Button faded blue): a 10% wash of the accent with step-11 text.",
+      "html": "<button class=\"ds-btn-faded\">Link conversation</button>",
+      "css": ".ds-btn-faded { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border: none; border-radius: 8px; background: rgb(var(--blue-9, 39 129 246) / 0.1); color: rgb(var(--blue-11, 8 109 224)); font: 460 14px/21px Inter, system-ui, sans-serif; letter-spacing: -0.28px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-faded:hover { background: rgb(var(--blue-9, 39 129 246) / 0.2); } .ds-btn-faded:focus-visible { outline: 2px solid rgb(var(--blue-9, 39 129 246)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Ghost Icon Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Toolbar and row actions (Button ghost slate, icon-only with tooltip).",
+      "html": "<button class=\"ds-btn-ghost\" aria-label=\"Settings\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20 7h-9M14 17H5\"/><circle cx=\"17\" cy=\"17\" r=\"3\"/><circle cx=\"7\" cy=\"7\" r=\"3\"/></svg></button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: none; border-radius: 8px; background: transparent; color: #60646C; cursor: pointer; transition: background 150ms ease-out, color 150ms ease-out; } .ds-btn-ghost:hover { background: rgba(196,197,198,0.22); color: #1C2024; } .ds-btn-ghost:focus-visible { outline: 2px solid rgb(var(--blue-9, 39 129 246)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Input from components-next, with optional prefix icon.",
+      "html": "<label class=\"ds-field\">Title<input class=\"ds-input\" placeholder=\"Leave blank to use the contact's name\"></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font: 500 14px/21px Inter, system-ui, sans-serif; color: #1C2024; } .ds-input { height: 40px; padding: 0 12px; border: none; border-radius: 8px; outline: 1px solid #EAEAEA; outline-offset: -1px; background: #fff; color: #1C2024; font: 420 14px/21px Inter, system-ui, sans-serif; transition: outline-color 150ms ease-out; } .ds-input::placeholder { color: #80838D; } .ds-input:hover { outline-color: #D9D9E0; } .ds-input:focus-visible { outline-color: rgb(var(--blue-9, 39 129 246)); }"
+    },
+    {
+      "name": "Toolbar Filter",
+      "kind": "chip",
+      "description": "SingleSelect trigger from filter/inputs: faded slate button that opens a searchable menu.",
+      "html": "<button class=\"ds-filter\">All inboxes<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"m6 9 6 6 6-6\"/></svg></button>",
+      "css": ".ds-filter { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border: none; border-radius: 8px; background: rgba(196,197,198,0.22); color: #60646C; font: 440 12px/18px Inter, system-ui, sans-serif; cursor: pointer; transition: background 150ms ease-out; } .ds-filter:hover { background: rgba(196,197,198,0.36); color: #1C2024; } .ds-filter:focus-visible { outline: 2px solid rgb(var(--blue-9, 39 129 246)); outline-offset: 2px; }"
+    },
+    {
+      "name": "Conversation Chip",
+      "kind": "chip",
+      "description": "A linked conversation on a Kanban card: status dot, channel icon, display id.",
+      "html": "<a class=\"ds-chip\" href=\"#\"><span class=\"ds-chip-dot\"></span><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.7A8.4 8.4 0 1 1 21 11.5z\"/></svg>#42</a>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 6px; background: rgba(196,197,198,0.22); color: #60646C; font: 440 12px/16px Inter, system-ui, sans-serif; text-decoration: none; transition: color 150ms ease-out; } .ds-chip:hover { color: #1C2024; } .ds-chip:focus-visible { outline: 2px solid rgb(var(--blue-9, 39 129 246)); outline-offset: 1px; } .ds-chip-dot { width: 6px; height: 6px; border-radius: 9999px; background: #12A594; }"
+    },
+    {
+      "name": "Kanban Card",
+      "kind": "card",
+      "refersTo": "kanban-card",
+      "description": "A deal on the board: title, contact, conversation chips, metadata row.",
+      "html": "<article class=\"ds-card\" tabindex=\"0\"><h4 class=\"ds-card-title\">Plano anual — Mariana</h4><span class=\"ds-card-contact\">Mariana Souza</span><span class=\"ds-card-meta\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M12 6v6l4 2\"/></svg>3 days ago</span></article>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 8px; width: 264px; padding: 12px; border-radius: 8px; background: #fff; outline: 1px solid #ECECEC; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); cursor: grab; transition: box-shadow 150ms ease-out; } .ds-card:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); } .ds-card:focus-visible { outline: 2px solid rgb(var(--blue-9, 39 129 246)); } .ds-card-title { margin: 0; font: 500 14px/21px Inter, system-ui, sans-serif; letter-spacing: -0.27px; color: #1C2024; } .ds-card-contact { font: 440 12px/16px Inter, system-ui, sans-serif; color: #60646C; } .ds-card-meta { display: inline-flex; align-items: center; gap: 4px; font: 440 12px/16px Inter, system-ui, sans-serif; color: #80838D; }"
+    },
+    {
+      "name": "Kanban Column Header",
+      "kind": "custom",
+      "refersTo": "kanban-column",
+      "description": "Stage colour dot, name, count pill on the translucent column surface.",
+      "html": "<div class=\"ds-column\"><span class=\"ds-column-dot\"></span><span class=\"ds-column-name\">Em andamento</span><span class=\"ds-column-count\">12</span></div>",
+      "css": ".ds-column { display: flex; align-items: center; gap: 8px; width: 288px; padding: 12px; border-radius: 12px; background: rgba(215,215,215,0.22); } .ds-column-dot { width: 10px; height: 10px; border-radius: 9999px; background: #F59E0B; } .ds-column-name { font: 500 14px/21px Inter, system-ui, sans-serif; letter-spacing: -0.27px; color: #1C2024; } .ds-column-count { padding: 0 6px; border-radius: 6px; background: rgba(196,197,198,0.22); color: #60646C; font: 440 12px/16px Inter, system-ui, sans-serif; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "A Mesa de Operação",
+    "overview": "Agents keep this dashboard open all day, triaging conversations from WhatsApp, e-mail, the widget and every other channel, and moving deals along a funnel. The interface is the desk, not the work: dense, calm and predictable, so the conversation and the customer are what the eye lands on. Familiarity is a feature. A new Flow screen must feel like it shipped with Chatwoot, built from the same components, type scale and colour tokens, and differing only where the task demands it.\n\nThe system is Chatwoot's own (components-next, the n-* colour tokens, the typography utilities in _woot.scss), light and dark from the same token names. Flow extends it; it never forks it. Expression lives in precise details: a stage colour dot, a channel icon on a conversation chip, a quiet hover lift on a card being dragged.",
+    "keyCharacteristics": [
+      "Restrained palette: neutral surfaces, one blue for action and selection, semantic colour only for state.",
+      "Flat surfaces separated by tone and a 1px outline; shadow is reserved for things that float.",
+      "One sans family (Inter) on a tight, fixed scale; hierarchy from weight and colour, not size jumps.",
+      "Every control comes from components-next; no native form controls in Vue screens.",
+      "Light and dark themes are the same tokens with different values: never hard-code a hex."
+    ],
+    "rules": [
+      {
+        "name": "The Tokens-Only Rule",
+        "body": "Colour comes from the n-* Tailwind tokens, never from a literal hex. The only exception is user data, such as a stage colour picked in the board settings, which is applied through :style.",
+        "section": "colors"
+      },
+      {
+        "name": "The State-Not-Decoration Rule",
+        "body": "Teal, ruby and amber always signal a state, and they are always paired with an icon or a word. A coloured dot alone never carries meaning.",
+        "section": "colors"
+      },
+      {
+        "name": "The Accent-Ramp Rule",
+        "section": "colors",
+        "body": "Action and selection use only the n-brand and n-blue-* tokens, in the roles above, never n-iris, woot-* or a literal blue, so a white label re-colours every screen at once. The ramp is generated by Custom::WhiteLabel::Palette, which keeps Chatwoot's lightness for every step and guarantees: white text on step 9 at 4.5:1 (a brand too light for it is darkened, and the super admin form says so), step 11 at 4.5:1 and step 12 at 7:1 on the step-3 wash, and step 9 at 3:1 on the dark page. Put white text only on step 9 or darker, and accent text only in steps 11 and 12. Those are the pairs the guarantee covers."
+      },
+      {
+        "name": "The Utility Rule",
+        "body": "Text uses the text-heading-*, text-body-main, text-label and text-label-small utilities. Hand-built text-sm font-medium combinations drift from the scale and are not used in new code.",
+        "section": "typography"
+      },
+      {
+        "name": "The Float-Only Rule",
+        "body": "Only overlays carry shadow-lg. Inline containers get a tone or a hairline, never a large shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do build every control from components-next, and look there before writing markup.",
+      "Do use the typography utilities (text-heading-3, text-body-main, text-label-small).",
+      "Do keep one primary button per view.",
+      "Do pair every state colour with an icon or a word.",
+      "Do give icon-only controls an aria-label and a tooltip.",
+      "Do use logical spacing (ms-, me-, start-, end-), so RTL works.",
+      "Do keep strings in i18n/fazer-ai/locale/{en,pt_BR,es}."
+    ],
+    "donts": [
+      "Don't use native <select>, <input> or <button> elements in Vue screens.",
+      "Don't write a literal hex colour, except for user-chosen data applied through :style.",
+      "Don't put shadow-lg on inline containers; it belongs to overlays.",
+      "Don't put a coloured border-left stripe on cards or list items.",
+      "Don't open a modal for something a side panel or an inline control can do.",
+      "Don't hand-build type styles (text-sm font-medium) where a utility exists."
+    ]
+  }
+}

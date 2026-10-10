@@ -1,0 +1,62 @@
+name: Flow Chat release
+
+# The version of this fork is its own: a git tag `flow-chat-vX.Y.Z` (semver of what changed here, independent of the
+# Chatwoot version it is built on). Pushing the tag builds the EE image with custom/docker/build-ee, publishes it to the
+# private package with the tag, `<chatwoot version>-<sha>-ee` and `<sha>-ee` (custom/docker/publish-ghcr), and opens a
+# GitHub release with notes generated from the merged pull requests since the previous release. The running build
+# tells its release at GET /flow/version.
+on:
+  push:
+    tags: ["flow-chat-v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)build, e.g. flow-chat-v0.1.0"
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Resolve the tag
+        id: tag
+        run: |
+          tag="${{ github.event.inputs.tag || github.ref_name }}"
+          case "$tag" in flow-chat-v[0-9]*.[0-9]*.[0-9]*) ;; *) echo "::error::$tag is not flow-chat-vX.Y.Z"; exit 1;; esac
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#flow-chat-v}" >> "$GITHUB_OUTPUT"
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          df -h / | tail -1
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.tag.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Build the image
+        env:
+          FLOW_VERSION: ${{ steps.tag.outputs.version }}
+        run: custom/docker/build-ee "${{ steps.tag.outputs.tag }}"
+
+      - name: Publish the image
+        env:
+          GHCR_OWNER: ${{ github.repository_owner }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | custom/docker/publish-ghcr
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.tag.outputs.tag }}
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          gh release view "$TAG" > /dev/null 2>&1 \
+            || gh release create "$TAG" --generate-notes --title "Flow Chat $VERSION"

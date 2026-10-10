@@ -1,0 +1,111 @@
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useAccount } from 'dashboard/composables/useAccount';
+import { formatDistanceToNow, fromUnixTime } from 'date-fns';
+import { enUS, es, ptBR } from 'date-fns/locale';
+import { useMapGetter } from 'dashboard/composables/store';
+import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
+import { getInboxIconByType } from 'dashboard/helper/inbox';
+import { formatMoney } from './money';
+
+const DATE_LOCALES = { en: enUS, es, pt_BR: ptBR };
+
+export const STAGE_COLORS = [
+  '#3B82F6',
+  '#8B5CF6',
+  '#EC4899',
+  '#F59E0B',
+  '#10B981',
+  '#14B8A6',
+  '#EF4444',
+  '#6B7280',
+];
+
+// Mirrors Custom::Kanban::CardFields::ALL; a super admin picks them per account.
+export const CARD_FIELDS = [
+  'contact',
+  'value',
+  'conversations',
+  'assignee',
+  'time_in_stage',
+  'last_activity',
+];
+
+// Mirrors Custom::Kanban::Features: what a super admin lets this account use. An account that
+// never chose gets the defaults.
+export const FEATURES = [
+  'auto_create',
+  'stale_alerts',
+  'webhooks',
+  'ai_summary',
+];
+export const DEFAULT_FEATURES = ['stale_alerts', 'webhooks'];
+
+export function useFlowKanban() {
+  const { locale } = useI18n();
+  const { currentAccount } = useAccount();
+  const accountId = useMapGetter('getCurrentAccountId');
+  const inboxes = useMapGetter('inboxes/getInboxes');
+
+  const cardFields = computed(() => {
+    const chosen = currentAccount.value?.settings?.flow_kanban_card_fields;
+    return new Set(Array.isArray(chosen) ? chosen : CARD_FIELDS);
+  });
+
+  const features = computed(() => {
+    const chosen = currentAccount.value?.settings?.flow_kanban_features;
+    return new Set(Array.isArray(chosen) ? chosen : DEFAULT_FEATURES);
+  });
+  const hasFeature = name => features.value.has(name);
+
+  // Mirrors Custom::Kanban::Currency: one currency per account, BRL until an admin picks one.
+  const currency = computed(
+    () => currentAccount.value?.settings?.flow_kanban_currency || 'BRL'
+  );
+
+  // `whole` drops the cents, for the board, where the order of magnitude is what matters.
+  const money = (cents, { whole = false } = {}) =>
+    formatMoney(cents, {
+      currency: currency.value,
+      locale: locale.value,
+      whole,
+    });
+
+  const relativeTime = timestamp =>
+    timestamp
+      ? formatDistanceToNow(fromUnixTime(timestamp), {
+          addSuffix: true,
+          locale: DATE_LOCALES[locale.value] || enUS,
+        })
+      : '';
+
+  // The inbox store only holds the inboxes this user can access, so a conversation whose
+  // inbox is missing here is one the user cannot open: it is shown, but not linked.
+  const inboxFor = inboxId => inboxes.value.find(inbox => inbox.id === inboxId);
+
+  const inboxIcon = inbox =>
+    inbox
+      ? getInboxIconByType(inbox.channel_type, inbox.medium, 'line')
+      : 'i-lucide-lock';
+
+  const conversationPath = displayId =>
+    frontendURL(conversationUrl({ accountId: accountId.value, id: displayId }));
+
+  const contactPath = contactId =>
+    frontendURL(`accounts/${accountId.value}/contacts/${contactId}`);
+
+  const boardPath = () => frontendURL(`accounts/${accountId.value}/kanban`);
+
+  return {
+    cardFields,
+    hasFeature,
+    currency,
+    money,
+    relativeTime,
+    inboxFor,
+    inboxIcon,
+    conversationPath,
+    contactPath,
+    boardPath,
+  };
+}

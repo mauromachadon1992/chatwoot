@@ -18,6 +18,7 @@ import { markCallDismissed, isLocalCall } from 'dashboard/helper/voice';
 import { VOICE_CALL_DIRECTION } from 'dashboard/components-next/message/constants';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { getUserPermissions } from 'dashboard/helper/permissionsHelper';
+import { flowKanbanCableEvents } from 'dashboard/helper/flowKanbanCable';
 import {
   CONVERSATION_PARTICIPATING_PERMISSIONS,
   CONVERSATION_UNASSIGNED_PERMISSIONS,
@@ -104,6 +105,7 @@ class ActionCableConnector extends BaseActionCableConnector {
       'voice_call.outbound_connected': this.onVoiceCallOutboundConnected,
       'voice_call.outbound_accepted': this.onVoiceCallOutboundAccepted,
       'voice_call.ended': this.onVoiceCallEnded,
+      ...flowKanbanCableEvents,
     };
   }
 

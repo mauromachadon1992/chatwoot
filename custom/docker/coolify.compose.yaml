@@ -1,0 +1,176 @@
+# Flow Agents on Coolify: the fork's private EE image (enterprise/ + custom/) for rails and
+# sidekiq, and fazer.ai's Baileys API, on the shared PostgreSQL and Redis of the
+# `infra-compartilhada` project.
+#
+# Drop-in for the `chatwoot-baileys` service: the same service names, the same `storage`
+# volume and the same variable names, so the values already set in Coolify carry over. Paste
+# it into Service → Edit Compose File; nothing here holds a secret, every credential is a
+# Coolify variable (`${VAR:?}` ones must be set before the first deploy). See
+# custom/docker/README.md for the private registry login and the rollout checklist.
+#
+# Image: ghcr.io/mauromachadon1992/chatwoot, private. Pin FLOW_IMAGE_TAG to an immutable tag
+# (`<version>-<sha>-ee`, e.g. 4.18.0-3bd220e2f-ee); `latest-ee` follows the last published
+# one. Tags: custom/docker/README.md.
+
+services:
+  rails:
+    image: '${FLOW_IMAGE:-ghcr.io/mauromachadon1992/chatwoot}:${FLOW_IMAGE_TAG:-latest-ee}'
+    pull_policy: always
+    volumes:
+      - 'storage:/app/storage'
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - DEFAULT_LOCALE=pt_BR
+      - FRONTEND_URL=${SERVICE_URL_RAILS}
+      - INTERNAL_HOST_URL=http://rails:3000
+      # Shared PostgreSQL (infra-compartilhada → postgres-compartilhado). Its Coolify
+      # container name is its UUID, reachable because this service joins the predefined
+      # network ("Connect to Predefined Network" on).
+      - POSTGRES_HOST=${POSTGRES_HOST:-nwg0cgo4s480c8g0kww84kkk}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USERNAME=${POSTGRES_USERNAME:?the shared PostgreSQL user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?the shared PostgreSQL password}
+      - POSTGRES_DATABASE=${POSTGRES_DB:-chatwoot_production}
+      # Must stay the value the installation already runs with: sessions, signed links and
+      # encrypted columns depend on it.
+      - SECRET_KEY_BASE=${SERVICE_PASSWORD_64_SECRETKEYBASE:?keep the current secret}
+      # Shared Redis (infra-compartilhada → redis-compartilhado).
+      - REDIS_URL=${REDIS_URL:?redis://default:<password>@v0g8sswg0g8k0wsgcss0wck8:6379/0}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME=${BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME}
+      - BAILEYS_PROVIDER_DEFAULT_URL=${BAILEYS_PROVIDER_DEFAULT_URL:-http://baileys-api:3025}
+      - BAILEYS_PROVIDER_DEFAULT_API_KEY=${BAILEYS_PROVIDER_DEFAULT_API_KEY}
+      - BAILEYS_PROVIDER_USE_INTERNAL_HOST_URL=true
+      - MAILER_SENDER_EMAIL=${MAILER_SENDER_EMAIL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SMTP_ADDRESS=${SMTP_ADDRESS}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION}
+      - SMTP_ENABLE_STARTTLS_AUTO=${SMTP_ENABLE_STARTTLS_AUTO}
+      - SMTP_OPENSSL_VERIFY_MODE=${SMTP_OPENSSL_VERIFY_MODE}
+      - SMTP_TLS=${SMTP_TLS}
+      - BRAND_ASSETS_URL=${BRAND_ASSETS_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      # Chatwoot Enterprise plan from the Chatwoot Hub: only with a Chatwoot Inc license
+      # attached to this installation (custom/README.md → Chatwoot Enterprise).
+      - CHATWOOT_HUB_SYNC=${CHATWOOT_HUB_SYNC:-false}
+    entrypoint: docker/entrypoints/rails.sh
+    command:
+      - bundle
+      - exec
+      - rails
+      - s
+      - '-p'
+      - '3000'
+      - '-b'
+      - 0.0.0.0
+    restart: always
+    post_start:
+      - command:
+        - sh
+        - '-c'
+        - 'bundle exec rails branding:update && if [ -n "$${BRAND_ASSETS_URL}" ]; then deployment/extract_brand_assets.sh "$${BRAND_ASSETS_URL}"; fi'
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'wget -qO- --header="Accept: text/html" http://127.0.0.1:3000/'
+      interval: 60s
+      timeout: 20s
+      retries: 10
+
+  sidekiq:
+    image: '${FLOW_IMAGE:-ghcr.io/mauromachadon1992/chatwoot}:${FLOW_IMAGE_TAG:-latest-ee}'
+    pull_policy: always
+    volumes:
+      - 'storage:/app/storage'
+    depends_on:
+      rails:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - DEFAULT_LOCALE=pt_BR
+      - FRONTEND_URL=${SERVICE_URL_RAILS}
+      - INTERNAL_HOST_URL=http://rails:3000
+      - POSTGRES_HOST=${POSTGRES_HOST:-nwg0cgo4s480c8g0kww84kkk}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USERNAME=${POSTGRES_USERNAME:?the shared PostgreSQL user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?the shared PostgreSQL password}
+      - POSTGRES_DATABASE=${POSTGRES_DB:-chatwoot_production}
+      - SECRET_KEY_BASE=${SERVICE_PASSWORD_64_SECRETKEYBASE:?keep the current secret}
+      - REDIS_URL=${REDIS_URL:?redis://default:<password>@v0g8sswg0g8k0wsgcss0wck8:6379/0}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME=${BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME}
+      - BAILEYS_PROVIDER_DEFAULT_URL=${BAILEYS_PROVIDER_DEFAULT_URL:-http://baileys-api:3025}
+      - BAILEYS_PROVIDER_DEFAULT_API_KEY=${BAILEYS_PROVIDER_DEFAULT_API_KEY}
+      - BAILEYS_PROVIDER_USE_INTERNAL_HOST_URL=true
+      - MAILER_SENDER_EMAIL=${MAILER_SENDER_EMAIL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - SMTP_ADDRESS=${SMTP_ADDRESS}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION}
+      - SMTP_ENABLE_STARTTLS_AUTO=${SMTP_ENABLE_STARTTLS_AUTO}
+      - SMTP_OPENSSL_VERIFY_MODE=${SMTP_OPENSSL_VERIFY_MODE}
+      - SMTP_TLS=${SMTP_TLS}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CHATWOOT_HUB_SYNC=${CHATWOOT_HUB_SYNC:-false}
+      # The image runs fazer.ai's native WhatsApp connector inside this container unless
+      # told otherwise (fazer-ai/chatwoot #783). It creates <POSTGRES_DATABASE>_whatsapp_connector
+      # on the shared PostgreSQL. The Baileys inboxes keep using baileys-api either way. Set
+      # WHATSAPP_CONNECTOR_ENABLED=false to keep the worker as it was.
+      - WHATSAPP_CONNECTOR_ENABLED=${WHATSAPP_CONNECTOR_ENABLED:-true}
+      - WHATSAPP_CONNECTOR_EMBEDDED=${WHATSAPP_CONNECTOR_EMBEDDED:-true}
+    # The image's ENTRYPOINT already gates a sidekiq command on the schema; kept explicit,
+    # as in fazer.ai's own Coolify compose.
+    entrypoint: docker/entrypoints/sidekiq.sh
+    command:
+      - bundle
+      - exec
+      - sidekiq
+      - '-C'
+      - config/sidekiq.yml
+    restart: always
+    healthcheck:
+      # Only the exec'd worker counts: the entrypoint's argv also carries "sidekiq" while it
+      # still waits for migrations.
+      test:
+        - CMD-SHELL
+        - 'ps aux | grep [s]idekiq | grep -qv entrypoints'
+      interval: 20s
+      timeout: 20s
+      retries: 10
+
+  baileys-api:
+    image: 'ghcr.io/fazer-ai/baileys-api:latest'
+    pull_policy: always
+    volumes:
+      - 'storage:/app/storage'
+    environment:
+      - NODE_ENV=production
+      - PORT=3025
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - BAILEYS_LOG_LEVEL=${BAILEYS_LOG_LEVEL:-warn}
+      - MEDIA_CLEANUP_ENABLED=${MEDIA_CLEANUP_ENABLED:-true}
+      - MEDIA_CLEANUP_INTERVAL_MS=${MEDIA_CLEANUP_INTERVAL_MS:-3600000}
+      - MEDIA_MAX_AGE_HOURS=${MEDIA_MAX_AGE_HOURS:-24}
+    restart: always
+    healthcheck:
+      test:
+        - CMD-SHELL
+        # /status needs the API key, so any HTTP answer (a 401 included) means the server is up.
+        - 'wget -S -O /dev/null http://127.0.0.1:3025/status 2>&1 | grep -q "HTTP/"'
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  storage:

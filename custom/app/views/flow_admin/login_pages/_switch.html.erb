@@ -1,0 +1,13 @@
+<%# locals: (name:, label:, checked:, hint: nil, preview: nil) %>
+<label class="flex items-start gap-3 cursor-pointer">
+  <input type="hidden" name="<%= name %>" value="false">
+  <span class="relative flex-shrink-0 mt-0.5">
+    <input type="checkbox" name="<%= name %>" value="true" class="sr-only peer" <%= 'checked' if checked %> <% if preview %>data-preview="<%= preview %>"<% end %>>
+    <span class="block w-9 h-5 transition-colors rounded-full bg-n-slate-6 peer-checked:bg-n-brand peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-n-brand"></span>
+    <span class="absolute top-0.5 start-0.5 size-4 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-4 rtl:peer-checked:-translate-x-4"></span>
+  </span>
+  <span class="flex flex-col gap-0.5">
+    <span class="text-sm text-n-slate-12"><%= label %></span>
+    <% if hint %><span class="text-xs text-n-slate-11"><%= hint %></span><% end %>
+  </span>
+</label>

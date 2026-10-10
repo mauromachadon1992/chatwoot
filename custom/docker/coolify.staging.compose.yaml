@@ -1,0 +1,173 @@
+# Flow Agents on Coolify, staging: the fork's private EE image with its own PostgreSQL and
+# Redis, isolated from production and from `infra-compartilhada`.
+#
+# Project `atendimento` → environment `staging`. Only rails is published (chat-hml.); the
+# Baileys API, PostgreSQL and Redis stay on the stack's private network. Every secret is a
+# Coolify-generated SERVICE_* variable, so nothing here holds one.
+#
+# FRONTEND_URL is the real hostname, not ${SERVICE_URL_RAILS}: the domain is set by hand and
+# SERVICE_URL_RAILS stays the auto-generated rails-<uuid>. host with no DNS or certificate, which
+# broke links, e-mails and the cable origin. Coolify restores a compose-declared value on every
+# restart, so an env override does not stick; change it here and in the service's compose.
+#
+# Image: ghcr.io/mauromachadon1992/chatwoot, private (the Coolify server needs a
+# `docker login ghcr.io` with read:packages). FLOW_IMAGE_TAG is an immutable tag; promote a
+# build by changing it. Tags: custom/docker/README.md.
+
+services:
+  rails:
+    image: 'ghcr.io/mauromachadon1992/chatwoot:${FLOW_IMAGE_TAG:-4.18.0-3bd220e2f-ee}'
+    pull_policy: missing
+    volumes:
+      - 'storage:/app/storage'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      RAILS_ENV: production
+      INSTALLATION_ENV: docker
+      DEFAULT_LOCALE: pt_BR
+      FRONTEND_URL: 'https://chat-hml.freitascasaeconstrucao.com.br'
+      INTERNAL_HOST_URL: http://rails:3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USERNAME: ${SERVICE_USER_POSTGRES}
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      POSTGRES_DATABASE: ${POSTGRES_DB:-chatwoot_staging}
+      SECRET_KEY_BASE: ${SERVICE_PASSWORD_64_SECRETKEYBASE}
+      REDIS_URL: redis://redis:6379/0
+      REDIS_PASSWORD: ${SERVICE_PASSWORD_REDIS}
+      BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME: ${BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME:-Flow Agents (staging)}
+      BAILEYS_PROVIDER_DEFAULT_URL: http://baileys-api:3025
+      BAILEYS_PROVIDER_DEFAULT_API_KEY: ${SERVICE_PASSWORD_64_DEFAULTAPIKEY}
+      BAILEYS_PROVIDER_USE_INTERNAL_HOST_URL: 'true'
+      MAILER_SENDER_EMAIL: ${MAILER_SENDER_EMAIL:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Chatwoot Enterprise plan from the Chatwoot Hub: never on staging.
+      CHATWOOT_HUB_SYNC: 'false'
+    entrypoint: docker/entrypoints/rails.sh
+    command: ['bundle', 'exec', 'rails', 's', '-p', '3000', '-b', '0.0.0.0']
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- --header="Accept: text/html" http://127.0.0.1:3000/ > /dev/null']
+      interval: 30s
+      timeout: 20s
+      retries: 10
+      start_period: 120s
+
+  sidekiq:
+    image: 'ghcr.io/mauromachadon1992/chatwoot:${FLOW_IMAGE_TAG:-4.18.0-3bd220e2f-ee}'
+    pull_policy: missing
+    volumes:
+      - 'storage:/app/storage'
+    depends_on:
+      rails:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      RAILS_ENV: production
+      INSTALLATION_ENV: docker
+      DEFAULT_LOCALE: pt_BR
+      FRONTEND_URL: 'https://chat-hml.freitascasaeconstrucao.com.br'
+      INTERNAL_HOST_URL: http://rails:3000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USERNAME: ${SERVICE_USER_POSTGRES}
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      POSTGRES_DATABASE: ${POSTGRES_DB:-chatwoot_staging}
+      SECRET_KEY_BASE: ${SERVICE_PASSWORD_64_SECRETKEYBASE}
+      REDIS_URL: redis://redis:6379/0
+      REDIS_PASSWORD: ${SERVICE_PASSWORD_REDIS}
+      BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME: ${BAILEYS_PROVIDER_DEFAULT_CLIENT_NAME:-Flow Agents (staging)}
+      BAILEYS_PROVIDER_DEFAULT_URL: http://baileys-api:3025
+      BAILEYS_PROVIDER_DEFAULT_API_KEY: ${SERVICE_PASSWORD_64_DEFAULTAPIKEY}
+      BAILEYS_PROVIDER_USE_INTERNAL_HOST_URL: 'true'
+      MAILER_SENDER_EMAIL: ${MAILER_SENDER_EMAIL:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Chatwoot Enterprise plan from the Chatwoot Hub: never on staging.
+      CHATWOOT_HUB_SYNC: 'false'
+      # fazer.ai's native WhatsApp connector, in its own <database>_whatsapp_connector
+      # database on this stack's PostgreSQL.
+      WHATSAPP_CONNECTOR_ENABLED: ${WHATSAPP_CONNECTOR_ENABLED:-true}
+      WHATSAPP_CONNECTOR_EMBEDDED: 'true'
+    entrypoint: docker/entrypoints/sidekiq.sh
+    command: ['bundle', 'exec', 'sidekiq', '-C', 'config/sidekiq.yml']
+    restart: unless-stopped
+    healthcheck:
+      # Only the exec'd worker counts: the entrypoint's argv also carries "sidekiq" while it
+      # still waits for migrations.
+      test: ['CMD-SHELL', 'ps aux | grep [s]idekiq | grep -qv entrypoints']
+      interval: 20s
+      timeout: 20s
+      retries: 10
+
+  baileys-api:
+    image: 'ghcr.io/fazer-ai/baileys-api:latest'
+    pull_policy: always
+    volumes:
+      - 'baileys:/app/storage'
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3025
+      REDIS_URL: redis://redis:6379/1
+      REDIS_PASSWORD: ${SERVICE_PASSWORD_REDIS}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      BAILEYS_LOG_LEVEL: ${BAILEYS_LOG_LEVEL:-warn}
+      DEFAULT_API_KEY: ${SERVICE_PASSWORD_64_DEFAULTAPIKEY}
+      MEDIA_CLEANUP_ENABLED: 'true'
+      MEDIA_CLEANUP_INTERVAL_MS: 3600000
+      MEDIA_MAX_AGE_HOURS: 24
+    # The key chatwoot sends; an existing one is left as it is.
+    command: ['sh', '-c', 'bun manage-api-keys create user "$$DEFAULT_API_KEY" || true; exec bun start']
+    restart: unless-stopped
+    healthcheck:
+      # /status needs the API key, so any HTTP answer (a 401 included) means the server is up.
+      test: ['CMD-SHELL', 'wget -S -O /dev/null http://127.0.0.1:3025/status 2>&1 | grep -q "HTTP/"']
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  postgres:
+    image: 'pgvector/pgvector:pg16'
+    restart: unless-stopped
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-chatwoot_staging}
+      POSTGRES_USER: ${SERVICE_USER_POSTGRES}
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: 'redis:7-alpine'
+    restart: unless-stopped
+    # AOF: baileys-api keeps the WhatsApp Signal auth state here, and a stale snapshot forces
+    # re-pairing.
+    command: ['sh', '-c', 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes:
+      - 'redis:/data'
+    environment:
+      REDIS_PASSWORD: ${SERVICE_PASSWORD_REDIS}
+    healthcheck:
+      test: ['CMD-SHELL', 'redis-cli -a "$$REDIS_PASSWORD" --no-auth-warning ping | grep -q PONG']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  storage:
+  baileys:
+  postgres:
+  redis:

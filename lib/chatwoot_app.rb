@@ -39,7 +39,8 @@ module ChatwootApp
 
   def self.extensions
     if custom?
-      %w[enterprise custom]
+      # Flow: honour DISABLE_ENTERPRISE / a removed enterprise/ even when custom/ exists.
+      enterprise? ? %w[enterprise custom] : %w[custom]
     elsif enterprise?
       %w[enterprise]
     else

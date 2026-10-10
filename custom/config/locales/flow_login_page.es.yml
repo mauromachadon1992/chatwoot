@@ -1,0 +1,100 @@
+es:
+  flow_login_page:
+    super_admin:
+      nav: Página de inicio de sesión
+      title: Página de inicio de sesión
+      description: Cómo se presenta la instalación en el inicio de sesión, el SSO, la recuperación y el restablecimiento de contraseña y el registro.
+      open_login: Abrir la página de inicio de sesión
+      saved: Página de inicio de sesión guardada.
+      not_saved: No se pudo guardar. Corrige los campos indicados.
+      restored: La página de inicio de sesión volvió a la predeterminada de Chatwoot.
+      session_expired: Tu sesión expiró y no se guardó nada. Cerrar sesión en el panel también cierra la del Super Admin. Revisa los campos y guarda de nuevo.
+      save: Guardar página de inicio de sesión
+      restore: Restaurar predeterminada
+      restore_confirm: ¿Restaurar la página de inicio de sesión de Chatwoot? Se borrarán los textos, las imágenes y los colores configurados aquí.
+      enable:
+        title: Usar esta página de inicio de sesión
+        hint: Desactivada, las pantallas de acceso vuelven a ser las de Chatwoot. No se borra nada de lo configurado. Una cuenta con marca blanca en su dominio propio mantiene su marca.
+      identity:
+        title: Identidad
+        hint: Vale para toda la instalación, incluido el panel de las cuentas sin marca blanca.
+        name: Nombre
+        name_hint: Aparece en la pestaña del navegador y en lugar de "Chatwoot" en los textos.
+        name_placeholder: 'Ej.: Flow Agents'
+        color: Color de acento
+        color_hint: Botones, enlaces, foco y selección, en el inicio de sesión y en el panel.
+        color_adjusted: 'El texto blanco sobre este color alcanza un contraste de %{ratio}:1, por debajo del mínimo de 4,5:1. En los botones, el panel usa un tono más oscuro del mismo color:'
+        palette: Paleta generada
+        logo: Logo (fondo claro)
+        logo_hint: PNG, JPG, SVG o WebP, hasta 2 MB. Formato horizontal.
+        logo_dark: Logo (fondo oscuro)
+        logo_dark_hint: Opcional. Sin él, el logo claro se usa en el tema oscuro.
+        icon: Icono
+        icon_hint: PNG o SVG cuadrado (512×512), hasta 1 MB. Se usa como favicon.
+      layout:
+        title: Diseño y fondo
+        label: Diseño
+        background: Tarjeta sobre el fondo
+        background_hint: El formulario en una tarjeta centrada, sobre el fondo elegido.
+        split: Panel lateral
+        split_hint: El formulario de un lado y el fondo, con un mensaje, del otro. En pantallas estrechas pasa a ser la tarjeta.
+        kind: Fondo
+        kind_brand: Color de la marca
+        kind_gradient: Degradado
+        kind_image: Imagen
+        brand_hint: Un degradado suave generado a partir del color de acento, que acompaña al tema claro y al oscuro.
+        gradient_from: Inicio
+        gradient_via: Medio (opcional)
+        gradient_to: Fin
+        gradient_angle: Ángulo
+        image: Imagen de fondo
+        image_hint: JPG, PNG o WebP, hasta 5 MB. Usa al menos 1920×1080.
+        overlay: Velo sobre la imagen
+        overlay_hint: Oscurece la imagen para destacar la tarjeta y el mensaje.
+        animation: Animación
+        animation_none: Ninguna
+        animation_drift: Movimiento suave
+        animation_zoom: Zoom lento
+        animation_hint: Lenta y discreta. Para quien pide menos movimiento al sistema, el fondo queda quieto.
+      copy:
+        title: Textos
+        hint: Por idioma. Un campo vacío usa el texto predeterminado de Chatwoot en ese idioma.
+        locale_pt_BR: Português
+        locale_en: English
+        locale_es: Español
+        field_title: Título
+        field_subtitle: Subtítulo
+        field_panel_message: Mensaje del panel
+        panel_message_hint: Solo aparece en el diseño de panel lateral.
+        count: '%{count}/%{limit}'
+      options:
+        title: Opciones y enlaces
+        hint: Ocultar solo oculta. Nada aparece si no está configurado en la instalación.
+        hide_signup: Ocultar "Crear cuenta"
+        hide_sso: Ocultar el inicio de sesión por SSO
+        hide_google: Ocultar el inicio de sesión con Google
+        support_label: Texto del enlace de soporte
+        support_label_placeholder: 'Ej.: ¿Necesitas ayuda?'
+        support_url: Enlace de soporte
+        support_url_hint: 'Una dirección https:// o mailto:'
+        terms_url: Términos de uso
+        privacy_url: Política de privacidad
+        url_placeholder: https://
+      images:
+        choose: Elegir archivo
+        replace: Cambiar
+        remove: Quitar
+        empty: Sin imagen
+      preview:
+        title: Vista previa
+        hint: Se actualiza mientras editas. Guarda para aplicar.
+        light: Claro
+        dark: Oscuro
+        desktop: Computadora
+        mobile: Móvil
+        email: Correo
+        password: Contraseña
+        submit: Entrar
+        support: Soporte
+        terms: Términos
+        privacy: Privacidad
