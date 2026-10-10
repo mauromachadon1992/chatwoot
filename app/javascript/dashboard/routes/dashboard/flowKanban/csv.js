@@ -1,6 +1,8 @@
 // The logic of CSV export and import in the Kanban. Pure where it can be, so it is tested
 // without a screen.
 
+import { isFileEmpty } from 'shared/helpers/FileHelper';
+
 // Mirrors Custom::Kanban::CsvFile.
 export const MAX_BYTES = 2 * 1024 * 1024;
 export const MAX_ROWS = 5000;
@@ -11,7 +13,7 @@ export const fileProblem = file => {
   if (!/\.(csv|txt)$/i.test(file.name) && !/csv|text\/plain/.test(file.type))
     return 'type';
   if (file.size > MAX_BYTES) return 'size';
-  if (file.size === 0) return 'empty';
+  if (isFileEmpty(file)) return 'empty';
   return null;
 };
 

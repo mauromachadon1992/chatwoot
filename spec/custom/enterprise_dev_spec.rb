@@ -3,6 +3,9 @@ require 'rails_helper'
 RSpec.describe Custom::EnterpriseDev do
   let!(:account) { create(:account) }
 
+  # The CE job runs with DISABLE_ENTERPRISE; the dev switch refuses there by design.
+  before { skip 'needs the enterprise edition' unless ChatwootApp.enterprise? }
+
   it 'turns on the enterprise plan and every feature but the internal and deprecated ones' do
     described_class.new.enable(seats: 10)
 
