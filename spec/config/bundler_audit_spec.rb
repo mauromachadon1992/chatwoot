@@ -33,4 +33,16 @@ describe 'Ignored bundler-audit advisories' do
     expect(tied_to_zero_x?([framing_advisory], Gem::Version.new('1.0.2'))).to be(false)
     expect(tied_to_zero_x?([framing_advisory], Gem::Version.new('1.0.0'))).to be(false)
   end
+
+  # The RubyLLM ReDoS advisories ignored in .bundler-audit.yml only exist on Ruby 3.1.x (no regex memoization before 3.2). An
+  # ignore holds for every Ruby, so it is tied to the Ruby the app is pinned to: on 3.1 it would hide
+  # a real exposure.
+  describe 'the RubyLLM ReDoS advisories that only exist on Ruby 3.1.x' do
+    let(:ruby_31_only) { %w[CVE-2026-67987 CVE-2026-67989 CVE-2026-67991] }
+
+    it 'are ignored only while the app runs a Ruby that has regex memoization' do
+      expect(ignored).to include(*ruby_31_only)
+      expect(Gem::Version.new(RUBY_VERSION)).to be >= Gem::Version.new('3.2')
+    end
+  end
 end
