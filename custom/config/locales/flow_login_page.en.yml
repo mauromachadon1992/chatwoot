@@ -1,0 +1,100 @@
+en:
+  flow_login_page:
+    super_admin:
+      nav: Login page
+      title: Login page
+      description: How the installation presents itself on login, SSO, password recovery and reset, and signup.
+      open_login: Open the login page
+      saved: Login page saved.
+      not_saved: Could not save. Fix the fields marked below.
+      restored: The login page is back to Chatwoot's default.
+      session_expired: Your session expired and nothing was saved. Signing out of the dashboard also ends the super admin session. Check the fields and save again.
+      save: Save login page
+      restore: Restore default
+      restore_confirm: Restore Chatwoot's login page? The copy, images and colours set here will be deleted.
+      enable:
+        title: Use this login page
+        hint: When off, the sign-in screens go back to Chatwoot's. Nothing you configured is deleted. An account with a white label on its own domain keeps its brand.
+      identity:
+        title: Identity
+        hint: Applies to the whole installation, including the dashboard of accounts without a white label.
+        name: Name
+        name_hint: Shown in the browser tab and in place of "Chatwoot" in the copy.
+        name_placeholder: 'E.g. Flow Agents'
+        color: Accent color
+        color_hint: Buttons, links, focus and selection, on the login and in the dashboard.
+        color_adjusted: 'White text on this color reaches %{ratio}:1, below the 4.5:1 minimum. On buttons, the dashboard uses a darker shade of the same color:'
+        palette: Generated palette
+        logo: Logo (light background)
+        logo_hint: PNG, JPG, SVG or WebP, up to 2 MB. Horizontal format.
+        logo_dark: Logo (dark background)
+        logo_dark_hint: Optional. Without it, the light logo is used in dark mode.
+        icon: Icon
+        icon_hint: Square PNG or SVG (512×512), up to 1 MB. Becomes the favicon.
+      layout:
+        title: Layout and background
+        label: Layout
+        background: Card on background
+        background_hint: The form in a centred card, over the background you choose.
+        split: Side panel
+        split_hint: The form on one side and the background, with a message, on the other. On narrow screens it becomes the card.
+        kind: Background
+        kind_brand: Brand color
+        kind_gradient: Gradient
+        kind_image: Image
+        brand_hint: A soft blend generated from the accent color, which follows the light and dark themes.
+        gradient_from: Start
+        gradient_via: Middle (optional)
+        gradient_to: End
+        gradient_angle: Angle
+        image: Background image
+        image_hint: JPG, PNG or WebP, up to 5 MB. Use at least 1920×1080.
+        overlay: Veil over the image
+        overlay_hint: Darkens the image so the card and the message stand out.
+        animation: Animation
+        animation_none: None
+        animation_drift: Gentle drift
+        animation_zoom: Slow zoom
+        animation_hint: Slow and subtle. For people who ask their system for less motion, the background stays still.
+      copy:
+        title: Copy
+        hint: Per language. An empty field uses Chatwoot's default text in that language.
+        locale_pt_BR: Português
+        locale_en: English
+        locale_es: Español
+        field_title: Title
+        field_subtitle: Subtitle
+        field_panel_message: Panel message
+        panel_message_hint: Shown only in the side panel layout.
+        count: '%{count}/%{limit}'
+      options:
+        title: Options and links
+        hint: Hiding only hides. Nothing appears unless it is configured on the installation.
+        hide_signup: Hide "Create account"
+        hide_sso: Hide SSO login
+        hide_google: Hide Google login
+        support_label: Support link text
+        support_label_placeholder: 'E.g. Need help?'
+        support_url: Support link
+        support_url_hint: 'An https:// or mailto: address'
+        terms_url: Terms of service
+        privacy_url: Privacy policy
+        url_placeholder: https://
+      images:
+        choose: Choose file
+        replace: Replace
+        remove: Remove
+        empty: No image
+      preview:
+        title: Preview
+        hint: Updates as you edit. Save to apply.
+        light: Light
+        dark: Dark
+        desktop: Desktop
+        mobile: Mobile
+        email: Email
+        password: Password
+        submit: Sign in
+        support: Support
+        terms: Terms
+        privacy: Privacy

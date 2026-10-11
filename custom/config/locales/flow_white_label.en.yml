@@ -1,0 +1,70 @@
+en:
+  flow_white_label:
+    field:
+      label: White label
+      enabled: Active
+      disabled: 'Off'
+      configure: Configure white label
+    super_admin:
+      title: White label
+      description: The brand this account wears in the dashboard, on the login page of its own domain, in emails, on the satisfaction survey and in the widget.
+      back: Back to account
+      saved: White label saved.
+      not_saved: Could not save. Fix the fields marked below.
+      session_expired: Your session expired and nothing was saved. Signing out of the dashboard also ends the super admin session. Check the fields and save again.
+      save: Save white label
+      cancel: Cancel
+      enable:
+        title: Enable white label
+        hint: When off, the account goes back to the installation brand. Nothing you configured is deleted.
+      identity:
+        title: Identity
+        name: Brand name
+        name_hint: Shown in the browser tab, on the login page and in place of the product name.
+        name_placeholder: 'E.g. Smile Clinic'
+        color: Brand color
+        color_hint: Becomes the dashboard accent (buttons, links, focus and selection) and is used in emails, on the satisfaction survey and for the installed app.
+        color_adjusted: 'White text on this color reaches %{ratio}:1, below the 4.5:1 minimum. On buttons, the dashboard uses a darker shade of the same color:'
+        palette: Dashboard palette
+      logos:
+        title: Logos
+        logo: Logo (light background)
+        logo_dark: Logo (dark background)
+        icon: Icon
+        logo_email: Email logo
+        logo_hint: PNG, JPG, SVG or WebP, up to 2 MB. Horizontal format.
+        logo_dark_hint: Optional. Without it, the light logo is also used in dark mode.
+        icon_hint: Square PNG or SVG (512×512), up to 1 MB. Becomes the favicon and app icon.
+        logo_email_hint: PNG, JPG or GIF, up to 2 MB. Email clients do not render SVG.
+        choose: Choose file
+        replace: Replace
+        remove: Remove
+        empty: No image
+      domain:
+        title: Custom domain
+        label: Domain
+        placeholder: support.customer.com
+        hint: With a domain set, the login page and favicon already wear the account brand.
+        dns: 'Create a CNAME record for %{domain} pointing to %{target}, and issue its HTTPS certificate in your proxy (e.g. Coolify).'
+      links:
+        title: Links
+        terms: Terms of service
+        privacy: Privacy policy
+        url_placeholder: https://
+      powered_by:
+        title: Powered by
+        hint: The "Powered by" line in emails, on the satisfaction survey and in the widget. Leave blank to use the brand name.
+        name: Name
+        name_placeholder: 'E.g. Flow Agents'
+        url: Link
+      preview:
+        title: Preview
+        hint: Updates as you edit. Save to apply.
+        tab: Browser tab
+        dashboard: Dashboard
+        login: Login
+        login_button: Sign in
+        email: Email
+        email_body: Hi! Your conversation was updated.
+        powered_by: Powered by %{name}
+        conversations: Conversations

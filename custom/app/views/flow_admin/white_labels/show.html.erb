@@ -1,0 +1,329 @@
+<% scope = 'flow_white_label.super_admin' %>
+<% content_for(:title) { "#{t("#{scope}.title")} · #{@account.name}" } %>
+<% frontend_host = URI.parse(ENV.fetch('FRONTEND_URL', 'http://localhost')).host %>
+<% installation = GlobalConfig.get('INSTALLATION_NAME', 'LOGO', 'LOGO_THUMBNAIL', 'BRAND_COLOR') %>
+<% name = @account.white_label_value(:white_label_name) %>
+<% color = @account.white_label_value(:white_label_color) || installation['BRAND_COLOR'] || '#2781F6' %>
+<%# The dashboard's own accent, and the ramp a valid saved colour turns into (see Custom::WhiteLabel::Palette). %>
+<% default_ramp = Custom::WhiteLabel::Palette::REFERENCE[:light].map { |rgb| "rgb(#{rgb.join(' ')})" } %>
+<% saved_color = @account.white_label_value(:white_label_color) %>
+<% palette = Custom::WhiteLabel::Palette.new(saved_color) if saved_color&.match?(Custom::WhiteLabel::COLOR_FORMAT) %>
+<% accent = palette&.action_hex || '#2781F6' %>
+<% ramp = palette ? palette.variables[:light].values_at(*(1..12).map { |step| "--blue-#{step}" }).map { |rgb| "rgb(#{rgb})" } : default_ramp %>
+<% powered_by = @account.white_label_value(:white_label_powered_by_name) || name || installation['INSTALLATION_NAME'] %>
+
+<header class="flex items-center gap-4 px-8 py-4 border-b border-n-weak" role="banner">
+  <div class="flex items-center justify-center p-2 border rounded-full border-n-weak text-n-slate-11">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20c1.1 0 2-.9 2-2v-.5c0-.55.45-1 1-1h1.5a4.5 4.5 0 0 0 4.5-4.5C21 7.36 16.97 2 12 2Z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="11.5" cy="7" r="1"/><circle cx="16" cy="9" r="1"/></svg>
+  </div>
+  <div class="flex flex-col justify-center flex-1 min-w-0">
+    <h1 class="m-0 text-base font-medium leading-6 truncate text-n-slate-12" id="page-title"><%= content_for(:title) %></h1>
+    <p class="m-0 text-sm leading-5 text-n-slate-11"><%= t("#{scope}.description") %></p>
+  </div>
+  <%= link_to t("#{scope}.back"), super_admin_account_path(@account), class: 'text-sm font-medium text-n-slate-11 hover:text-n-slate-12 whitespace-nowrap' %>
+</header>
+
+<section class="px-8 py-6 main-content__body">
+  <%= form_with url: super_admin_account_white_label_path(@account), method: :patch, multipart: true, local: true,
+                html: { class: 'grid gap-8 xl:grid-cols-[minmax(0,1fr)_22rem] items-start', data: { white_label_form: true } } do %>
+    <div class="flex flex-col max-w-3xl gap-8">
+
+      <%# Enable %>
+      <label class="flex items-start gap-4 p-4 rounded-xl outline outline-1 -outline-offset-1 outline-n-container bg-n-solid-1 cursor-pointer">
+        <input type="hidden" name="white_label[white_label_enabled]" value="false">
+        <span class="relative flex-shrink-0 mt-0.5">
+          <input type="checkbox" name="white_label[white_label_enabled]" value="true" class="sr-only peer" <%= 'checked' if @account.white_label_enabled? %> data-preview="enabled">
+          <span class="block w-9 h-5 transition-colors rounded-full bg-n-slate-6 peer-checked:bg-n-brand peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-n-brand"></span>
+          <span class="absolute top-0.5 start-0.5 size-4 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-4 rtl:peer-checked:-translate-x-4"></span>
+        </span>
+        <span class="flex flex-col gap-0.5">
+          <span class="text-sm font-medium text-n-slate-12"><%= t("#{scope}.enable.title") %></span>
+          <span class="text-xs text-n-slate-11"><%= t("#{scope}.enable.hint") %></span>
+        </span>
+      </label>
+
+      <%# Identity %>
+      <fieldset class="flex flex-col gap-4 p-0 m-0 border-0">
+        <legend class="mb-4 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.identity.title") %></legend>
+        <%= render 'text_field', key: :white_label_name, label: t("#{scope}.identity.name"), hint: t("#{scope}.identity.name_hint"),
+                                 placeholder: t("#{scope}.identity.name_placeholder"), preview: 'name' %>
+        <div class="flex flex-col gap-1.5">
+          <label for="white_label_color_text" class="text-sm font-medium text-n-slate-12"><%= t("#{scope}.identity.color") %></label>
+          <% color_error = @account.errors[:white_label_color].first %>
+          <div class="flex items-center gap-3">
+            <input type="color" value="<%= color %>" aria-label="<%= t("#{scope}.identity.color") %>" data-color-picker
+                   class="size-10 p-1 !mb-0 rounded-lg cursor-pointer bg-n-solid-1 outline outline-1 -outline-offset-1 outline-n-weak border-0">
+            <input id="white_label_color_text" type="text" name="white_label[white_label_color]" value="<%= @account.white_label_value(:white_label_color) %>"
+                   placeholder="<%= color %>" maxlength="7" data-color-text data-preview="color"
+                   class="w-32 h-10 px-3 !mb-0 font-mono text-sm uppercase rounded-lg bg-n-solid-1 border-0 outline outline-1 -outline-offset-1 text-n-slate-12 focus:outline-2 focus:outline-n-brand <%= color_error ? 'outline-n-ruby-9' : 'outline-n-weak' %>">
+          </div>
+          <% if color_error %>
+            <p class="m-0 text-xs text-n-ruby-11"><%= t("#{scope}.identity.color") %>: <%= color_error %></p>
+          <% else %>
+            <p class="m-0 text-xs text-n-slate-11"><%= t("#{scope}.identity.color_hint") %></p>
+          <% end %>
+          <div data-color-adjusted data-template="<%= t("#{scope}.identity.color_adjusted", ratio: '__RATIO__') %>"
+               class="flex items-start gap-2 p-3 mt-1 text-xs rounded-lg bg-n-alpha-1 text-n-slate-11 <%= 'hidden' unless palette&.adjusted? %>" role="status">
+            <svg class="flex-shrink-0 mt-px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>
+              <span data-color-adjusted-text><%= t("#{scope}.identity.color_adjusted", ratio: palette ? number_with_precision(palette.brand.contrast(Custom::WhiteLabel::Palette::WHITE), precision: 1) : '') %></span>
+              <span class="inline-flex items-center gap-1 ms-1 align-middle whitespace-nowrap">
+                <span data-color-adjusted-swatch class="inline-block rounded-sm size-3 outline outline-1 -outline-offset-1 outline-n-weak" style="background-color: <%= accent %>"></span>
+                <span data-color-adjusted-hex class="font-mono text-n-slate-12"><%= accent %></span>
+              </span>
+            </span>
+          </div>
+          <div class="flex flex-col gap-1.5 mt-1">
+            <span class="text-xs font-medium text-n-slate-11"><%= t("#{scope}.identity.palette") %></span>
+            <div data-ramp data-default-ramp="<%= default_ramp.to_json %>" data-palette-url="<%= palette_super_admin_account_white_label_path(@account) %>"
+                 class="flex h-6 overflow-hidden rounded-md outline outline-1 -outline-offset-1 outline-n-weak max-w-md" aria-hidden="true">
+              <% ramp.each_with_index do |swatch, index| %>
+                <span data-ramp-step class="flex-1 <%= 'flex-[1.6]' if index == 8 %>" style="background-color: <%= swatch %>"></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <%# Logos %>
+      <fieldset class="flex flex-col gap-3 p-0 m-0 border-0">
+        <legend class="mb-4 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.logos.title") %></legend>
+        <div class="grid gap-3 lg:grid-cols-2">
+          <%= render 'image_field', name: :white_label_logo, label: t("#{scope}.logos.logo"), hint: t("#{scope}.logos.logo_hint") %>
+          <%= render 'image_field', name: :white_label_logo_dark, label: t("#{scope}.logos.logo_dark"), hint: t("#{scope}.logos.logo_dark_hint"), dark: true %>
+          <%= render 'image_field', name: :white_label_icon, label: t("#{scope}.logos.icon"), hint: t("#{scope}.logos.icon_hint"), square: true %>
+          <%= render 'image_field', name: :white_label_logo_email, label: t("#{scope}.logos.logo_email"), hint: t("#{scope}.logos.logo_email_hint") %>
+        </div>
+      </fieldset>
+
+      <%# Domain %>
+      <fieldset class="flex flex-col gap-3 p-0 m-0 border-0">
+        <legend class="mb-4 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.domain.title") %></legend>
+        <%= render 'text_field', key: :white_label_domain, label: t("#{scope}.domain.label"), hint: t("#{scope}.domain.hint"),
+                                 placeholder: t("#{scope}.domain.placeholder"), prefix: 'https://', preview: 'domain' %>
+        <div class="flex gap-2 p-3 text-xs rounded-lg bg-n-alpha-1 text-n-slate-11">
+          <svg class="flex-shrink-0 mt-px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span data-dns-hint data-target="<%= frontend_host %>" data-template="<%= t("#{scope}.domain.dns", domain: '__DOMAIN__', target: frontend_host) %>">
+            <%= t("#{scope}.domain.dns", domain: @account.white_label_value(:white_label_domain) || t("#{scope}.domain.placeholder"), target: frontend_host) %>
+          </span>
+        </div>
+      </fieldset>
+
+      <%# Links %>
+      <fieldset class="flex flex-col gap-4 p-0 m-0 border-0">
+        <legend class="mb-4 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.links.title") %></legend>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <%= render 'text_field', key: :white_label_terms_url, label: t("#{scope}.links.terms"), type: 'url', placeholder: t("#{scope}.links.url_placeholder") %>
+          <%= render 'text_field', key: :white_label_privacy_url, label: t("#{scope}.links.privacy"), type: 'url', placeholder: t("#{scope}.links.url_placeholder") %>
+        </div>
+      </fieldset>
+
+      <%# Powered by %>
+      <fieldset class="flex flex-col gap-4 p-0 m-0 border-0">
+        <legend class="mb-1 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.powered_by.title") %></legend>
+        <p class="m-0 -mt-1 text-xs text-n-slate-11"><%= t("#{scope}.powered_by.hint") %></p>
+        <div class="grid gap-4 lg:grid-cols-2">
+          <%= render 'text_field', key: :white_label_powered_by_name, label: t("#{scope}.powered_by.name"),
+                                   placeholder: t("#{scope}.powered_by.name_placeholder"), preview: 'powered-by' %>
+          <%= render 'text_field', key: :white_label_powered_by_url, label: t("#{scope}.powered_by.url"), type: 'url',
+                                   placeholder: t("#{scope}.links.url_placeholder") %>
+        </div>
+      </fieldset>
+
+      <div class="flex items-center justify-end gap-3 pt-6 border-t border-n-weak">
+        <%= link_to t("#{scope}.cancel"), super_admin_account_path(@account), class: 'h-9 px-4 inline-flex items-center rounded-lg text-sm font-medium text-n-slate-11 hover:text-n-slate-12 hover:bg-n-alpha-1' %>
+        <button type="submit" class="inline-flex items-center h-9 px-4 text-sm font-medium text-white border-0 rounded-lg cursor-pointer bg-n-brand hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-n-brand">
+          <%= t("#{scope}.save") %>
+        </button>
+      </div>
+    </div>
+
+    <%# Live preview %>
+    <aside class="flex flex-col gap-4 xl:sticky xl:top-6" aria-label="<%= t("#{scope}.preview.title") %>"
+           data-preview-root data-default-name="<%= installation['INSTALLATION_NAME'] %>" data-default-color="<%= installation['BRAND_COLOR'] || '#2781F6' %>"
+           data-default-logo="<%= installation['LOGO'] %>" data-default-icon="<%= installation['LOGO_THUMBNAIL'] %>"
+           data-powered-template="<%= t("#{scope}.preview.powered_by", name: '__NAME__') %>">
+      <div>
+        <h2 class="m-0 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.preview.title") %></h2>
+        <p class="m-0 text-xs text-n-slate-11"><%= t("#{scope}.preview.hint") %></p>
+      </div>
+
+      <figure class="m-0">
+        <figcaption class="mb-1.5 text-xs font-medium text-n-slate-11"><%= t("#{scope}.preview.tab") %></figcaption>
+        <div class="flex items-center gap-2 px-3 py-2 rounded-t-lg rounded-b-sm bg-n-alpha-2 max-w-[15rem]">
+          <img data-preview-icon src="<%= @account.white_label_image_path(:white_label_icon) || installation['LOGO_THUMBNAIL'] %>" alt="" class="size-4 rounded-sm object-contain">
+          <span data-preview-name class="text-xs truncate text-n-slate-12"><%= name || installation['INSTALLATION_NAME'] %></span>
+        </div>
+      </figure>
+
+      <figure class="m-0">
+        <figcaption class="mb-1.5 text-xs font-medium text-n-slate-11"><%= t("#{scope}.preview.dashboard") %></figcaption>
+        <div class="flex h-32 overflow-hidden rounded-xl outline outline-1 -outline-offset-1 outline-n-container bg-n-solid-1">
+          <div class="flex flex-col w-24 gap-2 p-2 border-e border-n-weak bg-n-alpha-1">
+            <div class="flex items-center gap-1.5">
+              <img data-preview-icon src="<%= @account.white_label_image_path(:white_label_icon) || installation['LOGO_THUMBNAIL'] %>" alt="" class="size-4 rounded-sm object-contain">
+              <span data-preview-name class="text-[10px] font-medium truncate text-n-slate-12"><%= name || installation['INSTALLATION_NAME'] %></span>
+            </div>
+            <span class="h-1.5 rounded-full w-14 bg-n-slate-6"></span>
+            <span class="w-10 h-1.5 rounded-full bg-n-slate-6"></span>
+            <span class="h-1.5 rounded-full w-12 bg-n-slate-6"></span>
+          </div>
+          <div class="flex flex-col flex-1 gap-2 p-3">
+            <span class="text-[11px] font-medium text-n-slate-12"><%= t("#{scope}.preview.conversations") %></span>
+            <span class="h-2 rounded-full w-3/4 bg-n-alpha-2"></span>
+            <span class="w-1/2 h-2 rounded-full bg-n-alpha-2"></span>
+            <span data-preview-accent class="self-start h-5 mt-auto rounded-md w-16" style="background-color: <%= accent %>"></span>
+          </div>
+        </div>
+      </figure>
+
+      <figure class="m-0">
+        <figcaption class="mb-1.5 text-xs font-medium text-n-slate-11"><%= t("#{scope}.preview.login") %></figcaption>
+        <div class="flex flex-col items-center gap-2 p-4 rounded-xl outline outline-1 -outline-offset-1 outline-n-container bg-n-solid-1">
+          <img data-preview-logo src="<%= @account.white_label_image_path(:white_label_logo) || installation['LOGO'] %>" alt="" class="object-contain h-7 max-w-[10rem]">
+          <span data-preview-domain class="text-[10px] text-n-slate-10"><%= @account.white_label_value(:white_label_domain) || frontend_host %></span>
+          <span class="w-full h-6 rounded-md bg-n-alpha-1"></span>
+          <span data-preview-accent class="flex items-center justify-center w-full h-6 text-[10px] font-medium text-white rounded-md" style="background-color: <%= accent %>"><%= t("#{scope}.preview.login_button") %></span>
+        </div>
+      </figure>
+
+      <figure class="m-0">
+        <figcaption class="mb-1.5 text-xs font-medium text-n-slate-11"><%= t("#{scope}.preview.email") %></figcaption>
+        <div class="overflow-hidden rounded-xl outline outline-1 -outline-offset-1 outline-n-container bg-n-solid-1">
+          <div data-preview-email-accent class="h-1" style="background-color: <%= color %>"></div>
+          <div class="flex flex-col gap-2 p-4">
+            <img data-preview-email-logo src="<%= @account.white_label_image_path(:white_label_logo_email) %>" alt="" class="object-contain h-6 max-w-[8rem] self-start <%= 'hidden' unless @account.white_label_logo_email.attached? %>">
+            <span class="text-xs text-n-slate-12"><%= t("#{scope}.preview.email_body") %></span>
+          </div>
+          <div data-preview-powered class="px-4 py-2 text-[10px] text-center border-t border-n-weak text-n-slate-10"><%= t("#{scope}.preview.powered_by", name: powered_by) %></div>
+        </div>
+      </figure>
+    </aside>
+  <% end %>
+</section>
+
+<script>
+  (function () {
+    var form = document.querySelector('[data-white-label-form]');
+    var root = document.querySelector('[data-preview-root]');
+    if (!form || !root) return;
+
+    var all = function (selector) { return root.querySelectorAll(selector); };
+    var field = function (key) { return form.querySelector('[data-preview="' + key + '"]'); };
+    var hexOk = function (value) { return /^#[0-9a-f]{6}$/i.test(value); };
+
+    var nameInput = field('name');
+    var colorText = field('color');
+    var colorPicker = form.querySelector('[data-color-picker]');
+    var domainInput = field('domain');
+    var poweredInput = field('powered-by');
+    var dnsHint = form.querySelector('[data-dns-hint]');
+
+    function brandName() { return nameInput.value.trim() || root.dataset.defaultName; }
+
+    function render() {
+      var name = brandName();
+      all('[data-preview-name]').forEach(function (el) { el.textContent = name; });
+
+      var color = hexOk(colorText.value.trim()) ? colorText.value.trim() : root.dataset.defaultColor;
+      all('[data-preview-email-accent]').forEach(function (el) { el.style.backgroundColor = color; });
+
+      var powered = poweredInput.value.trim() || nameInput.value.trim() || root.dataset.defaultName;
+      all('[data-preview-powered]').forEach(function (el) {
+        el.textContent = root.dataset.poweredTemplate.replace('__NAME__', powered);
+      });
+
+      var domain = domainInput.value.trim().replace(/^https?:\/\//, '').split('/')[0];
+      all('[data-preview-domain]').forEach(function (el) { el.textContent = domain || dnsHint.dataset.target; });
+      if (domain) dnsHint.textContent = dnsHint.dataset.template.replace('__DOMAIN__', domain);
+    }
+
+    // The dashboard's accent comes from the server's palette (contrast-adjusted), so the preview
+    // asks for it rather than guessing; an empty colour falls back to the dashboard default.
+    var ramp = form.querySelector('[data-ramp]');
+    var rampSteps = ramp.querySelectorAll('[data-ramp-step]');
+    var defaultRamp = JSON.parse(ramp.dataset.defaultRamp);
+    var adjusted = form.querySelector('[data-color-adjusted]');
+    var adjustedText = adjusted.querySelector('[data-color-adjusted-text]');
+    var adjustedSwatch = adjusted.querySelector('[data-color-adjusted-swatch]');
+    var adjustedHex = adjusted.querySelector('[data-color-adjusted-hex]');
+    var paletteTimer;
+    var paletteRequest = 0;
+
+    function showPalette(steps, action, note) {
+      rampSteps.forEach(function (el, index) { el.style.backgroundColor = steps[index]; });
+      all('[data-preview-accent]').forEach(function (el) { el.style.backgroundColor = action; });
+      adjusted.classList.toggle('hidden', !note);
+      if (!note) return;
+      adjustedText.textContent = adjusted.dataset.template.replace('__RATIO__', note.ratio.toLocaleString(document.documentElement.lang || undefined));
+      adjustedSwatch.style.backgroundColor = action;
+      adjustedHex.textContent = action;
+    }
+
+    function updatePalette() {
+      clearTimeout(paletteTimer);
+      var value = colorText.value.trim();
+      if (!hexOk(value)) {
+        if (!value) showPalette(defaultRamp, defaultRamp[8], null);
+        return;
+      }
+      paletteTimer = setTimeout(function () {
+        var request = ++paletteRequest;
+        fetch(ramp.dataset.paletteUrl + '?color=' + encodeURIComponent(value), { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .then(function (data) {
+            if (!data || request !== paletteRequest) return;
+            showPalette(data.ramp, data.action, data.adjusted ? { ratio: data.white_contrast } : null);
+          })
+          .catch(function () {});
+      }, 200);
+    }
+
+    colorPicker.addEventListener('input', function () { colorText.value = colorPicker.value.toUpperCase(); render(); updatePalette(); });
+    colorText.addEventListener('input', function () {
+      if (hexOk(colorText.value.trim())) colorPicker.value = colorText.value.trim();
+      render();
+      updatePalette();
+    });
+    [nameInput, domainInput, poweredInput].forEach(function (input) { input.addEventListener('input', render); });
+
+    var targets = {
+      white_label_logo: '[data-preview-logo]',
+      white_label_icon: '[data-preview-icon]',
+      white_label_logo_email: '[data-preview-email-logo]'
+    };
+
+    form.querySelectorAll('[data-image-field]').forEach(function (wrapper) {
+      var name = wrapper.dataset.imageField;
+      var input = wrapper.querySelector('[data-image-input]');
+      var thumb = wrapper.querySelector('[data-image-preview]');
+      var empty = wrapper.querySelector('[data-image-empty]');
+      var remove = wrapper.querySelector('[data-image-remove]');
+
+      function show(src) {
+        thumb.src = src || '';
+        thumb.classList.toggle('hidden', !src);
+        empty.classList.toggle('hidden', !!src);
+        if (targets[name]) {
+          all(targets[name]).forEach(function (el) {
+            el.src = src || (name === 'white_label_logo' ? root.dataset.defaultLogo : name === 'white_label_icon' ? root.dataset.defaultIcon : '');
+            el.classList.toggle('hidden', name === 'white_label_logo_email' && !src);
+          });
+        }
+      }
+
+      var original = thumb.getAttribute('src');
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (!file) return show(original);
+        if (remove) remove.checked = false;
+        var reader = new FileReader();
+        reader.onload = function (event) { show(event.target.result); };
+        reader.readAsDataURL(file);
+      });
+      if (remove) remove.addEventListener('change', function () { show(remove.checked ? '' : original); });
+    });
+
+    render();
+  })();
+</script>

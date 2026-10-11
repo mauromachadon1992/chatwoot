@@ -1,0 +1,537 @@
+<% scope = 'flow_login_page.super_admin' %>
+<% content_for(:title) { t("#{scope}.title") } %>
+<% page = @page %>
+<% installation = GlobalConfig.get('INSTALLATION_NAME', 'LOGO', 'LOGO_DARK') %>
+<% installation['INSTALLATION_NAME'] = installation['INSTALLATION_NAME'].presence || 'Chatwoot' %>
+<% palette = page.palette %>
+<% ramp_light = palette ? palette.ramp(:light) : Custom::WhiteLabel::Palette.reference_ramp(:light) %>
+<% ramp_dark = palette ? palette.ramp(:dark) : Custom::WhiteLabel::Palette.reference_ramp(:dark) %>
+<% accent = palette&.action_hex || '#2781F6' %>
+<% gradient = page.gradient.to_h %>
+<% active_locale = Custom::LoginPage::LOCALES.include?(I18n.locale.to_s) ? I18n.locale.to_s : 'pt_BR' %>
+<% field_error = ->(key) { page.errors[key].first } %>
+
+<header class="flex items-center gap-4 px-8 py-4 border-b border-n-weak" role="banner">
+  <div class="flex items-center justify-center p-2 border rounded-full border-n-weak text-n-slate-11">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>
+  </div>
+  <div class="flex flex-col justify-center flex-1 min-w-0">
+    <h1 class="m-0 text-base font-medium leading-6 truncate text-n-slate-12" id="page-title"><%= t("#{scope}.title") %></h1>
+    <p class="m-0 text-sm leading-5 text-n-slate-11"><%= t("#{scope}.description") %></p>
+  </div>
+  <a href="/app/login" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm font-medium text-n-slate-11 hover:text-n-slate-12 whitespace-nowrap">
+    <%= t("#{scope}.open_login") %>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+  </a>
+</header>
+
+<section class="px-8 py-6 main-content__body">
+  <%= form_with url: super_admin_login_page_path, method: :patch, multipart: true, local: true,
+                html: { class: 'grid gap-8 xl:grid-cols-[minmax(0,1fr)_26rem] items-start', data: { login_page_form: true } } do %>
+    <div class="flex flex-col max-w-3xl gap-10">
+
+      <%# Enable %>
+      <div class="p-4 rounded-xl outline outline-1 -outline-offset-1 outline-n-container bg-n-solid-1">
+        <%= render 'switch', name: 'login_page[enabled]', checked: page.enabled?, label: t("#{scope}.enable.title"), hint: t("#{scope}.enable.hint") %>
+      </div>
+
+      <%# Identity %>
+      <fieldset class="flex flex-col gap-4 p-0 m-0 border-0">
+        <legend class="mb-1 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.identity.title") %></legend>
+        <p class="m-0 -mt-2 text-xs text-n-slate-11"><%= t("#{scope}.identity.hint") %></p>
+        <%= render 'field', name: 'login_page[name]', value: page.name, label: t("#{scope}.identity.name"), hint: t("#{scope}.identity.name_hint"),
+                            placeholder: t("#{scope}.identity.name_placeholder"), error: field_error.call(:name), limit: 80, preview: 'name' %>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="login_page_accent_color" class="text-sm font-medium text-n-slate-12"><%= t("#{scope}.identity.color") %></label>
+          <div class="flex items-center gap-3">
+            <input type="color" value="<%= page.accent_color.presence || accent %>" aria-label="<%= t("#{scope}.identity.color") %>" data-color-picker
+                   class="size-10 p-1 !mb-0 rounded-lg cursor-pointer bg-n-solid-1 outline outline-1 -outline-offset-1 outline-n-weak border-0">
+            <input id="login_page_accent_color" type="text" name="login_page[accent_color]" value="<%= page.accent_color %>" placeholder="#2781F6" maxlength="7"
+                   data-color-text class="w-32 h-10 px-3 !mb-0 font-mono text-sm uppercase rounded-lg bg-n-solid-1 border-0 outline outline-1 -outline-offset-1 text-n-slate-12 focus:outline-2 focus:outline-n-brand <%= field_error.call(:accent_color) ? 'outline-n-ruby-9' : 'outline-n-weak' %>">
+          </div>
+          <% if (error = field_error.call(:accent_color)) %>
+            <p class="m-0 text-xs text-n-ruby-11"><%= t("#{scope}.identity.color") %>: <%= error %></p>
+          <% else %>
+            <p class="m-0 text-xs text-n-slate-11"><%= t("#{scope}.identity.color_hint") %></p>
+          <% end %>
+          <div data-color-adjusted data-template="<%= t("#{scope}.identity.color_adjusted", ratio: '__RATIO__') %>"
+               class="flex items-start gap-2 p-3 mt-1 text-xs rounded-lg bg-n-alpha-1 text-n-slate-11 <%= 'hidden' unless palette&.adjusted? %>" role="status">
+            <svg class="flex-shrink-0 mt-px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            <span>
+              <span data-color-adjusted-text><%= t("#{scope}.identity.color_adjusted", ratio: palette ? number_with_precision(palette.brand.contrast(Custom::WhiteLabel::Palette::WHITE), precision: 1) : '') %></span>
+              <span class="inline-flex items-center gap-1 ms-1 align-middle whitespace-nowrap">
+                <span data-color-adjusted-swatch class="inline-block rounded-sm size-3 outline outline-1 -outline-offset-1 outline-n-weak" style="background-color: <%= accent %>"></span>
+                <span data-color-adjusted-hex class="font-mono text-n-slate-12"><%= accent %></span>
+              </span>
+            </span>
+          </div>
+          <div class="flex flex-col gap-1.5 mt-1">
+            <span class="text-xs font-medium text-n-slate-11"><%= t("#{scope}.identity.palette") %></span>
+            <div data-ramp class="flex h-6 overflow-hidden rounded-md outline outline-1 -outline-offset-1 outline-n-weak max-w-md" aria-hidden="true">
+              <% ramp_light.each_with_index do |swatch, index| %>
+                <span data-ramp-step class="flex-1 <%= 'flex-[1.6]' if index == 8 %>" style="background-color: <%= swatch %>"></span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-3 lg:grid-cols-2">
+          <%= render 'image_field', name: :logo, label: t("#{scope}.identity.logo"), hint: t("#{scope}.identity.logo_hint") %>
+          <%= render 'image_field', name: :logo_dark, label: t("#{scope}.identity.logo_dark"), hint: t("#{scope}.identity.logo_dark_hint"), dark: true %>
+          <%= render 'image_field', name: :icon, label: t("#{scope}.identity.icon"), hint: t("#{scope}.identity.icon_hint"), square: true %>
+        </div>
+      </fieldset>
+
+      <%# Layout and background %>
+      <fieldset class="flex flex-col gap-5 p-0 m-0 border-0">
+        <legend class="mb-1 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.layout.title") %></legend>
+        <%= render 'segmented', name: 'login_page[layout]', group: 'layout', label: t("#{scope}.layout.label"), selected: page.layout,
+                                options: [['background', t("#{scope}.layout.background")], ['split', t("#{scope}.layout.split")]],
+                                hint: t("#{scope}.layout.#{page.layout}_hint"), error: field_error.call(:layout) %>
+        <span hidden data-layout-hints data-background="<%= t("#{scope}.layout.background_hint") %>" data-split="<%= t("#{scope}.layout.split_hint") %>"></span>
+
+        <%= render 'segmented', name: 'login_page[background_kind]', group: 'kind', label: t("#{scope}.layout.kind"), selected: page.background_kind,
+                                options: Custom::LoginPage::BACKGROUNDS.map { |kind| [kind, t("#{scope}.layout.kind_#{kind}")] },
+                                error: field_error.call(:background_kind) %>
+
+        <p class="m-0 -mt-3 text-xs text-n-slate-11" data-when-kind="brand"><%= t("#{scope}.layout.brand_hint") %></p>
+
+        <div class="flex flex-col gap-4" data-when-kind="gradient">
+          <div class="flex flex-wrap items-end gap-4">
+            <% [['from', gradient['from'].presence || accent], ['via', gradient['via']], ['to', gradient['to'].presence || '#0B3265']].each do |stop, value| %>
+              <label class="flex flex-col gap-1.5 text-sm font-medium text-n-slate-12">
+                <%= t("#{scope}.layout.gradient_#{stop}") %>
+                <span class="flex items-center gap-2">
+                  <input type="color" value="<%= value.presence || '#7EB6FF' %>" data-stop-picker="<%= stop %>" aria-label="<%= t("#{scope}.layout.gradient_#{stop}") %>"
+                         class="size-9 p-1 !mb-0 rounded-lg cursor-pointer bg-n-solid-1 outline outline-1 -outline-offset-1 outline-n-weak border-0">
+                  <input type="text" name="login_page[gradient][<%= stop %>]" value="<%= value %>" maxlength="7" placeholder="—" data-stop-text="<%= stop %>"
+                         class="w-24 h-9 px-2 !mb-0 font-mono text-xs uppercase rounded-lg bg-n-solid-1 border-0 outline outline-1 -outline-offset-1 outline-n-weak text-n-slate-12 focus:outline-2 focus:outline-n-brand">
+                </span>
+              </label>
+            <% end %>
+          </div>
+          <label class="flex flex-col gap-1.5 max-w-md text-sm font-medium text-n-slate-12">
+            <span class="flex justify-between"><%= t("#{scope}.layout.gradient_angle") %> <output class="text-xs font-normal tabular-nums text-n-slate-11" data-angle-output><%= gradient['angle'].presence || 135 %>°</output></span>
+            <input type="range" min="0" max="360" step="5" name="login_page[gradient][angle]" value="<%= gradient['angle'].presence || 135 %>" data-angle class="w-full accent-n-brand">
+          </label>
+          <% if (error = field_error.call(:gradient)) %>
+            <p class="m-0 text-xs text-n-ruby-11"><%= t("#{scope}.layout.kind_gradient") %>: <%= error %></p>
+          <% end %>
+        </div>
+
+        <div class="flex flex-col gap-4" data-when-kind="image">
+          <%= render 'image_field', name: :background_image, label: t("#{scope}.layout.image"), hint: t("#{scope}.layout.image_hint") %>
+          <label class="flex flex-col gap-1.5 max-w-md text-sm font-medium text-n-slate-12">
+            <span class="flex justify-between"><%= t("#{scope}.layout.overlay") %> <output class="text-xs font-normal tabular-nums text-n-slate-11" data-overlay-output><%= page.overlay %>%</output></span>
+            <input type="range" min="0" max="80" step="5" name="login_page[overlay]" value="<%= page.overlay %>" data-overlay class="w-full accent-n-brand">
+            <span class="text-xs font-normal text-n-slate-11"><%= t("#{scope}.layout.overlay_hint") %></span>
+          </label>
+        </div>
+
+        <%= render 'segmented', name: 'login_page[animation]', group: 'animation', label: t("#{scope}.layout.animation"), selected: page.animation,
+                                options: Custom::LoginPage::ANIMATIONS.keys.map { |animation| [animation, t("#{scope}.layout.animation_#{animation}")] },
+                                hint: t("#{scope}.layout.animation_hint"), error: field_error.call(:animation) %>
+      </fieldset>
+
+      <%# Copy, per language %>
+      <fieldset class="flex flex-col gap-4 p-0 m-0 border-0">
+        <legend class="mb-1 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.copy.title") %></legend>
+        <p class="m-0 -mt-2 text-xs text-n-slate-11"><%= t("#{scope}.copy.hint") %></p>
+        <div class="flex gap-1 p-1 self-start rounded-lg bg-n-alpha-1" role="tablist" aria-label="<%= t("#{scope}.copy.title") %>">
+          <% Custom::LoginPage::LOCALES.each do |locale| %>
+            <button type="button" role="tab" id="copy-tab-<%= locale %>" aria-controls="copy-panel-<%= locale %>" aria-selected="<%= locale == active_locale %>" data-copy-tab="<%= locale %>"
+                    class="h-8 px-3 text-sm border-0 rounded-md cursor-pointer text-n-slate-11 hover:text-n-slate-12 aria-selected:bg-n-solid-1 aria-selected:text-n-slate-12 aria-selected:shadow-sm aria-selected:font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-n-brand">
+              <%= t("#{scope}.copy.locale_#{locale}") %>
+              <% if page.copy.to_h[locale].present? %><span class="inline-block ms-1 rounded-full size-1.5 bg-n-brand align-middle" aria-hidden="true"></span><% end %>
+            </button>
+          <% end %>
+        </div>
+        <% Custom::LoginPage::LOCALES.each do |locale| %>
+          <div role="tabpanel" id="copy-panel-<%= locale %>" aria-labelledby="copy-tab-<%= locale %>" data-copy-panel="<%= locale %>" class="flex flex-col gap-4" <%= 'hidden' unless locale == active_locale %>>
+            <% Custom::LoginPage::COPY_LIMITS.each do |field, limit| %>
+              <%= render 'field', name: "login_page[copy][#{locale}][#{field}]", value: page.copy_for(locale, field),
+                                  label: t("#{scope}.copy.field_#{field}"), limit: limit, multiline: field != 'title',
+                                  placeholder: (default_titles[locale]&.gsub(/chatwoot/i, page.name.presence || installation['INSTALLATION_NAME']) if field == 'title'),
+                                  hint: (t("#{scope}.copy.panel_message_hint") if field == 'panel_message'),
+                                  error: field_error.call(:"copy_#{locale}_#{field}"), preview: "#{field}:#{locale}" %>
+            <% end %>
+          </div>
+        <% end %>
+      </fieldset>
+
+      <%# Options and links %>
+      <fieldset class="flex flex-col gap-4 p-0 m-0 border-0">
+        <legend class="mb-1 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.options.title") %></legend>
+        <p class="m-0 -mt-2 text-xs text-n-slate-11"><%= t("#{scope}.options.hint") %></p>
+        <div class="flex flex-col gap-3">
+          <% Custom::LoginPage::TOGGLES.each do |toggle| %>
+            <%= render 'switch', name: "login_page[options][#{toggle}]", checked: page.toggle?(toggle), label: t("#{scope}.options.#{toggle}") %>
+          <% end %>
+        </div>
+        <div class="grid gap-4 pt-2 lg:grid-cols-2">
+          <%= render 'field', name: 'login_page[options][support_label]', value: page.option(:support_label), label: t("#{scope}.options.support_label"),
+                              placeholder: t("#{scope}.options.support_label_placeholder"), limit: Custom::LoginPage::SUPPORT_LABEL_LIMIT,
+                              error: field_error.call(:support_label), preview: 'support_label' %>
+          <%= render 'field', name: 'login_page[options][support_url]', value: page.option(:support_url), label: t("#{scope}.options.support_url"),
+                              hint: t("#{scope}.options.support_url_hint"), placeholder: t("#{scope}.options.url_placeholder"),
+                              error: field_error.call(:support_url), preview: 'support_url' %>
+          <%= render 'field', name: 'login_page[options][terms_url]', value: page.option(:terms_url), label: t("#{scope}.options.terms_url"), type: 'url',
+                              placeholder: t("#{scope}.options.url_placeholder"), error: field_error.call(:terms_url), preview: 'terms_url' %>
+          <%= render 'field', name: 'login_page[options][privacy_url]', value: page.option(:privacy_url), label: t("#{scope}.options.privacy_url"), type: 'url',
+                              placeholder: t("#{scope}.options.url_placeholder"), error: field_error.call(:privacy_url), preview: 'privacy_url' %>
+        </div>
+      </fieldset>
+
+      <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-n-weak">
+        <% if page.persisted? %>
+          <button type="submit" form="restore-login-page" class="inline-flex items-center h-9 px-3 text-sm font-medium border-0 rounded-lg cursor-pointer bg-transparent text-n-ruby-11 hover:bg-n-alpha-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-n-ruby-9">
+            <%= t("#{scope}.restore") %>
+          </button>
+        <% else %>
+          <span></span>
+        <% end %>
+        <button type="submit" class="inline-flex items-center h-9 px-4 text-sm font-medium text-white border-0 rounded-lg cursor-pointer bg-n-brand hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-n-brand">
+          <%= t("#{scope}.save") %>
+        </button>
+      </div>
+    </div>
+
+    <%# Live preview %>
+    <aside class="flex flex-col gap-3 xl:sticky xl:top-6" aria-label="<%= t("#{scope}.preview.title") %>"
+           data-preview-root
+           data-accent="<%= accent %>"
+           data-ramp-light="<%= ramp_light.to_json %>" data-ramp-dark="<%= ramp_dark.to_json %>"
+           data-reference-light="<%= Custom::WhiteLabel::Palette.reference_ramp(:light).to_json %>"
+           data-reference-dark="<%= Custom::WhiteLabel::Palette.reference_ramp(:dark).to_json %>"
+           data-palette-url="<%= palette_super_admin_login_page_path %>"
+           data-default-name="<%= installation['INSTALLATION_NAME'] %>"
+           data-default-logo="<%= installation['LOGO'] %>" data-default-logo-dark="<%= installation['LOGO_DARK'] %>"
+           data-default-titles="<%= default_titles.to_json %>"
+           data-background-image="<%= page.image_path(:background_image) %>">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="m-0 text-sm font-semibold text-n-slate-12"><%= t("#{scope}.preview.title") %></h2>
+          <p class="m-0 text-xs text-n-slate-11"><%= t("#{scope}.preview.hint") %></p>
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <% [['theme', [['light', t("#{scope}.preview.light")], ['dark', t("#{scope}.preview.dark")]]],
+            ['device', [['desktop', t("#{scope}.preview.desktop")], ['mobile', t("#{scope}.preview.mobile")]]]].each do |control, choices| %>
+          <div class="inline-flex gap-1 p-1 rounded-lg bg-n-alpha-1" role="radiogroup" aria-label="<%= control %>">
+            <% choices.each_with_index do |(value, text), index| %>
+              <label class="cursor-pointer">
+                <input type="radio" name="preview_<%= control %>" value="<%= value %>" class="sr-only peer" data-preview-control="<%= control %>" <%= 'checked' if index.zero? %> form="lp-preview-controls">
+                <span class="flex items-center h-7 px-2.5 text-xs rounded-md text-n-slate-11 peer-checked:bg-n-solid-1 peer-checked:text-n-slate-12 peer-checked:shadow-sm peer-checked:font-medium peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-n-brand"><%= text %></span>
+              </label>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="lp-frame" data-lp-frame data-theme="light" data-device="desktop">
+        <div class="lp-stage" data-lp-stage data-layout="<%= page.layout %>">
+          <div class="lp-bg" data-lp-bg></div>
+          <div class="lp-veil" data-lp-veil></div>
+          <div class="lp-scrim" data-lp-scrim></div>
+          <p class="lp-message" data-lp-message></p>
+          <div class="lp-main">
+            <div class="lp-card">
+              <img class="lp-logo" data-lp-logo alt="" hidden>
+              <span class="lp-name" data-lp-name></span>
+              <span class="lp-title" data-lp-title></span>
+              <span class="lp-subtitle" data-lp-subtitle></span>
+              <span class="lp-label"><%= t("#{scope}.preview.email") %></span>
+              <span class="lp-input"></span>
+              <span class="lp-label"><%= t("#{scope}.preview.password") %></span>
+              <span class="lp-input"></span>
+              <span class="lp-button" data-lp-button><%= t("#{scope}.preview.submit") %></span>
+              <span class="lp-links" data-lp-links
+                    data-support="<%= t("#{scope}.preview.support") %>" data-terms="<%= t("#{scope}.preview.terms") %>" data-privacy="<%= t("#{scope}.preview.privacy") %>"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+  <% end %>
+
+  <%# Outside the main form: forms do not nest, the button above points here with form="…". %>
+  <%= form_with url: super_admin_login_page_path, method: :delete, local: true, id: 'restore-login-page',
+                html: { data: { confirm_message: t("#{scope}.restore_confirm") } } do %><% end %>
+</section>
+
+<style>
+  /* The preview draws the real login's structure at a small scale: a solid card over the
+     background, or the side panel with a scrim under its message. Colours mirror the
+     dashboard tokens for each theme; the accent ramp comes from the server's palette. */
+  .lp-frame { --lp-page: #F7F7F7; --lp-surface: #FFFFFF; --lp-ink: #1C2024; --lp-muted: #60646C; --lp-faint: #80838D; --lp-line: #E2E3E7; --lp-field: #FFFFFF;
+              position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: 12px; overflow: hidden; outline: 1px solid rgb(0 0 0 / 0.08); outline-offset: -1px;
+              font-family: Inter, system-ui, sans-serif; }
+  .lp-frame[data-theme="dark"] { --lp-page: #1C1D20; --lp-surface: #1F2023; --lp-ink: #EDEEF0; --lp-muted: #B0B4BA; --lp-faint: #777B84; --lp-line: #2E2D32; --lp-field: #141517; }
+  .lp-frame[data-device="mobile"] { width: 13rem; aspect-ratio: 9 / 18; margin-inline: auto; }
+  .lp-stage { position: relative; height: 100%; overflow: hidden; background: var(--lp-page); }
+  .lp-bg, .lp-veil, .lp-scrim { position: absolute; inset: 0; }
+  .lp-bg { background-size: cover; background-position: center; }
+  .lp-bg.is-drift { background-size: 200% 200%; animation: lp-drift 18s ease-in-out infinite alternate; }
+  .lp-bg.is-zoom { animation: lp-zoom 30s ease-in-out infinite alternate; }
+  @keyframes lp-drift { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+  @keyframes lp-zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
+  @media (prefers-reduced-motion: reduce) { .lp-bg { animation: none !important; } }
+  .lp-veil { background: #000; opacity: 0; pointer-events: none; }
+  .lp-scrim, .lp-message { display: none; }
+  .lp-main { position: relative; height: 100%; display: flex; align-items: center; justify-content: center; padding: 6%; }
+  .lp-card { display: flex; flex-direction: column; gap: 5px; width: min(56%, 15rem); padding: 14px; border-radius: 12px; background: var(--lp-surface);
+             box-shadow: 0 12px 32px rgb(0 0 0 / 0.18); }
+  .lp-logo { height: 13px; width: auto; max-width: 70%; object-fit: contain; align-self: flex-start; margin-bottom: 4px; }
+  .lp-name { font-size: 9px; font-weight: 600; color: var(--lp-ink); margin-bottom: 4px; }
+  .lp-title { font-size: 11px; font-weight: 600; line-height: 1.25; color: var(--lp-ink); }
+  .lp-subtitle { font-size: 7.5px; line-height: 1.4; color: var(--lp-muted); margin-bottom: 4px; }
+  .lp-subtitle:empty { display: none; }
+  .lp-label { font-size: 6.5px; font-weight: 500; color: var(--lp-ink); margin-top: 2px; }
+  .lp-input { height: 13px; border-radius: 4px; background: var(--lp-field); outline: 1px solid var(--lp-line); outline-offset: -1px; }
+  .lp-button { display: flex; align-items: center; justify-content: center; height: 15px; margin-top: 5px; border-radius: 4px; font-size: 7px; font-weight: 500; color: #FFF; }
+  .lp-links { display: flex; flex-wrap: wrap; gap: 3px 8px; justify-content: center; padding-top: 6px; margin-top: 4px; border-top: 1px solid var(--lp-line); font-size: 6px; color: var(--lp-muted); }
+  .lp-links:empty { display: none; }
+  /* Side panel: form on the left on the plain surface, the background with its message on the right. */
+  .lp-stage[data-layout="split"] .lp-bg, .lp-stage[data-layout="split"] .lp-veil, .lp-stage[data-layout="split"] .lp-scrim { left: 50%; }
+  .lp-stage[data-layout="split"] .lp-main { width: 50%; background: var(--lp-surface); }
+  .lp-stage[data-layout="split"] .lp-card { width: 82%; box-shadow: none; padding: 6px; background: transparent; }
+  .lp-stage[data-layout="split"] .lp-scrim { display: block; background: linear-gradient(to top, rgb(0 0 0 / 0.6), transparent 60%); }
+  .lp-stage[data-layout="split"] .lp-message:not(:empty) { display: block; position: absolute; left: calc(50% + 7%); right: 7%; bottom: 8%; margin: 0;
+                                                           font-size: 9px; font-weight: 500; line-height: 1.35; color: #FFF; }
+  .lp-frame[data-device="mobile"] .lp-stage[data-layout="split"] .lp-bg,
+  .lp-frame[data-device="mobile"] .lp-stage[data-layout="split"] .lp-veil,
+  .lp-frame[data-device="mobile"] .lp-stage[data-layout="split"] .lp-scrim,
+  .lp-frame[data-device="mobile"] .lp-stage[data-layout="split"] .lp-message { display: none; }
+  .lp-frame[data-device="mobile"] .lp-stage[data-layout="split"] .lp-main { width: 100%; }
+  .lp-frame[data-device="mobile"] .lp-card { width: 86%; }
+</style>
+
+<script>
+  (function () {
+    var form = document.querySelector('[data-login-page-form]');
+    var root = document.querySelector('[data-preview-root]');
+    if (!form || !root) return;
+
+    var restore = document.getElementById('restore-login-page');
+    if (restore) restore.addEventListener('submit', function (event) {
+      if (!window.confirm(restore.dataset.confirmMessage)) event.preventDefault();
+    });
+
+    var $ = function (selector, scope) { return (scope || form).querySelector(selector); };
+    var $$ = function (selector, scope) { return Array.prototype.slice.call((scope || form).querySelectorAll(selector)); };
+    var hexOk = function (value) { return /^#[0-9a-f]{6}$/i.test((value || '').trim()); };
+    var checked = function (group) { var input = $('input[data-group="' + group + '"]:checked'); return input ? input.value : null; };
+    var field = function (key) { return $('[data-preview="' + key + '"]'); };
+    var value = function (key) { var input = field(key); return input ? input.value.trim() : ''; };
+
+    var frame = $('[data-lp-frame]', root);
+    var stage = $('[data-lp-stage]', root);
+    var bg = $('[data-lp-bg]', root);
+    var veil = $('[data-lp-veil]', root);
+    var state = {
+      accent: root.dataset.accent,
+      ramps: { light: JSON.parse(root.dataset.rampLight), dark: JSON.parse(root.dataset.rampDark) },
+      reference: { light: JSON.parse(root.dataset.referenceLight), dark: JSON.parse(root.dataset.referenceDark) },
+      titles: JSON.parse(root.dataset.defaultTitles),
+      backgroundImage: root.dataset.backgroundImage || '',
+      logo: '', logoDark: '',
+      locale: $('[data-copy-tab][aria-selected="true"]').dataset.copyTab,
+      theme: 'light'
+    };
+    var logoField = $('[data-image-field="logo"] [data-image-preview]');
+    var logoDarkField = $('[data-image-field="logo_dark"] [data-image-preview]');
+    state.logo = (logoField && logoField.getAttribute('src')) || '';
+    state.logoDark = (logoDarkField && logoDarkField.getAttribute('src')) || '';
+
+    // The brand aurora reads --blue-3/5/7/9 as "r g b", like the dashboard's tokens.
+    function applyRamp() {
+      var ramp = state.ramps[state.theme];
+      ramp.forEach(function (color, index) {
+        stage.style.setProperty('--blue-' + (index + 1), color.replace(/^rgb\(|\)$/g, ''));
+      });
+      $('[data-lp-button]', root).style.backgroundColor = state.accent;
+    }
+
+    function gradientCss() {
+      var stops = ['from', 'via', 'to'].map(function (stop) { return $('[data-stop-text="' + stop + '"]').value.trim(); }).filter(hexOk);
+      if (stops.length < 2) return 'none';
+      return 'linear-gradient(' + $('[data-angle]').value + 'deg, ' + stops.join(', ') + ')';
+    }
+
+    var BRAND_CSS = 'radial-gradient(at 18% 12%, rgb(var(--blue-7)) 0, transparent 55%), radial-gradient(at 86% 82%, rgb(var(--blue-9) / 0.55) 0, transparent 50%), radial-gradient(at 70% 20%, rgb(var(--blue-5)) 0, transparent 45%), rgb(var(--blue-3))';
+
+    function renderBackground() {
+      var kind = checked('kind');
+      var animation = checked('animation');
+      bg.className = 'lp-bg';
+      bg.style.backgroundImage = '';
+      bg.style.background = '';
+      veil.style.opacity = 0;
+      if (kind === 'brand') bg.style.background = BRAND_CSS;
+      if (kind === 'gradient') bg.style.background = gradientCss();
+      if (kind === 'image') {
+        bg.style.backgroundImage = state.backgroundImage ? 'url("' + state.backgroundImage + '")' : 'none';
+        bg.style.backgroundSize = 'cover';
+        veil.style.opacity = $('[data-overlay]').value / 100;
+      }
+      if (animation === 'drift') bg.classList.add('is-drift');
+      if (animation === 'zoom') bg.classList.add('is-zoom');
+    }
+
+    // Which animation suits which background, as the server validates it.
+    var ANIMATIONS = { none: ['brand', 'gradient', 'image'], drift: ['brand', 'gradient'], zoom: ['image'] };
+    function syncAnimations() {
+      var kind = checked('kind');
+      $$('input[data-group="animation"]').forEach(function (input) {
+        input.disabled = ANIMATIONS[input.value].indexOf(kind) === -1;
+        if (input.disabled && input.checked) $('input[data-group="animation"][value="none"]').checked = true;
+      });
+      $$('[data-when-kind]').forEach(function (el) { el.hidden = el.dataset.whenKind !== kind; });
+      var hints = $('[data-layout-hints]');
+      var hint = $('[data-hint-for="layout"]');
+      if (hints && hint) hint.textContent = hints.dataset[checked('layout')];
+    }
+
+    function brandName() { return value('name') || root.dataset.defaultName; }
+
+    function renderCard() {
+      var dark = state.theme === 'dark';
+      var logo = dark ? (state.logoDark || state.logo || root.dataset.defaultLogoDark || root.dataset.defaultLogo) : (state.logo || root.dataset.defaultLogo);
+      var logoEl = $('[data-lp-logo]', root);
+      logoEl.src = logo || '';
+      logoEl.hidden = !logo;
+      $('[data-lp-name]', root).textContent = logo ? '' : brandName();
+      var fallback = (state.titles[state.locale] || '').replace(/chatwoot/gi, function () { return brandName(); });
+      $('[data-lp-title]', root).textContent = value('title:' + state.locale) || fallback;
+      $('[data-lp-subtitle]', root).textContent = value('subtitle:' + state.locale);
+      $('[data-lp-message]', root).textContent = value('panel_message:' + state.locale);
+      var links = $('[data-lp-links]', root);
+      var parts = [];
+      if (value('support_url')) parts.push(value('support_label') || links.dataset.support);
+      if (value('terms_url')) parts.push(links.dataset.terms);
+      if (value('privacy_url')) parts.push(links.dataset.privacy);
+      links.innerHTML = '';
+      parts.forEach(function (text) { var span = document.createElement('span'); span.textContent = text; links.appendChild(span); });
+    }
+
+    function render() {
+      stage.dataset.layout = checked('layout');
+      frame.dataset.theme = state.theme;
+      applyRamp();
+      syncAnimations();
+      renderBackground();
+      renderCard();
+    }
+
+    // Accent: the dashboard's real (contrast-adjusted) tone and ramp come from the server.
+    var colorPicker = $('[data-color-picker]');
+    var colorText = $('[data-color-text]');
+    var adjusted = $('[data-color-adjusted]');
+    var rampSteps = $$('[data-ramp] [data-ramp-step]');
+    var paletteTimer;
+    var paletteRequest = 0;
+    function showPalette(data) {
+      state.accent = data ? data.action : '#2781F6';
+      state.ramps = data ? { light: data.ramp, dark: data.ramp_dark } : { light: state.reference.light, dark: state.reference.dark };
+      state.ramps.light.forEach(function (color, index) { if (rampSteps[index]) rampSteps[index].style.backgroundColor = color; });
+      adjusted.classList.toggle('hidden', !(data && data.adjusted));
+      if (data && data.adjusted) {
+        $('[data-color-adjusted-text]', adjusted).textContent = adjusted.dataset.template.replace('__RATIO__', data.white_contrast.toLocaleString(document.documentElement.lang || undefined));
+        $('[data-color-adjusted-swatch]', adjusted).style.backgroundColor = data.action;
+        $('[data-color-adjusted-hex]', adjusted).textContent = data.action;
+      }
+      render();
+    }
+    function updatePalette() {
+      clearTimeout(paletteTimer);
+      var color = colorText.value.trim();
+      if (!hexOk(color)) { if (!color) showPalette(null); return; }
+      paletteTimer = setTimeout(function () {
+        var request = ++paletteRequest;
+        fetch(root.dataset.paletteUrl + '?color=' + encodeURIComponent(color), { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+          .then(function (res) { return res.ok ? res.json() : null; })
+          .then(function (data) { if (data && request === paletteRequest) showPalette(data); })
+          .catch(function () {});
+      }, 200);
+    }
+    colorPicker.addEventListener('input', function () { colorText.value = colorPicker.value.toUpperCase(); updatePalette(); });
+    colorText.addEventListener('input', function () { if (hexOk(colorText.value)) colorPicker.value = colorText.value.trim(); updatePalette(); });
+
+    // Gradient stops: picker and text stay in step.
+    $$('[data-stop-picker]').forEach(function (picker) {
+      var text = $('[data-stop-text="' + picker.dataset.stopPicker + '"]');
+      picker.addEventListener('input', function () { text.value = picker.value.toUpperCase(); render(); });
+      text.addEventListener('input', function () { if (hexOk(text.value)) picker.value = text.value.trim(); render(); });
+    });
+    $('[data-angle]').addEventListener('input', function (event) { $('[data-angle-output]').textContent = event.target.value + '°'; render(); });
+    $('[data-overlay]').addEventListener('input', function (event) { $('[data-overlay-output]').textContent = event.target.value + '%'; render(); });
+
+    // Copy tabs (arrow keys move between them, as a tablist should).
+    var tabs = $$('[data-copy-tab]');
+    function selectTab(tab) {
+      tabs.forEach(function (other) { other.setAttribute('aria-selected', other === tab ? 'true' : 'false'); other.tabIndex = other === tab ? 0 : -1; });
+      $$('[data-copy-panel]').forEach(function (panel) { panel.hidden = panel.dataset.copyPanel !== tab.dataset.copyTab; });
+      state.locale = tab.dataset.copyTab;
+      render();
+    }
+    tabs.forEach(function (tab, index) {
+      tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+      tab.addEventListener('click', function () { selectTab(tab); });
+      tab.addEventListener('keydown', function (event) {
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+        var next = tabs[(index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        next.focus();
+        selectTab(next);
+      });
+    });
+
+    // Character counters.
+    $$('[data-counted="true"]').forEach(function (input) {
+      var counter = form.querySelector('[data-counter-for="' + input.id + '"]');
+      if (!counter) return;
+      input.addEventListener('input', function () { counter.textContent = input.value.length + '/' + counter.dataset.limit; });
+    });
+
+    // Images: preview the chosen file before it is saved.
+    $$('[data-image-field]').forEach(function (wrapper) {
+      var name = wrapper.dataset.imageField;
+      var input = $('[data-image-input]', wrapper);
+      var thumb = $('[data-image-preview]', wrapper);
+      var empty = $('[data-image-empty]', wrapper);
+      var remove = $('[data-image-remove]', wrapper);
+      var original = thumb.getAttribute('src') || '';
+      function show(src) {
+        thumb.src = src || '';
+        thumb.classList.toggle('hidden', !src);
+        empty.classList.toggle('hidden', !!src);
+        if (name === 'logo') state.logo = src;
+        if (name === 'logo_dark') state.logoDark = src;
+        if (name === 'background_image') state.backgroundImage = src;
+        render();
+      }
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        if (!file) return show(original);
+        if (remove) remove.checked = false;
+        var reader = new FileReader();
+        reader.onload = function (event) { show(event.target.result); };
+        reader.readAsDataURL(file);
+      });
+      if (remove) remove.addEventListener('change', function () { show(remove.checked ? '' : original); });
+    });
+
+    // Preview controls.
+    $$('[data-preview-control]', root).forEach(function (input) {
+      input.addEventListener('change', function () {
+        if (input.dataset.previewControl === 'theme') state.theme = input.value;
+        if (input.dataset.previewControl === 'device') frame.dataset.device = input.value;
+        render();
+      });
+    });
+
+    form.addEventListener('input', function (event) { if (event.target.closest('[data-preview], [data-group]')) render(); });
+    form.addEventListener('change', function (event) { if (event.target.matches('[data-group]')) render(); });
+    render();
+  })();
+</script>

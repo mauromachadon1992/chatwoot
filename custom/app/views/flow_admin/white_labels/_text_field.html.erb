@@ -1,0 +1,28 @@
+<%# locals: (key:, label:, hint: nil, placeholder: nil, type: 'text', prefix: nil, preview: nil) %>
+<% error = @account.errors[key].first %>
+<div class="flex flex-col gap-1.5">
+  <label for="white_label_<%= key %>" class="text-sm font-medium text-n-slate-12"><%= label %></label>
+  <div class="flex items-stretch rounded-lg bg-n-solid-1 outline outline-1 -outline-offset-1 transition-colors focus-within:outline-2 focus-within:outline-n-brand <%= error ? 'outline-n-ruby-9' : 'outline-n-weak hover:outline-n-slate-6' %>">
+    <% if prefix %>
+      <span class="flex items-center ps-3 text-sm text-n-slate-10 select-none"><%= prefix %></span>
+    <% end %>
+    <input
+      id="white_label_<%= key %>"
+      name="white_label[<%= key %>]"
+      type="<%= type %>"
+      value="<%= @account.white_label_value(key) %>"
+      placeholder="<%= placeholder %>"
+      <% if preview %>data-preview="<%= preview %>"<% end %>
+      <% if error %>aria-invalid="true" aria-describedby="white_label_<%= key %>_error"<% end %>
+      class="w-full h-10 px-3 !mb-0 text-sm bg-transparent border-0 rounded-lg outline-none text-n-slate-12 placeholder:text-n-slate-10"
+    >
+  </div>
+  <% if error %>
+    <p id="white_label_<%= key %>_error" class="flex items-center gap-1.5 m-0 text-xs text-n-ruby-11">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <%= label %>: <%= error %>
+    </p>
+  <% elsif hint %>
+    <p class="m-0 text-xs text-n-slate-11"><%= hint %></p>
+  <% end %>
+</div>

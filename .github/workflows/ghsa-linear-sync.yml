@@ -10,6 +10,8 @@ permissions:
 
 jobs:
   sync:
+    # Upstream's secrets and Linear project; the fork has neither.
+    if: github.repository == 'chatwoot/chatwoot'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

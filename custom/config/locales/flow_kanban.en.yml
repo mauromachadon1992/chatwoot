@@ -1,0 +1,141 @@
+en:
+  flow_kanban:
+    default_stages:
+      new: New
+      in_progress: In progress
+      won: Won
+      lost: Lost
+    card_fields:
+      label: Kanban card fields
+      hint: What the board shows on each card without opening it. The title always shows.
+      contact: Contact
+      value: Value
+      conversations: Conversations and channels
+      assignee: Assignee
+      time_in_stage: Time in stage
+      last_activity: Last activity
+    features:
+      label: Kanban features
+      hint: Behaviours this account may use. An administrator still sets each one up per board.
+      auto_create:
+        label: Automatic deals
+        hint: A new conversation can open a deal on its own, on the boards and inboxes an administrator picks.
+      stale_alerts:
+        label: Stalled-deal alerts
+        hint: A deal that stays too long in a stage is flagged and its agent is told, on the stages given a limit.
+      webhooks:
+        label: Webhooks
+        hint: An administrator can send deal events (created, moved, won, lost, value changed, task created) to an address.
+      ai_summary:
+        label: 'AI deal summary'
+        hint: 'Agents can ask for a draft summary of a deal and a suggested next task. The text of the deal and of the conversations they can open is sent to the AI provider Captain uses.'
+    settings:
+      unsupported_currency: Currency not supported.
+      quote_template_too_long: The quote message can have up to 2000 characters.
+    quote:
+      default_template: "Hi {{contact}}! Here is the quote:\n\n{{items}}\n\nTotal: {{total}}\n\nAny questions, just reply to this message. — {{agent}}"
+      discount: "%{percent}% off"
+      units:
+        un: "ea"
+        m: "m"
+        m2: "m²"
+        m3: "m³"
+        kg: "kg"
+        t: "t"
+        l: "L"
+        cx: "box"
+        pc: "pc"
+        sc: "bag"
+        par: "pair"
+        kit: "kit"
+        h: "h"
+        srv: "svc"
+    pro:
+      invalid_date: 'a date must be ISO 8601, like 2026-10-30T18:00:00-03:00'
+      invalid_attributes: 'custom_attributes must be an object'
+      invalid_labels: 'labels must be a list of texts'
+      no_deal: 'this conversation has no open deal'
+      invalid_quantity: 'quantity must be a number greater than zero'
+      too_many_lines: 'a deal holds at most %{max} product lines'
+      contact_needed: 'a deal needs a contact: send conversation_id (the conversation display id) or contact_id'
+    ai:
+      nothing_to_summarize: 'There are no messages in the linked conversations to summarize yet.'
+      rate_limited: 'You have asked for many summaries. Try again in %{minutes} min.'
+      disabled: 'The AI summary is not turned on for this account.'
+      not_configured: 'The AI assistant is not set up. Ask an administrator to add the Captain API key.'
+      quota: 'The account has used its AI responses for this period.'
+      failed: 'The assistant could not answer now. Nothing was changed; try again in a moment.'
+    imports:
+      file:
+        too_big: 'The file is over 2 MB.'
+        encoding: 'The file is not UTF-8. Save it as CSV UTF-8 and try again.'
+        empty: 'The file has no header row.'
+        no_rows: 'The file has a header but no rows.'
+        too_many_rows: 'The file has more than %{max} rows. Split it and import in parts.'
+        malformed: 'The file is not a valid CSV (check quotes and separators).'
+      errors:
+        name_blank: 'the name is empty'
+        name_too_long: 'the name is over %{max} characters'
+        sku_too_long: 'the SKU is over %{max} characters'
+        unit_unknown: 'unknown unit (use one of %{units})'
+        price_invalid: 'the price is not an amount'
+        repeated_in_file: 'this item is repeated in the file'
+        email_invalid: 'the e-mail is not valid'
+        phone_invalid: 'the phone must be a number with country code, like +5511999998888'
+        contact_missing: 'needs an e-mail or a phone to find or create the contact'
+        stage_unknown: 'no stage called "%{name}" (stages: %{stages})'
+        value_invalid: 'the value is not an amount'
+        date_invalid: 'the date must be YYYY-MM-DD or DD/MM/YYYY'
+        assignee_unknown: 'no agent with the e-mail %{email}'
+        unexpected: 'something went wrong with this row'
+    task_reminder:
+      due_soon: 'Task due in %{minutes} min: %{title} (%{card})'
+      overdue: 'Task overdue: %{title} (%{card})'
+      open: Open the board
+  activerecord:
+    errors:
+      models:
+        custom/kanban/card:
+          attributes:
+            start_at:
+              after_due: 'the start must not be after the due date'
+            custom_attributes:
+              too_many: 'at most %{count} allowed'
+              bad_key: 'each name must have from 1 to %{max} characters'
+              too_big: 'is too big (at most 10 KB)'
+            labels:
+              too_many: 'at most %{count} allowed'
+              too_long: 'each label can have up to %{max} characters'
+            value_cents:
+              follows_items: follows the sum of the products; remove the products to type a value
+        custom/kanban/webhook:
+          attributes:
+            url:
+              https: must be a full https address
+            events:
+              empty: pick at least one event
+          too_many: an account can have at most %{max} webhooks
+        custom/kanban/stage_automation:
+          attributes:
+            trigger_config:
+              no_reply: needs a number of hours from 1 to 720 and who is silent, the customer or the team
+            actions:
+              empty: needs at least one action
+              too_many: can have at most %{count} actions
+              step_stage: 'action %{position}: pick a stage of this board'
+              step_title: 'action %{position}: give the task a title of up to 255 characters'
+              step_task_type: 'action %{position}: pick a task type'
+              step_due: 'action %{position}: the due time is 0 to 720 hours'
+              step_agent: 'action %{position}: pick an agent of this account'
+              step_label: 'action %{position}: pick a label of this account'
+              step_type: 'action %{position}: unknown action'
+        custom/kanban/board:
+          attributes:
+            auto_create:
+              daily_cap: daily limit must be between 1 and 500
+              inboxes: includes an inbox outside this account
+              no_inbox: needs at least one inbox to watch
+        custom/kanban/stage:
+          attributes:
+            stale_after_days:
+              open_only: only applies to open stages

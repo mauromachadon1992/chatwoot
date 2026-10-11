@@ -23,6 +23,10 @@ const isSaving = ref(false);
 const logoInput = ref(null);
 
 const logoUrl = computed(() => currentAccount.value?.brand_logo_email_url);
+// Flow: a white label set by the super admin wins over this form, so it is not offered.
+const managedByWhiteLabel = computed(
+  () => currentAccount.value?.settings?.white_label_enabled === true
+);
 
 // Seeded on the account's identity, not on every write to it: uploading a logo commits a
 // fresh account to the store, and a deep watcher would use that to overwrite whatever the
@@ -85,7 +89,14 @@ const removeLogo = async () => {
     :description="t('GENERAL_SETTINGS.FORM.EMAIL_BRANDING.NOTE')"
     with-border
   >
-    <form class="grid gap-4" @submit.prevent="save">
+    <p
+      v-if="managedByWhiteLabel"
+      class="flex items-start gap-2 p-3 m-0 rounded-lg bg-n-alpha-1 text-body-main text-n-slate-11"
+    >
+      <span class="i-lucide-info size-4 mt-0.5 flex-shrink-0" />
+      {{ t('FLOW_WHITE_LABEL.EMAIL_BRANDING_MANAGED') }}
+    </p>
+    <form v-else class="grid gap-4" @submit.prevent="save">
       <WithLabel
         name="brand-name"
         :label="t('GENERAL_SETTINGS.FORM.EMAIL_BRANDING.NAME.LABEL')"

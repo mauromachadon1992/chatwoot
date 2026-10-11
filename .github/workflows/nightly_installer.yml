@@ -19,6 +19,8 @@ permissions:
 
 jobs:
   nightly:
+    # Installs upstream's released image from get.chatwoot.app; not what this fork ships.
+    if: github.repository == 'chatwoot/chatwoot'
     runs-on: ubuntu-24.04
     steps:
 

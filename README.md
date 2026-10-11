@@ -1,164 +1,72 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/brand/logo-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset=".github/brand/logo-light.png">
-  <img src=".github/brand/logo-light.png" alt="fazer.ai" width="200">
-</picture>
+<h1>Flow Chat</h1>
 
-<h1>Chatwoot fazer.ai</h1>
-
-<p>O Chatwoot oficial, com tudo que faltava pra atender no Brasil.</p>
-<p>Atendimento por WhatsApp no seu servidor, com edição aberta e opção Pro.</p>
+<p>O Chatwoot do projeto Flow: atendimento por WhatsApp com Kanban de vendas e agentes de IA.</p>
+<p>Fork privado do Chatwoot fazer.ai, que estende o Chatwoot oficial. Não é a distribuição oficial.</p>
 
 **Português (Brasil)** · [English](README-en.md)
-
-[![Release](https://img.shields.io/github/v/release/fazer-ai/chatwoot)](https://github.com/fazer-ai/chatwoot/releases)
-[![Downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Ffazer.ai%2Fapi%2Fbadges%2Fchatwoot-downloads)](https://github.com/fazer-ai/chatwoot/pkgs/container/chatwoot)
 
 </div>
 
 ## O que é
 
-Chatwoot fazer.ai é um fork do Chatwoot oficial, mantido pela fazer.ai (FAZER.AI LTDA), parceira oficial do Chatwoot no Brasil. A Chatwoot Inc. desenvolve o produto original e é uma empresa separada.
+O **Flow Chat** é o Chatwoot do projeto Flow. Parte do [fork da fazer.ai](https://github.com/fazer-ai/chatwoot), que por sua vez estende o [Chatwoot oficial](https://github.com/chatwoot/chatwoot), e acrescenta, na pasta [`custom/`](custom/), um Kanban de vendas próprio e a conversa com o **Flow Agents**, os agentes de IA do projeto (`mauromachadon1992/flow-agents-ee`).
 
-O fork acompanha as versões do Chatwoot oficial e acrescenta recursos para quem monta e opera atendimento por WhatsApp. Você pode usar a edição aberta gratuitamente ou contratar o Chatwoot fazer.ai Pro para incluir o Kanban de vendas.
+Três camadas, cada uma com o seu dono: o Chatwoot (Chatwoot Inc.), as adições do fork da fazer.ai (FAZER.AI LTDA) e as do Flow Chat. O Flow Chat **não** é produto, release, imagem nem suporte oficiais do Chatwoot nem da fazer.ai.
 
-## O que a fazer.ai adiciona
+## O que o Flow Chat adiciona
 
-### WhatsApp
+### Kanban de vendas (`custom/`)
 
-- Conexão pelo QR code do celular, sem API paga de terceiros, ou pela API oficial, inclusive em coexistência com o app WhatsApp Business.
-- Provedor próprio para QR code, “WhatsApp (nativo)”, em beta. Roda no servidor da instalação, sem serviço de terceiros, com um [conector de código aberto em Go](https://github.com/fazer-ai/whatsapp-connector) mantido pela fazer.ai.
-- Troca do modo de conexão da caixa de entrada sem perder o histórico.
-- Importação do histórico do celular ao conectar.
-- Grupos do WhatsApp.
-- Reações e respostas citando mensagens, além de edição e exclusão.
-- Indicadores de “digitando” e “gravando áudio”.
-- Notas de voz são enviadas como notas de voz, em vez de arquivo de áudio.
-- Foto de perfil do contato puxada do WhatsApp.
+- Quadros, etapas (abertas, ganha, perdida) e cards: um negócio ligado a um contato, com as conversas de qualquer caixa de entrada. Arrastar e soltar, filtros, tempo real e visibilidade por caixa de entrada, time e agente.
+- Valor e produtos: catálogo, linhas do negócio, orçamento montado a partir do card, probabilidade por etapa e relatórios de funil e previsão.
+- Tarefas por card, "minhas tarefas", lembretes e notificações.
+- Negócios que nascem sozinhos de novas conversas (por conta e por quadro), alerta de negócio parado e motivo de perda.
+- Automações por etapa, webhooks de saída assinados (HMAC) e importação e exportação em CSV.
+- Resumo do negócio por IA (Captain), desligado por padrão.
+- Linha do tempo de cada card, com quem agiu: uma pessoa, um agente de IA, uma regra ou o sistema.
+- Painel do card em abas, celular, português, inglês e espanhol, claro e escuro.
 
-### Chat interno entre agentes
+O que cada parte faz e o que não faz está em [`custom/README.md`](custom/README.md). O plano, em [`custom/ROADMAP.md`](custom/ROADMAP.md), e o estado de agora, em [`custom/BACKLOG.md`](custom/BACKLOG.md).
 
-A equipe conversa dentro do atendimento, em canais públicos ou privados e por mensagens diretas.
+### Conversa com o Flow Agents
 
-- Threads e reações, com menção a conversas.
-- Anexos ao colar ou arrastar arquivos, com rascunhos de mensagens.
-- Notificações nativas e layout para celular.
+- O Flow Chat fala o **dialeto de Kanban** que o cliente do agente já usa (15 operações; o harness do Flow Agents passa 16 de 16 contra ele) e oferece **extensões** (catálogo, produtos do negócio, valor), todas por capacidades anunciadas em `GET kanban/settings`.
+- O agente age como um **usuário de serviço** (`agent_bot`), que não alcança webhooks, importações nem automações.
+- O contrato, em [`custom/contracts/`](custom/contracts/), é o mesmo nos dois repositórios, com um hash só. O [protocolo](custom/contracts/protocol.md) diz quem muda o quê, em que ordem, e como cada lado prova a sua parte.
 
-A edição Pro libera o chat interno completo.
+### O que vem do fork da fazer.ai
 
-### Conversas e mensagens
+O Flow Chat herda tudo isso; os detalhes estão no [README do fork](https://github.com/fazer-ai/chatwoot#readme).
 
-- Mensagens agendadas, inclusive recorrentes ou com template do WhatsApp. Você pode suspender o envio se o cliente responder antes.
-- Edição de mensagens enviadas, com histórico do conteúdo.
-- Conversas fixadas ou marcadas como não lidas.
-- Conversa travada no agente que a assumiu.
-- Assinatura por caixa de entrada.
-- Filtros personalizados pessoais ou globais, inclusive para encontrar contatos ou conversas com atributo personalizado ausente.
+- **WhatsApp:** QR code ou API oficial, provedor nativo em beta (conector de código aberto da fazer.ai), grupos, reações, respostas citadas, edição e exclusão, histórico do celular.
+- **Chat interno entre agentes**, com os limites da edição aberta.
+- **Conversas e mensagens:** mensagens agendadas, edição com histórico, conversas fixadas, assinatura por caixa, filtros personalizados.
+- **Automações e integrações:** gatilhos novos, bots observadores, webhook por caixa de entrada.
+- **Operação:** white label ([CUSTOM_BRANDING.md](CUSTOM_BRANDING.md); o Flow Chat o usa para o nome e a tela de login), envio de e-mail pelo Resend, armazenamento compatível com S3, relatórios ordenáveis.
 
-### Automações e integrações
+## Imagem e deploy
 
-- Gatilhos para mensagem editada e conversa parada por um período.
-- Bots observadores recebem tudo o que acontece na caixa de entrada sem responder nem assumir conversas. Servem para classificar ou revisar o atendimento enquanto a equipe ou outro bot responde.
-- Webhook por caixa de entrada, com eventos de mensagens recebidas ou enviadas e novas tentativas em caso de falha.
-- Node do n8n: [`@fazer-ai/n8n-nodes-chatwoot`](https://www.npmjs.com/package/@fazer-ai/n8n-nodes-chatwoot).
-- [fazer.ai agents](https://fazer.ai/agents): agentes de IA que atendem pelo Chatwoot nas duas edições, com [código disponível no GitHub](https://github.com/fazer-ai/agents).
+- **Imagem:** privada, `ghcr.io/mauromachadon1992/chatwoot`, com as tags `<versão>-<sha>-ee` (imutável, a que se fixa em produção), `<sha>-ee`, `<versão>-ee` e `latest-ee`. Ela traz `enterprise/` e `custom/`. A imagem pública da fazer.ai **não** serve: ela remove `enterprise/` e não tem `custom/`.
+- **Construir e publicar:** `custom/docker/build-ee` e `custom/docker/publish-ghcr`. Rodar a imagem na sua máquina: `custom/docker/ee-local up` (http://localhost:3100, com banco e Redis próprios).
+- **Coolify:** `custom/docker/coolify.compose.yaml` (produção) e `custom/docker/coolify.staging.compose.yaml` (homologação, com PostgreSQL e Redis próprios). O passo a passo e as tags estão em [`custom/docker/README.md`](custom/docker/README.md).
+- **Desenvolvimento:** Docker, com `docker compose`; as regras do projeto estão em [AGENTS.md](AGENTS.md) e as de interface em [DESIGN.md](DESIGN.md).
 
-### Operação
+## Atualizar a partir do upstream
 
-- Interface em português ou no idioma da conta, assim como e-mails transacionais e mensagens de atividade.
-- White label com nome e logo próprios, além de cor e e-mails com a sua marca. Consulte [CUSTOM_BRANDING.md](CUSTOM_BRANDING.md).
-- Envio de e-mail pelo Resend e armazenamento em serviços compatíveis com S3, como R2 ou MinIO.
-- Importação em massa de e-mails por IMAP.
-- Relatórios ordenáveis por qualquer coluna, com visões cruzadas entre agente, caixa de entrada e time.
-
-Veja as mudanças de cada versão nas [notas de release](https://fazer.ai/chatwoot-release-notes) ou nas [releases do GitHub](https://github.com/fazer-ai/chatwoot/releases).
-
-## Edições
-
-| | Chatwoot fazer.ai | Chatwoot fazer.ai Pro |
-| --- | --- | --- |
-| Base de recursos | Chatwoot oficial com as adições da fazer.ai | Toda a edição aberta |
-| Kanban de vendas | Não | Funis e oportunidades com valor, produtos, tarefas, automações e relatórios de funil |
-| Chat interno | Até 2 canais privados, busca nos últimos 90 dias, sem enquetes | Completo, sem esses limites e com enquetes |
-| Licença | Gratuita, MIT fora de `enterprise/` | Licença própria da fazer.ai para o código Pro, em repositório separado |
-| Imagem Docker | Pública: `ghcr.io/fazer-ai/chatwoot` | Privada, liberada com a assinatura |
-
-Conheça o [Kanban do Pro](https://fazer.ai/kanban) e ative sua licença em [app.fazer.ai](https://app.fazer.ai). A licença do Chatwoot fazer.ai Pro vem de graça com a assinatura Pro da [Comunidade Lucas Moreira](https://www.lucasmoreira.ai).
-
-### Chatwoot Enterprise
-
-As licenças fazer.ai não incluem recursos do Chatwoot Enterprise. SSO e Captain, assim como logs de auditoria e funções personalizadas, são licenciados pela Chatwoot Inc.
-
-Para usar esses recursos com o fork, contrate a licença com a Chatwoot Inc. e use a imagem `ghcr.io/fazer-ai/chatwoot:latest-ee`. A imagem com sufixo `-ee` não substitui a licença. A parceria oferece [desconto na contratação](https://fazer.ai/parceria-chatwoot).
-
-## Instalar
-
-### Com o instalador do fazer.ai agents
-
-O caminho mais curto é o [instalador do fazer.ai agents](https://fazer.ai/agents). Um agente de código conduz a instalação do Chatwoot fazer.ai e do agente de IA, junto com os demais serviços, num VPS.
-
-### Só o Chatwoot, com Docker
-
-Use a imagem pública `ghcr.io/fazer-ai/chatwoot:latest`. Se você já tem uma instalação, faça backup do banco antes de substituir a imagem oficial e siga os passos de migração abaixo.
-
-O repositório inclui o [docker-compose.coolify.yaml](docker-compose.coolify.yaml) e um [guia de deploy no Coolify](docker/README-coolify-deploy.md), em português.
-
-As variáveis próprias do fork estão comentadas no [.env.example](.env.example). A imagem pública oferece a tag `latest` e uma tag para cada release.
-
-### WhatsApp (nativo)
-
-O conector vem na imagem do Chatwoot fazer.ai e roda no container do Sidekiq, ligado por padrão para toda conta. Usa o mesmo Redis e cria um banco próprio no mesmo PostgreSQL no primeiro start. Para desligar, configure:
-
-```bash
-WHATSAPP_CONNECTOR_ENABLED=false
-```
-
-Para rodar o conector como serviço separado na stack, configure `WHATSAPP_CONNECTOR_EMBEDDED=false`. O [README do conector](https://github.com/fazer-ai/whatsapp-connector#instalar-com-o-chatwoot-fazerai) traz o passo a passo dos dois modos, com exemplos de docker-compose e migração de caixa.
-
-> [!WARNING]
-> Se você já roda o conector separado, configure `WHATSAPP_CONNECTOR_EMBEDDED=false` antes de atualizar a imagem. Sem isso, sobe um segundo conector disputando as mesmas sessões.
-
-## Atualizar e migrar do Chatwoot oficial
-
-### Atualizar
-
-1. Faça backup do banco antes de trocar a imagem.
-2. Baixe a nova imagem e reinicie os serviços pelo painel onde o Chatwoot roda.
-
-Para fixar uma versão, use a tag da release no lugar de `latest`.
-
-### Migrar do Chatwoot oficial
-
-1. Escolha uma versão do fork igual ou mais nova que a instalada.
-2. Faça backup do banco antes de trocar a imagem.
-3. Substitua a imagem oficial por `ghcr.io/fazer-ai/chatwoot`, com a tag escolhida, e reinicie os serviços.
-
-O banco e os anexos são mantidos, assim como as configurações.
-
-## Suporte e comunidade
-
-- Dúvidas de instalação e uso: [perguntas e respostas da Comunidade Lucas Moreira](https://www.lucasmoreira.ai/c/perguntas-e-respostas).
-- Bugs e pedidos de funcionalidade: [issues no GitHub](https://github.com/fazer-ai/chatwoot/issues).
-- Vídeos em português: [canal Lucas Moreira](https://youtube.com/@eulucassmoreira).
-- Documentação da API, inclusive Kanban: [docs-chatwoot.fazer.ai](https://docs-chatwoot.fazer.ai).
+O tronco do Flow Chat é `feat/kanban`; a `main` espelha o fork da fazer.ai e não recebe commits nossos. Traga o upstream por merge, de preferência em tag, e confira os arquivos do upstream que tocamos, listados em [`custom/README.md`](custom/README.md) ("Upstream files we touch"). Faça backup do banco antes de trocar a imagem.
 
 ## Licença
 
-O Chatwoot original tem copyright (c) 2017-2026 Chatwoot Inc. e usa a licença MIT, exceto o conteúdo de `enterprise/`. Esse diretório segue os termos de [enterprise/LICENSE](enterprise/LICENSE).
+O Chatwoot original tem copyright (c) 2017-2026 Chatwoot Inc. e usa a licença MIT, exceto o conteúdo de `enterprise/`, que segue os termos de [enterprise/LICENSE](enterprise/LICENSE). Os recursos do `enterprise/` (SSO, Captain, logs de auditoria, funções personalizadas e os demais) exigem licença da Chatwoot Inc. em produção; o resumo do negócio por IA usa o Captain.
 
-As alterações e adições do fork têm copyright (c) 2025-2026 FAZER.AI LTDA. Elas seguem os mesmos termos do código que estendem, com licença MIT fora de `enterprise/`. Componentes de terceiros mantêm suas respectivas licenças.
+As alterações e adições do fork da fazer.ai têm copyright (c) 2025-2026 FAZER.AI LTDA e seguem os mesmos termos do código que estendem. As adições do Flow Chat (`custom/` e os ganchos listados em `custom/README.md`) derivam desse código e não mudam os termos do que estendem. Componentes de terceiros mantêm suas respectivas licenças.
 
-Ao redistribuir o software ou partes substanciais dele, mantenha os dois avisos de copyright e o aviso de permissão. A exigência também se aplica a cópias de arquivos individuais.
-
-Consulte [NOTICE](NOTICE) e [LICENSE](LICENSE) para os termos completos.
+Ao redistribuir o software ou partes substanciais dele, mantenha os avisos de copyright e o aviso de permissão. A exigência também se aplica a cópias de arquivos individuais. Consulte [NOTICE](NOTICE) e [LICENSE](LICENSE) para os termos completos.
 
 ## Links
 
-- [Chatwoot fazer.ai](https://fazer.ai/chatwoot)
-- [Licenças fazer.ai](https://app.fazer.ai)
-- [Chatwoot oficial](https://www.chatwoot.com)
-- [Código do Chatwoot oficial](https://github.com/chatwoot/chatwoot)
-
-Mantido pela fazer.ai, parceira oficial do Chatwoot no Brasil.
+- **Flow Agents:** `mauromachadon1992/flow-agents-ee`
+- **Upstream:** [fork da fazer.ai](https://github.com/fazer-ai/chatwoot) · [Chatwoot oficial](https://www.chatwoot.com) · [código do Chatwoot oficial](https://github.com/chatwoot/chatwoot)
+- **Suporte:** este repositório não tem suporte de terceiros; o suporte do produto original é da Chatwoot Inc. e da fazer.ai.

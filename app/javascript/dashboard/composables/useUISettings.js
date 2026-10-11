@@ -5,6 +5,7 @@ import wootConstants from 'dashboard/constants/globals';
 export const DEFAULT_CONVERSATION_SIDEBAR_ITEMS_ORDER = Object.freeze([
   { name: 'scheduled_messages' },
   { name: 'conversation_actions' },
+  { name: 'flow_kanban' },
   { name: 'macros' },
   { name: 'conversation_info' },
   { name: 'contact_attributes' },

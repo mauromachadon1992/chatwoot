@@ -20,6 +20,9 @@ import Icon from 'dashboard/components-next/icon/Icon.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import MfaVerification from 'dashboard/components/auth/MfaVerification.vue';
 import SessionLimitOverlay from 'dashboard/components/auth/SessionLimitOverlay.vue';
+// Flow: the installation login page (Super Admin → Login page).
+import FlowAuthShell from '../../flow/FlowAuthShell.vue';
+import { useLoginPage } from '../../flow/useLoginPage';
 
 const ERROR_MESSAGES = {
   'no-account-found': 'LOGIN.OAUTH.NO_ACCOUNT_FOUND',
@@ -42,6 +45,7 @@ export default {
     MfaVerification,
     SessionLimitOverlay,
     Icon,
+    FlowAuthShell,
   },
   props: {
     ssoAuthToken: { type: String, default: '' },
@@ -52,8 +56,10 @@ export default {
   },
   setup() {
     const { replaceInstallationName } = useBranding();
+    const { hidden: hiddenByLoginPage } = useLoginPage();
     return {
       replaceInstallationName,
+      hiddenByLoginPage,
       v$: useVuelidate(),
     };
   },
@@ -98,14 +104,21 @@ export default {
     showGoogleOAuth() {
       return (
         this.allowedLoginMethods.includes('google_oauth') &&
-        Boolean(window.chatwootConfig.googleOAuthClientId)
+        Boolean(window.chatwootConfig.googleOAuthClientId) &&
+        !this.hiddenByLoginPage('google')
       );
     },
     showSignupLink() {
-      return window.chatwootConfig.signupEnabled === 'true';
+      return (
+        window.chatwootConfig.signupEnabled === 'true' &&
+        !this.hiddenByLoginPage('signup')
+      );
     },
     showSamlLogin() {
-      return this.allowedLoginMethods.includes('saml');
+      return (
+        this.allowedLoginMethods.includes('saml') &&
+        !this.hiddenByLoginPage('sso')
+      );
     },
   },
   created() {
@@ -295,31 +308,16 @@ export default {
 </script>
 
 <template>
-  <main
-    class="flex flex-col w-full min-h-screen py-20 bg-n-brand/5 dark:bg-n-background sm:px-6 lg:px-8"
-  >
-    <section class="max-w-5xl mx-auto">
-      <img
-        :src="globalConfig.logo"
-        :alt="globalConfig.installationName"
-        class="block w-auto h-8 mx-auto dark:hidden"
-      />
-      <img
-        v-if="globalConfig.logoDark"
-        :src="globalConfig.logoDark"
-        :alt="globalConfig.installationName"
-        class="hidden w-auto h-8 mx-auto dark:block"
-      />
-      <h2 class="mt-6 text-3xl font-medium text-center text-n-slate-12">
-        {{ replaceInstallationName($t('LOGIN.TITLE')) }}
-      </h2>
+  <!-- Flow: Chatwoot's own wrapper and header unless an installation login page is set. -->
+  <FlowAuthShell :title="replaceInstallationName($t('LOGIN.TITLE'))">
+    <template #after-title>
       <p v-if="showSignupLink" class="mt-3 text-sm text-center text-n-slate-11">
         {{ $t('COMMON.OR') }}
         <router-link to="auth/signup" class="lowercase text-link text-n-brand">
           {{ $t('LOGIN.CREATE_NEW_ACCOUNT') }}
         </router-link>
       </p>
-    </section>
+    </template>
 
     <!-- Session Limit Section -->
     <section v-if="sessionsLimitReached" class="mt-11">
@@ -439,5 +437,5 @@ export default {
       </a>
     </p>
     <!-- eslint-enable vue/no-bare-strings-in-template @intlify/vue-i18n/no-raw-text -->
-  </main>
+  </FlowAuthShell>
 </template>

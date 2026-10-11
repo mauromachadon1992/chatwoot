@@ -1,0 +1,70 @@
+pt_BR:
+  flow_white_label:
+    field:
+      label: White label
+      enabled: Ativo
+      disabled: Desativado
+      configure: Configurar white label
+    super_admin:
+      title: White label
+      description: A marca que esta conta usa no painel, no login do domínio próprio, nos e-mails, na pesquisa de satisfação e no widget.
+      back: Voltar para a conta
+      saved: White label salvo.
+      not_saved: Não foi possível salvar. Corrija os campos indicados.
+      session_expired: Sua sessão expirou e nada foi salvo. Sair do painel encerra também a sessão do Super Admin. Confira os campos e salve de novo.
+      save: Salvar white label
+      cancel: Cancelar
+      enable:
+        title: Ativar white label
+        hint: Desativado, a conta volta a usar a marca da instalação. Nada do que foi configurado é apagado.
+      identity:
+        title: Identidade
+        name: Nome da marca
+        name_hint: Aparece no título da aba, no login e no lugar do nome do produto.
+        name_placeholder: 'Ex.: Clínica Sorriso'
+        color: Cor da marca
+        color_hint: Vira a cor de destaque do painel (botões, links, foco e seleção) e é usada nos e-mails, na pesquisa de satisfação e no app instalado.
+        color_adjusted: 'Texto branco sobre esta cor fica com contraste %{ratio}:1, abaixo do mínimo de 4,5:1. Nos botões, o painel usa um tom mais escuro da mesma cor:'
+        palette: Paleta do painel
+      logos:
+        title: Logos
+        logo: Logo (fundo claro)
+        logo_dark: Logo (fundo escuro)
+        icon: Ícone
+        logo_email: Logo de e-mail
+        logo_hint: PNG, JPG, SVG ou WebP, até 2 MB. Formato horizontal.
+        logo_dark_hint: Opcional. Sem ele, o logo claro é usado também no tema escuro.
+        icon_hint: PNG ou SVG quadrado (512×512), até 1 MB. Vira o favicon e o ícone do app.
+        logo_email_hint: PNG, JPG ou GIF, até 2 MB. Clientes de e-mail não exibem SVG.
+        choose: Escolher arquivo
+        replace: Trocar
+        remove: Remover
+        empty: Nenhuma imagem
+      domain:
+        title: Domínio próprio
+        label: Domínio
+        placeholder: atendimento.cliente.com.br
+        hint: Com o domínio configurado, o login e o favicon já aparecem com a marca da conta.
+        dns: 'Crie um registro CNAME de %{domain} apontando para %{target} e emita o certificado HTTPS dele no proxy (ex.: Coolify).'
+      links:
+        title: Links
+        terms: Termos de uso
+        privacy: Política de privacidade
+        url_placeholder: https://
+      powered_by:
+        title: Powered by
+        hint: A linha "Desenvolvido por" dos e-mails, da pesquisa de satisfação e do widget. Em branco, usa o nome da marca.
+        name: Nome
+        name_placeholder: 'Ex.: Flow Agents'
+        url: Link
+      preview:
+        title: Prévia
+        hint: Atualiza enquanto você edita. Salve para aplicar.
+        tab: Aba do navegador
+        dashboard: Painel
+        login: Login
+        login_button: Entrar
+        email: E-mail
+        email_body: Olá! Sua conversa foi atualizada.
+        powered_by: Desenvolvido por %{name}
+        conversations: Conversas

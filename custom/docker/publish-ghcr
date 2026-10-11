@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Publishes the local flow-chatwoot:latest-ee to the private package
+# ghcr.io/mauromachadon1992/chatwoot:
+#
+#   <version>-<sha>-ee   immutable, the one to pin in production (e.g. 4.18.0-3bd220e2f-ee)
+#   <sha>-ee             immutable, the commit alone
+#   <version>-ee         moves: the last build on that Chatwoot version
+#   latest-ee            moves: the last build published
+#
+# Immutable tags are never overwritten: a sha already published stops the script. The
+# version comes from the image's org.opencontainers.image.version label (build-ee), or from
+# /app/config/app.yml for older builds.
+#
+# Credentials: a classic PAT with write:packages, either logged in once from Windows
+# (`wsl -d Ubuntu -u mauro -- docker login ghcr.io -u mauromachadon1992`, then
+# `wsl -d Ubuntu -u mauro -- ~/chatwoot/custom/docker/publish-ghcr`), or piped on stdin for
+# a single run. The gh CLI's own token was refused by ghcr.io here.
+#
+# A package created this way starts private; check it at
+# https://github.com/users/mauromachadon1992/packages/container/package/chatwoot.
+set -euo pipefail
+
+owner="${GHCR_OWNER:-mauromachadon1992}"
+target="ghcr.io/${owner}/chatwoot"
+source_image="${FLOW_IMAGE:-flow-chatwoot:latest-ee}"
+
+# A token on stdin is used for this run only; with none (stdin a terminal), the existing
+# `docker login ghcr.io` is used and kept. Whitespace stripped: a pipe from Windows
+# PowerShell ends the token with \r\n.
+token=""
+[ -t 0 ] || token="$(tr -d '[:space:]')"
+
+sha="$(docker run --rm --entrypoint cat "$source_image" /app/.git_sha | cut -c1-9)"
+version="$(docker inspect "$source_image" \
+  --format '{{index .Config.Labels "org.opencontainers.image.version"}}' 2>/dev/null || true)"
+version="${version%%-*}"
+if [ -z "$version" ] || [ "$version" = "<no value>" ]; then
+  version="$(docker run --rm --entrypoint cat "$source_image" /app/config/app.yml \
+    | grep -m1 -E '^\s*version:' | grep -oE '[0-9]+(\.[0-9]+)+')"
+fi
+test -n "$version"
+
+if [ -n "$token" ]; then
+  # Log out on the way out, so the token is not left in ~/.docker/config.json.
+  trap 'docker logout ghcr.io > /dev/null 2>&1 || true' EXIT
+  printf '%s' "$token" | docker login ghcr.io -u "$owner" --password-stdin > /dev/null
+fi
+
+# The fork's own release (build-ee with FLOW_VERSION): one more immutable tag, flow-chat-vX.Y.Z.
+flow_tag=""
+flow_version="$(docker inspect "$source_image" --format '{{index .Config.Labels "io.flow.chat.version"}}' 2>/dev/null || true)"
+if [ -n "$flow_version" ] && [ "$flow_version" != "<no value>" ]; then flow_tag="flow-chat-v${flow_version}"; fi
+
+for tag in "${version}-${sha}-ee" "${sha}-ee" ${flow_tag:+"$flow_tag"}; do
+  if docker manifest inspect "${target}:${tag}" > /dev/null 2>&1; then
+    echo "${target}:${tag} is already published; immutable tags are not overwritten." >&2
+    exit 1
+  fi
+done
+
+for tag in "${version}-${sha}-ee" "${sha}-ee" ${flow_tag:+"$flow_tag"} "${version}-ee" latest-ee; do
+  docker tag "$source_image" "${target}:${tag}"
+  docker push -q "${target}:${tag}"
+done
+
+echo "Published ${target}: ${version}-${sha}-ee, ${sha}-ee, ${flow_tag:+${flow_tag}, }${version}-ee, latest-ee"

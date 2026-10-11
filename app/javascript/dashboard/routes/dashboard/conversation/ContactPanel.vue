@@ -19,6 +19,7 @@ import ContactInfo from './contact/ContactInfo.vue';
 import GroupContactInfo from './contact/GroupContactInfo.vue';
 import ContactNotes from './contact/ContactNotes.vue';
 import ScheduledMessages from './scheduledMessages/ScheduledMessages.vue';
+import ConversationKanbanPanel from '../flowKanban/ConversationKanbanPanel.vue';
 import ConversationInfo from './ConversationInfo.vue';
 import CustomAttributes from './customAttributes/CustomAttributes.vue';
 import SharedFiles from './SharedFiles.vue';
@@ -256,6 +257,21 @@ onMounted(() => {
               <ConversationParticipant
                 :conversation-id="conversationId"
                 :inbox-id="inboxId"
+              />
+            </AccordionItem>
+          </div>
+          <div v-else-if="element.name === 'flow_kanban'">
+            <AccordionItem
+              :title="$t('FLOW_KANBAN.PANEL.TITLE')"
+              :is-open="isContactSidebarItemOpen('is_flow_kanban_open')"
+              compact
+              @toggle="
+                value => toggleSidebarUIState('is_flow_kanban_open', value)
+              "
+            >
+              <ConversationKanbanPanel
+                :conversation-id="conversationId"
+                :contact-id="currentChat.meta?.sender?.id"
               />
             </AccordionItem>
           </div>

@@ -4,6 +4,8 @@ import { required, minLength } from '@vuelidate/validators';
 import { useAlert } from 'dashboard/composables';
 import FormInput from '../../../components/Form/Input.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+// Flow: the installation login page (Super Admin → Login page).
+import FlowAuthShell from '../../../flow/FlowAuthShell.vue';
 import { DEFAULT_REDIRECT_URL } from 'dashboard/constants/globals';
 import { setNewPassword } from '../../../api/auth';
 
@@ -11,6 +13,7 @@ export default {
   components: {
     FormInput,
     NextButton,
+    FlowAuthShell,
   },
   props: {
     resetPasswordToken: { type: String, default: '' },
@@ -86,9 +89,8 @@ export default {
 </script>
 
 <template>
-  <div
-    class="flex flex-col justify-center w-full min-h-screen py-12 bg-n-brand/5 dark:bg-n-background sm:px-6 lg:px-8"
-  >
+  <!-- Flow: Chatwoot's own wrapper unless an installation login page is set. -->
+  <FlowAuthShell variant="plain">
     <form
       class="bg-white shadow sm:mx-auto sm:w-full sm:max-w-lg dark:bg-n-solid-2 p-11 sm:shadow-lg sm:rounded-lg"
       @submit.prevent="submitForm"
@@ -135,5 +137,5 @@ export default {
         />
       </div>
     </form>
-  </div>
+  </FlowAuthShell>
 </template>

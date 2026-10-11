@@ -1,0 +1,23 @@
+<div class="field-unit__label">
+  <%= f.label field.attribute, t('flow_kanban.features.label') %>
+</div>
+<div class="field-unit__field">
+  <p class="text-gray-400 text-xs italic mb-4"><%= t('flow_kanban.features.hint') %></p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <% field.options.each do |key| %>
+      <label class="flex items-start justify-between gap-4 p-3 bg-white rounded-lg shadow-sm outline outline-1 outline-n-container cursor-pointer">
+        <span class="flex flex-col gap-1">
+          <span class="text-sm text-slate-700"><%= t("flow_kanban.features.#{key}.label") %></span>
+          <span class="text-xs text-slate-500"><%= t("flow_kanban.features.#{key}.hint") %></span>
+        </span>
+        <%= check_box_tag "account[#{field.attribute}][]",
+                          key,
+                          field.selected.include?(key),
+                          id: "account_#{field.attribute}_#{key}",
+                          class: 'mt-0.5 h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-600' %>
+      </label>
+    <% end %>
+  </div>
+  <%# Submitted when every box is unchecked, so "none of them" can be saved. %>
+  <%= hidden_field_tag "account[#{field.attribute}][]", '', id: nil %>
+</div>

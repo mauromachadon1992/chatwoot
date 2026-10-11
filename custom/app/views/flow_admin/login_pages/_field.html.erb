@@ -1,0 +1,28 @@
+<%# locals: (name:, label:, value:, error: nil, hint: nil, placeholder: nil, type: 'text', limit: nil, multiline: false, preview: nil) %>
+<% id = name.gsub(/\]\[|\[|\]/, '_').delete_suffix('_') %>
+<div class="flex flex-col gap-1.5">
+  <div class="flex items-baseline justify-between gap-3">
+    <label for="<%= id %>" class="text-sm font-medium text-n-slate-12"><%= label %></label>
+    <% if limit %>
+      <span class="text-xs tabular-nums text-n-slate-10" data-counter-for="<%= id %>" data-limit="<%= limit %>"><%= value.to_s.length %>/<%= limit %></span>
+    <% end %>
+  </div>
+  <div class="flex rounded-lg bg-n-solid-1 outline outline-1 -outline-offset-1 transition-colors focus-within:outline-2 focus-within:outline-n-brand <%= error ? 'outline-n-ruby-9' : 'outline-n-weak hover:outline-n-slate-6' %>">
+    <% field_attrs = { id: id, name: name, placeholder: placeholder, maxlength: limit, data: { preview: preview, counted: limit.present? },
+                       'aria-invalid': (error.present? || nil), 'aria-describedby': ("#{id}_error" if error) }.compact %>
+    <% classes = 'w-full !mb-0 px-3 text-sm bg-transparent border-0 rounded-lg outline-none text-n-slate-12 placeholder:text-n-slate-10' %>
+    <% if multiline %>
+      <%= text_area_tag nil, value, field_attrs.merge(rows: 2, class: "#{classes} py-2 resize-none leading-5") %>
+    <% else %>
+      <%= tag.input(**field_attrs, type: type, value: value, class: "#{classes} h-10") %>
+    <% end %>
+  </div>
+  <% if error %>
+    <p id="<%= id %>_error" class="flex items-center gap-1.5 m-0 text-xs text-n-ruby-11">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <%= label %>: <%= error %>
+    </p>
+  <% elsif hint %>
+    <p class="m-0 text-xs text-n-slate-11"><%= hint %></p>
+  <% end %>
+</div>

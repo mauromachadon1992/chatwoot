@@ -1,0 +1,197 @@
+<script setup>
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
+import Button from 'dashboard/components-next/button/Button.vue';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
+import ConversationChips from './ConversationChips.vue';
+import StatePill from './StatePill.vue';
+import { priorityView } from './proFields';
+import { useFlowKanban } from './useFlowKanban';
+
+const props = defineProps({
+  card: { type: Object, required: true },
+});
+
+defineEmits(['open']);
+
+const { t } = useI18n();
+const { cardFields, relativeTime, money, hasFeature } = useFlowKanban();
+
+// States, not fields: always shown when they hold, whatever fields the account picked.
+const staleDays = computed(() =>
+  hasFeature('stale_alerts') ? props.card.stale_days : null
+);
+
+const priority = computed(() => priorityView(props.card.priority));
+
+const contactLabel = computed(
+  () =>
+    props.card.contact.name ||
+    props.card.contact.phone_number ||
+    props.card.contact.email
+);
+
+// The freshest conversation stands for the deal's last activity, whatever its channel.
+const lastActivityAt = computed(() =>
+  Math.max(0, ...props.card.conversations.map(c => c.last_activity_at || 0))
+);
+
+const showValue = computed(
+  () => cardFields.value.has('value') && props.card.value_cents > 0
+);
+const showAssignee = computed(
+  () => cardFields.value.has('assignee') && props.card.assignee
+);
+const showConversations = computed(
+  () => cardFields.value.has('conversations') && props.card.conversations.length
+);
+const showTimeInStage = computed(
+  () => cardFields.value.has('time_in_stage') && props.card.stage_changed_at
+);
+const showLastActivity = computed(
+  () => cardFields.value.has('last_activity') && lastActivityAt.value > 0
+);
+// Follow-ups are part of working the deal, not a field an account can switch off.
+const tasks = computed(() => props.card.tasks || { open: 0, overdue: 0 });
+const showTasks = computed(() => tasks.value.open > 0);
+</script>
+
+<template>
+  <article
+    class="group flex flex-col gap-2 p-3 rounded-lg bg-n-solid-1 outline outline-1 outline-n-container shadow-sm cursor-grab select-none transition-shadow duration-150 hover:shadow-md active:cursor-grabbing focus-within:outline-2 focus-within:outline-n-brand"
+    @click="$emit('open', card)"
+  >
+    <!-- The way in for the keyboard and screen readers; the rest of the card opens it with the mouse. -->
+    <Button
+      ghost
+      slate
+      xs
+      type="button"
+      class="sr-only focus:not-sr-only focus:self-start"
+      :label="t('FLOW_KANBAN.CARD.OPEN')"
+      :aria-label="t('FLOW_KANBAN.CARD.OPEN_TITLE', { title: card.title })"
+      @click.stop="$emit('open', card)"
+    />
+    <div class="flex items-start gap-2">
+      <h4
+        class="flex-1 min-w-0 text-heading-3 break-words text-n-slate-12 line-clamp-2"
+      >
+        {{ card.title }}
+      </h4>
+      <Avatar
+        v-if="showAssignee"
+        v-tooltip.top="card.assignee.name"
+        :src="card.assignee.thumbnail"
+        :name="card.assignee.name"
+        :size="20"
+        rounded-full
+        aria-hidden="true"
+        class="flex-shrink-0"
+      />
+      <span v-if="showAssignee" class="sr-only">{{ card.assignee.name }}</span>
+    </div>
+
+    <div
+      v-if="staleDays || card.needs_review || priority"
+      class="flex flex-wrap gap-1"
+    >
+      <StatePill
+        v-if="priority"
+        :tone="priority.tone"
+        :icon="priority.icon"
+        :label="t(`FLOW_KANBAN.DETAILS.PRIORITIES.${priority.key}`)"
+      />
+      <StatePill
+        v-if="staleDays"
+        tone="amber"
+        icon="i-lucide-hourglass"
+        :label="t('FLOW_KANBAN.CARD.STALE', { days: staleDays })"
+      />
+      <StatePill
+        v-if="card.needs_review"
+        v-tooltip.top="t('FLOW_KANBAN.CARD.AUTOMATIC_HINT')"
+        tone="slate"
+        icon="i-lucide-message-square-plus"
+        :label="t('FLOW_KANBAN.CARD.AUTOMATIC')"
+      />
+    </div>
+
+    <p
+      v-if="showValue"
+      v-tooltip.top="t('FLOW_KANBAN.CARD.VALUE')"
+      class="text-label tabular-nums text-n-slate-12 w-fit"
+    >
+      <span class="sr-only">{{ t('FLOW_KANBAN.CARD.VALUE') }}</span>
+      {{ money(card.value_cents, { whole: true }) }}
+    </p>
+
+    <div
+      v-if="cardFields.has('contact')"
+      class="flex items-center min-w-0 gap-1.5 py-1"
+    >
+      <Avatar
+        :src="card.contact.thumbnail"
+        name=""
+        :size="16"
+        rounded-full
+        aria-hidden="true"
+      />
+      <span class="text-label-small truncate text-n-slate-11">{{
+        contactLabel
+      }}</span>
+    </div>
+
+    <ConversationChips
+      v-if="showConversations"
+      :conversations="card.conversations"
+    />
+
+    <div
+      v-if="showTimeInStage || showLastActivity || showTasks"
+      class="flex flex-wrap items-center gap-x-3 gap-y-1 text-label-small text-n-slate-11"
+    >
+      <span
+        v-if="showTasks"
+        v-tooltip.top="
+          tasks.overdue
+            ? t('FLOW_KANBAN.CARD.TASKS_OVERDUE', { count: tasks.overdue })
+            : t('FLOW_KANBAN.CARD.TASKS_OPEN', { count: tasks.open })
+        "
+        class="inline-flex items-center gap-1 tabular-nums"
+        :class="tasks.overdue ? 'text-n-ruby-11' : 'text-n-slate-11'"
+      >
+        <Icon
+          :icon="
+            tasks.overdue ? 'i-lucide-alarm-clock' : 'i-lucide-list-checks'
+          "
+          class="size-3.5"
+        />
+        {{ tasks.overdue || tasks.open }}
+        <span class="sr-only">
+          {{
+            tasks.overdue
+              ? t('FLOW_KANBAN.CARD.TASKS_OVERDUE', { count: tasks.overdue })
+              : t('FLOW_KANBAN.CARD.TASKS_OPEN', { count: tasks.open })
+          }}
+        </span>
+      </span>
+      <span
+        v-if="showTimeInStage"
+        v-tooltip.top="t('FLOW_KANBAN.CARD.TIME_IN_STAGE')"
+        class="inline-flex items-center gap-1"
+      >
+        <Icon icon="i-lucide-hourglass" class="size-3.5" />
+        {{ relativeTime(card.stage_changed_at) }}
+      </span>
+      <span
+        v-if="showLastActivity"
+        v-tooltip.top="t('FLOW_KANBAN.CARD.LAST_ACTIVITY')"
+        class="inline-flex items-center gap-1"
+      >
+        <Icon icon="i-lucide-message-circle" class="size-3.5" />
+        {{ relativeTime(lastActivityAt) }}
+      </span>
+    </div>
+  </article>
+</template>

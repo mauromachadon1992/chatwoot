@@ -29,6 +29,12 @@ ignore:
   # Patched 2.0 releases need an ai-agents migration (currently constrained to RubyLLM 1.x).
   # Remove when a supported patched RubyLLM/ai-agents combination is adopted.
   - CVE-2026-67991
+  # Same advisory family, same reason: both are ReDoS that only exist on Ruby 3.1.x, which lacks the
+  # regex memoization of 3.2+ (think-tag parsing: GHSA-5m38-526f-3498; Mistral capability matching:
+  # GHSA-57hg-jgw4-wcqw). Fork runs Ruby 3.4.4 (.ruby-version). Added 2026-10-11; review when a
+  # RubyLLM 2.x stable and an ai-agents release that accepts it exist, and remove then.
+  - CVE-2026-67987
+  - CVE-2026-67989
   # rack-proxy 1.0.0 to 1.0.2 response framing. The advisory database lists no unaffected
   # range, so the 0.x vite_ruby pins us to is flagged although the advisory did not assess
   # it. Not reachable here: rack-proxy only runs as ViteRuby::DevServerProxy, inserted when

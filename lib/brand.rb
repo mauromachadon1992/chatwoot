@@ -148,3 +148,5 @@ class Brand
     "#{ENV.fetch('FRONTEND_URL', nil).to_s.chomp('/')}/#{value.delete_prefix('/')}"
   end
 end
+
+Brand.prepend_mod_with('Brand')

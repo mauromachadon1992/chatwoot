@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Runs the fork's production image locally (see compose.ee-local.yaml).
+#
+#   custom/docker/ee-local up        start on http://localhost:3100 (first run creates secrets)
+#   custom/docker/ee-local check     what the running image loaded: extensions, plan, version
+#   custom/docker/ee-local logs      follow rails and sidekiq
+#   custom/docker/ee-local down      stop (keeps data); `down -v` also drops it
+#
+# FLOW_IMAGE picks another tag (default flow-chatwoot:latest-ee).
+set -euo pipefail
+
+dir="$(cd "$(dirname "$0")" && pwd)"
+env_file="$dir/.ee-local.env"
+compose=(docker compose -f "$dir/compose.ee-local.yaml")
+
+# Secrets for this machine only, never committed (.gitignore next to this script).
+if [ ! -f "$env_file" ]; then
+  umask 077
+  {
+    echo "SECRET_KEY_BASE=$(openssl rand -hex 64)"
+    echo "POSTGRES_PASSWORD=$(openssl rand -hex 24)"
+  } > "$env_file"
+  echo "Created $env_file"
+fi
+
+case "${1:-up}" in
+  up)
+    "${compose[@]}" up -d
+    echo "Starting on http://localhost:3100 (the first boot runs db:chatwoot_prepare)."
+    ;;
+  check)
+    "${compose[@]}" exec -T rails bundle exec rails runner '
+      puts "version      = #{Chatwoot.config[:version]} (#{File.read(".git_sha").strip[0, 9]})"
+      puts "edition      = #{ENV.fetch("CW_EDITION", "")}"
+      puts "extensions   = #{ChatwootApp.extensions.inspect}"
+      puts "pricing_plan = #{ChatwootHub.pricing_plan}"
+      puts "custom code  = #{defined?(Custom::WhiteLabel::Palette) && defined?(Custom::EnterpriseDev) ? "loaded" : "missing"}"
+    '
+    ;;
+  logs)
+    "${compose[@]}" logs -f rails sidekiq
+    ;;
+  down)
+    shift
+    "${compose[@]}" down "$@"
+    ;;
+  *)
+    echo "usage: $0 [up|check|logs|down [-v]]" >&2
+    exit 1
+    ;;
+esac

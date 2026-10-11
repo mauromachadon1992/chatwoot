@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "pro-kanban.v1.schema.json",
+  "title": "Pro Kanban dialect, v1: what fazer.ai agents reads from the Chatwoot",
+  "$defs": {
+    "step": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "color": { "type": ["string", "null"] },
+        "cancelled": { "type": "boolean" }
+      }
+    },
+    "stepList": {
+      "oneOf": [
+        { "type": "array", "items": { "$ref": "#/$defs/step" } },
+        {
+          "type": "object",
+          "required": ["steps"],
+          "properties": { "steps": { "type": "array", "items": { "$ref": "#/$defs/step" } } }
+        },
+        {
+          "type": "object",
+          "required": ["payload"],
+          "properties": { "payload": { "type": "array", "items": { "$ref": "#/$defs/step" } } }
+        }
+      ]
+    },
+    "board": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" }
+      }
+    },
+    "card": {
+      "type": "object",
+      "required": ["id", "board_id", "board_step_id", "title", "labels", "custom_attributes"],
+      "properties": {
+        "id": { "type": "integer" },
+        "board_id": { "type": "integer" },
+        "board_step_id": { "type": "integer" },
+        "board": {
+          "type": ["object", "null"],
+          "properties": {
+            "name": { "type": "string" },
+            "steps": { "type": "array", "items": { "$ref": "#/$defs/step" } }
+          }
+        },
+        "title": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "priority": { "enum": ["urgent", "high", "medium", "low", null] },
+        "status": { "type": ["string", "null"] },
+        "value": { "type": ["number", "null"] },
+        "start_date": { "type": ["string", "null"] },
+        "due_date": { "type": ["string", "null"] },
+        "custom_attributes": { "type": "object" },
+        "labels": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "conversation": {
+      "type": "object",
+      "required": ["kanban_task"],
+      "properties": {
+        "kanban_task": { "oneOf": [{ "$ref": "#/$defs/card" }, { "type": "null" }] }
+      }
+    }
+  }
+}
